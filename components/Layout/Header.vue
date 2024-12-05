@@ -4,9 +4,9 @@ import { Dialog, DialogPanel } from "@headlessui/vue";
 import { Bars3Icon, XMarkIcon } from "@heroicons/vue/24/outline";
 
 const navigation = [
-  { name: "FAQ", href: "/faq" },
+  { name: "FAQ", href: "/faqs" },
   { name: "Rules", href: "/rules" },
-  { name: "Reaction roles", href: "/reaction-role" },
+  { name: "Reaction roles", href: "/reaction-roles" },
   { name: "Applications", href: "/applications" },
 ];
 
