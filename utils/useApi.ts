@@ -13,11 +13,15 @@ export const useApi = async <T>(
   options: UseFetchOptions = {},
   displayErrors = false,
 ) => {
-  options.headers = {
-    "Content-Type": "application/json",
-    Accept: "application/json",
-    ...options.headers,
-  };
+  const xsrfToken = useCookie("XSRF-TOKEN");
+  if (xsrfToken.value) {
+    options.headers = {
+      "X-XSRF-TOKEN": xsrfToken.value,
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      ...options.headers,
+    };
+  }
   options.watch = false;
   options.baseURL = "/";
 

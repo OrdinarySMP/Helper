@@ -9,13 +9,12 @@ onMounted(async () => {
     method: "post",
     body: route.query,
   });
-  console.log(error)
 
-  // if (!error.value) {
-  //   navigateTo("/");
-  // } else {
-  //   navigateTo("/login");
-  // }
+  if (!error.value) {
+    navigateTo("/");
+  } else {
+    navigateTo("/login");
+  }
 });
 
 definePageMeta({
