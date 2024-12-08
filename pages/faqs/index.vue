@@ -30,7 +30,6 @@ const loadFAQ = async () => {
   })
 
   faqs.value = data.value ?? []
-  console.log(faqs.value)
 
   loading.value = false;
 };

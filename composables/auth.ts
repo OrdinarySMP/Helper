@@ -4,9 +4,9 @@
 export const useAuth = () => {
   const user = () => useState<any | undefined>("user", () => undefined);
 
-  const check = !!user().value?.length;
+  const check = user().value !== undefined;
 
-  const guest = !!user().value?.length;
+  const guest = user().value === undefined;
 
   const logout = () => {
     user().value = undefined;
@@ -25,8 +25,11 @@ export const useAuth = () => {
       user().value = undefined;
       return;
     }
-    console.log(data.value)
-    user().value = data.value;
+    if (Object.keys(data.value ?? {}).length === 0) {
+      user().value = undefined;
+    } else {
+      user().value = data.value;
+    }
   };
 
   return {

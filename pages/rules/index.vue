@@ -34,7 +34,6 @@ const loadRule = async () => {
   })
 
   rules.value = data.value ?? []
-  console.log(rules.value)
 
   loading.value = false;
 };

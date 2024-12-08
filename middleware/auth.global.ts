@@ -8,9 +8,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
     );
   };
 
-  console.log(useAuth().check)
-
-  console.log(useAuth().check)
+  console.log(useAuth().user().value !== {})
   if (isGuestPath(to.path) && useAuth().check) {
     return navigateTo("/");
   }
