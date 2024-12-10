@@ -8,12 +8,12 @@ export default defineNuxtRouteMiddleware(async (to) => {
     );
   };
 
-  console.log(useAuth().user().value !== {})
   if (isGuestPath(to.path) && useAuth().check) {
     return navigateTo("/");
   }
 
   if (!isGuestPath(to.path) && useAuth().guest) {
+    console.log('sdfsdfsdf')
     return navigateTo("/login");
   }
 });

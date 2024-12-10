@@ -7,6 +7,7 @@ const loading = ref(true);
 const faqs = ref<FAQ[]>([])
 const toDeleteFAQ = ref();
 const deleteDialog = ref(false);
+const pagination = ref<Pagination | null>();
 
 const headers = ref([
 	{
@@ -29,7 +30,19 @@ const loadFAQ = async () => {
     method: 'get'
   })
 
-  faqs.value = data.value ?? []
+  if (data.value) {
+    faqs.value = data.value.data ?? []
+
+    pagination.value = {
+      total: data.value.total,
+      currentPage: data.value.current_page,
+      perPage: data.value.per_page,
+      from: data.value.from,
+      to: data.value.to,
+      totalPages: data.value.last_page,
+    };
+  }
+
 
   loading.value = false;
 };
@@ -64,7 +77,12 @@ onMounted(() => {
         </Button>
       </NuxtLink>
     </p>
-  	<Table :loading="loading" :headers="headers" :data="faqs">
+  	<Table
+      :loading="loading"
+      :headers="headers"
+      :data="faqs"
+      :pagination="pagination"
+    >
         <template #body-actions="{ data }">
           <div class="flex gap-4">
             <NuxtLink :to="`/faqs/edit/${data.id}`">

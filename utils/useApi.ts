@@ -25,14 +25,14 @@ export const useApi = async <T>(
   options.watch = false;
   options.baseURL = "/";
 
-  const { data, error, pending, refresh } = await useFetch<T>(
+  const { data, error, refresh } = await useFetch<T>(
     apiUrl(path),
     options as {},
   );
 
   await handleError(error.value, displayErrors);
 
-  return { data, error, pending, refresh };
+  return { data, error, refresh };
 };
 
 const handleError = async (error: any | null, displayAllError: boolean) => {

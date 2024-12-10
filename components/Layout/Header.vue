@@ -15,7 +15,7 @@ const mobileMenuOpen = ref(false);
 
 <template>
   <header
-    class="inset-x-0 top-0 z-50 bg-gradient-to-b from-orange-500 to-red-500"
+    class="inset-x-0 top-0 bg-gradient-to-b from-orange-500 to-red-500"
   >
     <nav
       class="flex items-center justify-between px-6 py-2.5 lg:px-8"

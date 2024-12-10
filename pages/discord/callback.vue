@@ -1,19 +1,18 @@
 <script lang="ts" setup>
-import { ref, onMounted, computed } from "vue"
+import { onMounted } from "vue"
 
 const route = useRoute();
 
 onMounted(async () => {
-  console.log(route.query)
   const { error } = await useApi("/discord/callback", {
     method: "post",
     body: route.query,
   });
 
   if (!error.value) {
-    navigateTo("/");
+    return navigateTo("/");
   } else {
-    navigateTo("/login");
+    return navigateTo("/login?noPermission");
   }
 });
 

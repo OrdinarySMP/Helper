@@ -25,7 +25,7 @@ const { handleSubmit, setErrors, isSubmitting, setFieldValue } = useForm({
 const save = handleSubmit(async (values) => {
   errorMessage.value = "";
 
-  const { error } = await await useApi(`/faqs/${faqId.value}`, {
+  const { error } = await useApi(`/faqs/${faqId.value}`, {
     method:  "patch",
     body: values
   });
@@ -42,18 +42,18 @@ onMounted(async () => {
   loading.value = true;
   faqId.value = parseRouteParameter(route.params.id);
 
-  const { data } = await await useApi<FAQ[]>(`/faqs`, {
+  const { data } = await useApi<FAQ[]>(`/faqs`, {
     method:  "get",
     params: {
       "filter[id]": faqId.value,
     }
   });
-  if (!data.value || !data.value[0]) {
+  if (!data.value || !data.value?.data[0]) {
     navigateTo("/faqs");
     return
   }
 
-  faq.value = data.value[0]
+  faq.value = data.value.data[0]
 
   setFieldValue("question", faq.value.question);
   setFieldValue("answer", faq.value.answer);

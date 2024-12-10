@@ -1,14 +1,100 @@
 <script lang="ts" setup>
-import { ref, onMounted, computed } from "vue"
+import { ref, onMounted } from "vue";
+import { toTypedSchema } from "@vee-validate/zod";
+import * as zod from "zod";
+import { useForm } from "vee-validate";
+
+const route = useRoute();
+const errorMessage = ref<string>();
+
+const formSchema = toTypedSchema(
+  zod.object({
+    user: zod.string().min(1),
+    password: zod.string().min(6),
+  }),
+);
+
+const { handleSubmit, isSubmitting } = useForm({
+  validationSchema: formSchema,
+  initialValues: {
+    user: "",
+    password: "",
+  },
+});
+
+const login = handleSubmit(async () => {
+  errorMessage.value = "Your credentials do not match our records.";
+  return;
+});
 
 const discordOAuthUrl = ref("https://discord.com/oauth2/authorize?client_id=1256137976099110955&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fdiscord%2Fcallback&scope=guilds+identify+guilds.members.read");
 
+definePageMeta({
+  layout: "guest",
+});
+
+onMounted(() => {
+  console.log(route.query)
+  if ('noPermission' in route.query) {
+    errorMessage.value = "You do not have the required permissions.";
+  }
+})
 </script>
 
 <template>
-  <div>
-  	<NuxtLink :to="discordOAuthUrl">
-  		Login with Discord
-  	</NuxtLink>
+  <div class="flex h-full flex-1 flex-col py-12 sm:px-6 lg:px-8">
+    <div class="sm:mx-auto sm:w-full sm:max-w-md">
+      <h2
+        class="mt-6 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900"
+      >
+        Ordinary SMP
+      </h2>
+    </div>
+
+    <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
+      <div
+        class="border border-gray-100 bg-white px-6 py-12 shadow-lg sm:rounded-lg sm:px-12"
+      >
+        <form class="space-y-4" @submit.prevent="login">
+          <FieldInput
+            name="user"
+            label="Benutzername"
+            placeholder="you@example.com"
+          />
+          <FieldInput
+            type="password"
+            name="password"
+            label="Passwort"
+            placeholder="******"
+          />
+          <div>
+            <span v-if="errorMessage" class="text-red-600">{{
+              errorMessage
+            }}</span>
+          </div>
+          <div class="flex gap-4">
+            <Button
+              class="px-2 font-bold"
+              size="md"
+              type="submit"
+              :disabled="isSubmitting"
+              :loading="isSubmitting"
+            >
+              Login
+            </Button>
+            <NuxtLink :to="discordOAuthUrl">
+              <Button
+                class="px-2 font-bold"
+                size="md"
+                :disabled="isSubmitting"
+                :loading="isSubmitting"
+              >
+                Discord
+              </Button>
+            </NuxtLink>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
