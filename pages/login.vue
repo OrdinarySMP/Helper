@@ -29,7 +29,7 @@ const login = handleSubmit(async () => {
 });
 
 const discordOAuthUrl = ref(
-  "https://discord.com/oauth2/authorize?client_id=1256137976099110955&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fdiscord%2Fcallback&scope=guilds+identify+guilds.members.read",
+  `https://discord.com/oauth2/authorize?client_id=${config.public.discordClientId}&response_type=code&redirect_uri=${encodeURIComponent(`${config.public.discordCallbackUrl}`)}&scope=guilds+identify+guilds.members.read`,
 );
 
 definePageMeta({

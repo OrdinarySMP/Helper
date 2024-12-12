@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-const config = useRuntimeConfig()
 useHead({
   title: "Dashboard",
 });
@@ -8,6 +7,5 @@ useHead({
 <template>
   <div>
     <p>Hello {{ useAuth().user().value?.nickname }}</p>
-    {{ config.public.apiBase ?? "---" }}
   </div>
 </template>

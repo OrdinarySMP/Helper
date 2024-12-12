@@ -7,6 +7,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       apiBase: "/api/v1",
+      discordClientId: "",
+      discordCallbackUrl: "http://localhost:3000/discord/callback",
     },
   },
   nitro: {

@@ -14,13 +14,15 @@ export const useApi = async <T>(
   displayErrors = false,
 ) => {
   const xsrfToken = useCookie("XSRF-TOKEN");
+  options.headers = {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    ...options.headers,
+  };
+  console.log(xsrfToken.value)
   if (xsrfToken.value) {
-    options.headers = {
-      "X-XSRF-TOKEN": xsrfToken.value,
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      ...options.headers,
-    };
+    console.log("setting token")
+    options.headers["X-XSRF-TOKEN"] = xsrfToken.value;
   }
   options.watch = false;
   options.baseURL = "/";
