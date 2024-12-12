@@ -6,6 +6,7 @@ type UseFetchOptions = {
   headers?: Record<string, string> | [key: string, value: string][] | Headers;
   watch?: boolean;
   baseURL?: string;
+  credentials?: string;
 };
 
 export const useApi = async <T>(
@@ -14,16 +15,15 @@ export const useApi = async <T>(
   displayErrors = false,
 ) => {
   const xsrfToken = useCookie("XSRF-TOKEN");
-  options.headers = {
-    "Content-Type": "application/json",
-    Accept: "application/json",
-    ...options.headers,
-  };
-  console.log(xsrfToken.value)
   if (xsrfToken.value) {
-    console.log("setting token")
-    options.headers["X-XSRF-TOKEN"] = xsrfToken.value;
+    options.headers = {
+      "X-XSRF-TOKEN": xsrfToken.value,
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      ...options.headers,
+    };
   }
+  options.credentials = "include";
   options.watch = false;
   options.baseURL = "/";
 

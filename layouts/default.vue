@@ -1,7 +1,4 @@
 <script lang="ts" setup>
-const route = useRoute();
-
-console.log(route.meta.title);
 useHead({
   titleTemplate: (titleChunk) => {
     return titleChunk ? `${titleChunk} | Ordinary SMP` : "Ordinary SMP";
