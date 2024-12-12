@@ -2,14 +2,18 @@
 import { computed, useSlots } from "vue";
 const slots = useSlots();
 
-const props = withDefaults(defineProps<{ size?: "xs" | "sm" | "md" | "xl" | "2xl" | "3xl" }>(), {
-  size: "2xl",
-});
+const props = withDefaults(
+  defineProps<{ size?: "xs" | "sm" | "md" | "xl" | "2xl" | "3xl" }>(),
+  {
+    size: "2xl",
+  },
+);
 
 const emit = defineEmits(["close"]);
 
-const handleClick = (event: any) => {
-  if (event.target.closest(".dialog-content-container") === null) {
+const handleClick = (event: Event) => {
+  const target = event.target as HTMLElement | null;
+  if (target?.closest(".dialog-content-container") === null) {
     emit("close");
   }
 };

@@ -4,7 +4,7 @@ export interface Header {
   sortable?: boolean;
 }
 
-export type Data = { [key: string | number]: any };
+export type Data = { [key: string | number]: unknown };
 
 export interface Pagination {
   total: number;

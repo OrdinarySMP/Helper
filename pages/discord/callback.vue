@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted } from "vue"
+import { onMounted } from "vue";
 
 const route = useRoute();
 
@@ -19,7 +19,6 @@ onMounted(async () => {
 definePageMeta({
   layout: "guest",
 });
-
 </script>
 
 <template>

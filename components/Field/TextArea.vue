@@ -49,7 +49,7 @@ const hasErrors = computed(() => {
       :placeholder="placeholder"
       :disabled="disabled"
       @change="handleChange"
-    ></textarea>
+    />
     <p v-for="(error, key) in errors" :key="key" class="text-red-600">
       {{ error }}
     </p>

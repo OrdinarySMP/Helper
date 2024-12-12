@@ -20,9 +20,9 @@ const { handleSubmit, setErrors, isSubmitting } = useForm({
 const save = handleSubmit(async (values) => {
   errorMessage.value = "";
 
-  const { error } = await await useApi("/faqs", {
-    method:  "post",
-    body: values
+  const { error } = await useApi("/faqs", {
+    method: "post",
+    body: values,
   });
 
   if (error.value) {
@@ -33,6 +33,9 @@ const save = handleSubmit(async (values) => {
   }
 });
 
+useHead({
+  title: "FAQs",
+});
 </script>
 
 <template>

@@ -1,7 +1,7 @@
 import type { Notification } from "@/types/notification";
 
 export const useNotification = () => {
-  const notifications = useState<Record<string, Notification>>(
+  const notifications = useState<Record<string, Notification | undefined>>(
     "notifications",
     () => ({}),
   );
@@ -40,7 +40,7 @@ export const useNotification = () => {
 
   const dissmiss = (uuid: string) => {
     if (notifications.value[uuid]) {
-      delete notifications.value[uuid];
+      notifications.value[uuid] = undefined;
     }
   };
 

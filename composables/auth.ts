@@ -1,8 +1,7 @@
-// import { User } from "@/types/user";
-// import { ValidateResponse } from "@/types/response";
+import type { User } from "@/types/user";
 
 export const useAuth = () => {
-  const user = () => useState<any | undefined>("user", () => undefined);
+  const user = () => useState<User | undefined>("user", () => undefined);
 
   const check = user().value !== undefined;
 
@@ -17,7 +16,7 @@ export const useAuth = () => {
       method: "get",
     });
 
-    const { data, error } = await useApi<any>("/me", {
+    const { data, error } = await useApi<User>("/me", {
       method: "get",
     });
 
@@ -28,7 +27,7 @@ export const useAuth = () => {
     if (Object.keys(data.value ?? {}).length === 0) {
       user().value = undefined;
     } else {
-      user().value = data.value;
+      user().value = data.value ?? undefined;
     }
   };
 

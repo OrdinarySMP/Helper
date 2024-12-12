@@ -2,7 +2,7 @@ type UseFetchOptions = {
   method?: "get" | "post" | "patch" | "put" | "delete";
   query?: Record<string, unknown> | [key: string, value: string][];
   params?: Record<string, unknown> | [key: string, value: string][];
-  body?: RequestInit["body"] | Record<string, any>;
+  body?: RequestInit["body"] | Record<string, unknown>;
   headers?: Record<string, string> | [key: string, value: string][] | Headers;
   watch?: boolean;
   baseURL?: string;
@@ -27,7 +27,7 @@ export const useApi = async <T>(
 
   const { data, error, refresh } = await useFetch<T>(
     apiUrl(path),
-    options as {},
+    options as object,
   );
 
   await handleError(error.value, displayErrors);
@@ -35,7 +35,11 @@ export const useApi = async <T>(
   return { data, error, refresh };
 };
 
-const handleError = async (error: any | null, displayAllError: boolean) => {
+const handleError = async (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  error: any | null,
+  displayAllError: boolean,
+) => {
   if (!error || error.statusCode === undefined) {
     return;
   }
@@ -63,5 +67,7 @@ const handleError = async (error: any | null, displayAllError: boolean) => {
 };
 
 export const apiUrl = (path: string): string => {
-  return `/api/v1${path.startsWith("/") ? "" : "/"}${path}`;
+  const config = useRuntimeConfig()
+
+  return `${config.public.apiBase}${path.startsWith("/") ? "" : "/"}${path}`;
 };

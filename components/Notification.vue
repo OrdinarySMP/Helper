@@ -1,3 +1,6 @@
+<script lang="ts" setup>
+import { XMarkIcon } from "@heroicons/vue/24/solid";
+</script>
 <template>
   <div
     aria-live="assertive"
@@ -22,7 +25,7 @@
             class="mb-4 w-full max-w-sm"
           >
             <div
-              v-if="notification.title && notification.content"
+              v-if="notification?.title && notification?.content"
               class="pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-black/5"
             >
               <div class="p-4">
@@ -50,7 +53,7 @@
                       @click="useNotification().dissmiss(key)"
                     >
                       <span class="sr-only">Close</span>
-                      <p icon="x" class="text-xs" />
+                      <XMarkIcon class="size-4" />
                     </button>
                   </div>
                 </div>

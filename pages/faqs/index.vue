@@ -1,37 +1,39 @@
 <script lang="ts" setup>
-import { ref, onMounted } from "vue"
-import type { FAQ } from "@/types/faq"
-import { PencilIcon, PlusIcon } from '@heroicons/vue/24/solid'
+import { ref, onMounted } from "vue";
+import type { FAQ } from "@/types/faq";
+import { PencilIcon, PlusIcon } from "@heroicons/vue/24/solid";
+import type { Pagination } from "@/types/table";
+import type { PaginatedResponse } from "@/types/response";
 
 const loading = ref(true);
-const faqs = ref<FAQ[]>([])
+const faqs = ref<FAQ[]>([]);
 const toDeleteFAQ = ref();
 const deleteDialog = ref(false);
 const pagination = ref<Pagination | null>();
 
 const headers = ref([
-	{
-		title: "ID",
-		key: "id",
-	},
-	{
-		title: "Question",
-		key: "question",
-	},
-	{
-		title: "",
-		key: "actions",
-	},
-])
+  {
+    title: "ID",
+    key: "id",
+  },
+  {
+    title: "Question",
+    key: "question",
+  },
+  {
+    title: "",
+    key: "actions",
+  },
+]);
 
 const loadFAQ = async () => {
   loading.value = true;
-  const { data } = await useApi<FAQ[]>('/faqs', {
-    method: 'get'
-  })
+  const { data } = await useApi<PaginatedResponse<FAQ[]>>("/faqs", {
+    method: "get",
+  });
 
   if (data.value) {
-    faqs.value = data.value.data ?? []
+    faqs.value = data.value.data ?? [];
 
     pagination.value = {
       total: data.value.total,
@@ -43,7 +45,6 @@ const loadFAQ = async () => {
     };
   }
 
-
   loading.value = false;
 };
 
@@ -52,12 +53,16 @@ const remove = async () => {
     return;
   }
   await useApi<Record<string, string>[]>(`/faqs/${toDeleteFAQ.value.id}`, {
-    method: 'delete'
-  })
+    method: "delete",
+  });
   deleteDialog.value = false;
   toDeleteFAQ.value = undefined;
   await loadFAQ();
 };
+
+useHead({
+  title: "FAQs",
+});
 
 onMounted(() => {
   loadFAQ();
@@ -77,41 +82,39 @@ onMounted(() => {
         </Button>
       </NuxtLink>
     </p>
-  	<Table
+    <Table
       :loading="loading"
       :headers="headers"
       :data="faqs"
       :pagination="pagination"
     >
-        <template #body-actions="{ data }">
-          <div class="flex gap-4">
-            <NuxtLink :to="`/faqs/edit/${data.id}`">
-              <Button size="sm" class="px-2" color="gray">
-                <span class="flex items-center">
-                  <PencilIcon class="size-4 mr-2" />
-                  Edit
-                </span>
-              </Button>
-            </NuxtLink>
-
-            <Button
-              size="sm"
-              class="px-2"
-              color="error"
-              @click="
-                () => {
-                  toDeleteFAQ = data;
-                  deleteDialog = true;
-                }
-              "
-            >
+      <template #body-actions="{ data }">
+        <div class="flex gap-4">
+          <NuxtLink :to="`/faqs/edit/${data.id}`">
+            <Button size="sm" class="px-2" color="gray">
               <span class="flex items-center">
-                Delete
+                <PencilIcon class="size-4 mr-2" />
+                Edit
               </span>
             </Button>
-          </div>
-        </template>
-  	</Table>
+          </NuxtLink>
+
+          <Button
+            size="sm"
+            class="px-2"
+            color="error"
+            @click="
+              () => {
+                toDeleteFAQ = data;
+                deleteDialog = true;
+              }
+            "
+          >
+            <span class="flex items-center"> Delete </span>
+          </Button>
+        </div>
+      </template>
+    </Table>
     <Dialog
       v-if="deleteDialog"
       @close="
@@ -155,5 +158,5 @@ onMounted(() => {
         </Button>
       </template>
     </Dialog>
-	</div>
+  </div>
 </template>

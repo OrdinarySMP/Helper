@@ -4,6 +4,7 @@ import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
 
+const config = useRuntimeConfig()
 const route = useRoute();
 const errorMessage = ref<string>();
 
@@ -27,18 +28,19 @@ const login = handleSubmit(async () => {
   return;
 });
 
-const discordOAuthUrl = ref("https://discord.com/oauth2/authorize?client_id=1256137976099110955&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fdiscord%2Fcallback&scope=guilds+identify+guilds.members.read");
+const discordOAuthUrl = ref(
+  "https://discord.com/oauth2/authorize?client_id=1256137976099110955&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fdiscord%2Fcallback&scope=guilds+identify+guilds.members.read",
+);
 
 definePageMeta({
   layout: "guest",
 });
 
 onMounted(() => {
-  console.log(route.query)
-  if ('noPermission' in route.query) {
+  if ("noPermission" in route.query) {
     errorMessage.value = "You do not have the required permissions.";
   }
-})
+});
 </script>
 
 <template>

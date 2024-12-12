@@ -3,11 +3,11 @@ import { ref, onMounted } from "vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
-import type { Rule } from "@/types/rule"
+import type { Rule } from "@/types/rule";
 
-const route = useRoute()
-const ruleId = ref<Rule["id"]>()
-const rule = ref<Rule>()
+const route = useRoute();
+const ruleId = ref<Rule["id"]>();
+const rule = ref<Rule>();
 const loading = ref(true);
 const errorMessage = ref("");
 
@@ -26,9 +26,9 @@ const { handleSubmit, setErrors, isSubmitting, setFieldValue } = useForm({
 const save = handleSubmit(async (values) => {
   errorMessage.value = "";
 
-  const { error } = await await useApi(`/rules/${ruleId.value}`, {
-    method:  "patch",
-    body: values
+  const { error } = await useApi(`/rules/${ruleId.value}`, {
+    method: "patch",
+    body: values,
   });
 
   if (error.value) {
@@ -43,25 +43,29 @@ onMounted(async () => {
   loading.value = true;
   ruleId.value = parseRouteParameter(route.params.id);
 
-  const { data } = await await useApi<Rule[]>(`/rules`, {
-    method:  "get",
+  const { data } = await useApi<Rule[]>(`/rules`, {
+    method: "get",
     params: {
       "filter[id]": ruleId.value,
-    }
+    },
   });
   if (!data.value || !data.value[0]) {
     navigateTo("/rules");
-    return
+    return;
   }
 
-  rule.value = data.value[0]
+  rule.value = data.value[0];
 
   setFieldValue("number", rule.value.number);
   setFieldValue("name", rule.value.name);
   setFieldValue("rule", rule.value.rule);
 
   loading.value = false;
-})
+});
+
+useHead({
+  title: "Rules",
+});
 </script>
 
 <template>

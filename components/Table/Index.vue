@@ -3,11 +3,11 @@ import type { Header, Data, Pagination, Sorting } from "@/types/table";
 
 interface Props {
   headers: Header[];
-  data: any[]|null;
-  footer?: any;
+  data: Data[] | null;
+  footer?: Data;
   pagination?: Pagination | null;
   loading?: boolean;
-  rowStylesCallback?: (values: any) => string;
+  rowStylesCallback?: (values: Data) => string;
   initialSort?: Sorting;
   noData?: string;
 }
@@ -28,11 +28,11 @@ const emit = defineEmits<{
 
 const getValue = (values: Data, header: Header) => {
   const keys = getHeaderKey(header).split(".");
-  let current: any = values;
+  let current = values;
 
   for (const key of keys) {
     if (current?.[key] !== undefined) {
-      current = current[key];
+      current = current[key] as Record<string, unknown>;
     } else {
       return "";
     }
@@ -138,7 +138,7 @@ const setSorting = (header: Header) => {
             </td>
           </template>
         </tr>
-        <tr></tr>
+        <tr />
       </tbody>
       <tfoot v-if="footer">
         <tr>
@@ -154,7 +154,10 @@ const setSorting = (header: Header) => {
         </tr>
       </tfoot>
     </table>
-    <div v-if="!data.length && !loading" class="flex justify-center font-light">
+    <div
+      v-if="!data?.length && !loading"
+      class="flex justify-center font-light"
+    >
       {{ noData ?? "No data found." }}
     </div>
     <TablePagination

@@ -3,11 +3,12 @@ import { ref, onMounted } from "vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
-import type { FAQ } from "@/types/faq"
+import type { FAQ } from "@/types/faq";
+import type { PaginatedResponse } from "@/types/response";
 
-const route = useRoute()
-const faqId = ref<FAQ["id"]>()
-const faq = ref<FAQ>()
+const route = useRoute();
+const faqId = ref<FAQ["id"]>();
+const faq = ref<FAQ>();
 const loading = ref(true);
 const errorMessage = ref("");
 
@@ -26,8 +27,8 @@ const save = handleSubmit(async (values) => {
   errorMessage.value = "";
 
   const { error } = await useApi(`/faqs/${faqId.value}`, {
-    method:  "patch",
-    body: values
+    method: "patch",
+    body: values,
   });
 
   if (error.value) {
@@ -42,24 +43,28 @@ onMounted(async () => {
   loading.value = true;
   faqId.value = parseRouteParameter(route.params.id);
 
-  const { data } = await useApi<FAQ[]>(`/faqs`, {
-    method:  "get",
+  const { data } = await useApi<PaginatedResponse<FAQ[]>>(`/faqs`, {
+    method: "get",
     params: {
       "filter[id]": faqId.value,
-    }
+    },
   });
   if (!data.value || !data.value?.data[0]) {
     navigateTo("/faqs");
-    return
+    return;
   }
 
-  faq.value = data.value.data[0]
+  faq.value = data.value.data[0];
 
   setFieldValue("question", faq.value.question);
   setFieldValue("answer", faq.value.answer);
 
   loading.value = false;
-})
+});
+
+useHead({
+  title: "FAQs",
+});
 </script>
 
 <template>

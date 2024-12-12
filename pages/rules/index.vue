@@ -1,39 +1,53 @@
 <script lang="ts" setup>
-import { ref, onMounted } from "vue"
-import type { Rule } from "@/types/rule"
-import { PencilIcon, PlusIcon } from '@heroicons/vue/24/solid'
+import { ref, onMounted } from "vue";
+import type { Rule } from "@/types/rule";
+import { PencilIcon, PlusIcon } from "@heroicons/vue/24/solid";
+import type { Pagination } from "@/types/table";
+import type { PaginatedResponse } from "@/types/response";
 
 const loading = ref(true);
-const rules = ref<Rule[]>([])
+const rules = ref<Rule[]>([]);
 const toDeleteRule = ref();
 const deleteDialog = ref(false);
+const pagination = ref<Pagination | null>();
 
 const headers = ref([
-	{
-		title: "ID",
-		key: "id",
-	},
+  {
+    title: "ID",
+    key: "id",
+  },
   {
     title: "Number",
     key: "number",
   },
-	{
-		title: "Name",
-		key: "name",
-	},
-	{
-		title: "",
-		key: "actions",
-	},
-])
+  {
+    title: "Name",
+    key: "name",
+  },
+  {
+    title: "",
+    key: "actions",
+  },
+]);
 
 const loadRule = async () => {
   loading.value = true;
-  const { data } = await useApi<Rule[]>('/rules', {
-    method: 'get'
-  })
+  const { data } = await useApi<PaginatedResponse<Rule[]>>("/rules", {
+    method: "get",
+  });
 
-  rules.value = data.value ?? []
+  if (data.value) {
+    rules.value = data.value.data ?? [];
+
+    pagination.value = {
+      total: data.value.total,
+      currentPage: data.value.current_page,
+      perPage: data.value.per_page,
+      from: data.value.from,
+      to: data.value.to,
+      totalPages: data.value.last_page,
+    };
+  }
 
   loading.value = false;
 };
@@ -43,12 +57,16 @@ const remove = async () => {
     return;
   }
   await useApi<Record<string, string>[]>(`/rules/${toDeleteRule.value.id}`, {
-    method: 'delete'
-  })
+    method: "delete",
+  });
   deleteDialog.value = false;
   toDeleteRule.value = undefined;
   await loadRule();
 };
+
+useHead({
+  title: "Rules",
+});
 
 onMounted(() => {
   loadRule();
@@ -68,36 +86,39 @@ onMounted(() => {
         </Button>
       </NuxtLink>
     </p>
-  	<Table :loading="loading" :headers="headers" :data="rules">
-        <template #body-actions="{ data }">
-          <div class="flex gap-4">
-            <NuxtLink :to="`/rules/edit/${data.id}`">
-              <Button size="sm" class="px-2" color="gray">
-                <span class="flex items-center">
-                  <PencilIcon class="size-4 mr-2" />
-                  Edit
-                </span>
-              </Button>
-            </NuxtLink>
-
-            <Button
-              size="sm"
-              class="px-2"
-              color="error"
-              @click="
-                () => {
-                  toDeleteRule = data;
-                  deleteDialog = true;
-                }
-              "
-            >
+    <Table
+      :loading="loading"
+      :headers="headers"
+      :data="rules"
+      :pagination="pagination"
+    >
+      <template #body-actions="{ data }">
+        <div class="flex gap-4">
+          <NuxtLink :to="`/rules/edit/${data.id}`">
+            <Button size="sm" class="px-2" color="gray">
               <span class="flex items-center">
-                Delete
+                <PencilIcon class="size-4 mr-2" />
+                Edit
               </span>
             </Button>
-          </div>
-        </template>
-  	</Table>
+          </NuxtLink>
+
+          <Button
+            size="sm"
+            class="px-2"
+            color="error"
+            @click="
+              () => {
+                toDeleteRule = data;
+                deleteDialog = true;
+              }
+            "
+          >
+            <span class="flex items-center"> Delete </span>
+          </Button>
+        </div>
+      </template>
+    </Table>
     <Dialog
       v-if="deleteDialog"
       @close="
@@ -141,5 +162,5 @@ onMounted(() => {
         </Button>
       </template>
     </Dialog>
-	</div>
+  </div>
 </template>

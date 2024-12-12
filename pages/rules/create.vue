@@ -21,9 +21,9 @@ const { handleSubmit, setErrors, isSubmitting } = useForm({
 const save = handleSubmit(async (values) => {
   errorMessage.value = "";
 
-  const { error } = await await useApi("/rules", {
-    method:  "post",
-    body: values
+  const { error } = await useApi("/rules", {
+    method: "post",
+    body: values,
   });
 
   if (error.value) {
@@ -34,6 +34,9 @@ const save = handleSubmit(async (values) => {
   }
 });
 
+useHead({
+  title: "Rules",
+});
 </script>
 
 <template>

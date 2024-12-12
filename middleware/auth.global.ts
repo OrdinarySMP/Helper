@@ -3,8 +3,9 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   const isGuestPath = (path: string) => {
     return (
-      ["/login", "/discord/callback"].find((guestPath: string) => path.includes(guestPath)) !==
-      undefined
+      ["/login", "/discord/callback"].find((guestPath: string) =>
+        path.includes(guestPath),
+      ) !== undefined
     );
   };
 
@@ -13,7 +14,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
 
   if (!isGuestPath(to.path) && useAuth().guest) {
-    console.log('sdfsdfsdf')
+    console.log("sdfsdfsdf");
     return navigateTo("/login");
   }
 });

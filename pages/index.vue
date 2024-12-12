@@ -1,3 +1,13 @@
+<script lang="ts" setup>
+const config = useRuntimeConfig()
+useHead({
+  title: "Dashboard",
+});
+</script>
+
 <template>
-	<p>Hello</p>
+  <div>
+    <p>Hello {{ useAuth().user().value?.nickname }}</p>
+    {{ config.public.apiBase ?? "---" }}
+  </div>
 </template>
