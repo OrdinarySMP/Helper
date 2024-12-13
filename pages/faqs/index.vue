@@ -125,7 +125,7 @@ onMounted(() => {
       "
     >
       <template #title>
-        <p>Löschen</p>
+        <p>Delete</p>
       </template>
       <template #body>
         <p class="mb-2">

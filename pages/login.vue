@@ -60,13 +60,13 @@ onMounted(() => {
         <form class="space-y-4" @submit.prevent="login">
           <FieldInput
             name="user"
-            label="Benutzername"
+            label="Username"
             placeholder="you@example.com"
           />
           <FieldInput
             type="password"
             name="password"
-            label="Passwort"
+            label="Password"
             placeholder="******"
           />
           <div>
@@ -91,7 +91,7 @@ onMounted(() => {
                 :disabled="isSubmitting"
                 :loading="isSubmitting"
               >
-                Discord
+                Login with Discord
               </Button>
             </NuxtLink>
           </div>

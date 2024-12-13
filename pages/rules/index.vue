@@ -129,12 +129,12 @@ onMounted(() => {
       "
     >
       <template #title>
-        <p>Löschen</p>
+        <p>Delete</p>
       </template>
       <template #body>
         <p class="mb-2">
           Delete the Rule:
-          <span class="font-bold">{{ toDeleteRule?.question }}</span>
+          <span class="font-bold">{{ toDeleteRule?.name }}</span>
           ?
         </p>
         <p

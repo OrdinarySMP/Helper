@@ -4,6 +4,7 @@ import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
 import type { Rule } from "@/types/rule";
+import type { PaginatedResponse } from "@/types/response";
 
 const route = useRoute();
 const ruleId = ref<Rule["id"]>();
@@ -43,18 +44,18 @@ onMounted(async () => {
   loading.value = true;
   ruleId.value = parseRouteParameter(route.params.id);
 
-  const { data } = await useApi<Rule[]>(`/rules`, {
+  const { data } = await useApi<PaginatedResponse<Rule[]>>(`/rules`, {
     method: "get",
     params: {
       "filter[id]": ruleId.value,
     },
   });
-  if (!data.value || !data.value[0]) {
+  if (!data.value || !data.value?.data[0]) {
     navigateTo("/rules");
     return;
   }
 
-  rule.value = data.value[0];
+  rule.value = data.value.data[0];
 
   setFieldValue("number", rule.value.number);
   setFieldValue("name", rule.value.name);

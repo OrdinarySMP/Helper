@@ -95,7 +95,7 @@ const pageClicked = (page: number | string) => {
         type="button"
         @click="pageClicked(pagination.currentPage - 1)"
       >
-        Vorherige
+        Previous
       </TButton>
       <TButton
         class="relative px-4"
@@ -105,25 +105,25 @@ const pageClicked = (page: number | string) => {
         type="button"
         @click="pageClicked(pagination.currentPage + 1)"
       >
-        Nächste
+        Next
       </TButton>
     </div>
     <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
       <div>
         <p class="text-sm text-gray-700">
-          Zeigt
+          Showing
           {{ " " }}
           <span class="font-medium">{{ pagination.from }}</span>
           {{ " " }}
-          bis
+          to
           {{ " " }}
           <span class="font-medium">{{ pagination.to }}</span>
           {{ " " }}
-          von
+          of
           {{ " " }}
           <span class="font-medium">{{ pagination.total }}</span>
           {{ " " }}
-          Ergebnissen
+          results
         </p>
       </div>
       <div>
