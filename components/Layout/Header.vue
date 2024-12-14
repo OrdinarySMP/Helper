@@ -10,7 +10,18 @@ const navigation = [
   { name: "Applications", href: "/applications" },
 ];
 
+const userMenuOpen = ref(false);
 const mobileMenuOpen = ref(false);
+
+const select = (path: string) => {
+  navigateTo(path);
+  userMenuOpen.value = false;
+};
+
+const userMenu = ref([
+  {label: "Profile", value: "/profile"},
+  {label: "log out", value: "logout"},
+])
 </script>
 
 <template>
@@ -41,7 +52,26 @@ const mobileMenuOpen = ref(false);
           >{{ item.name }}</NuxtLink
         >
       </div>
-      <div class="hidden lg:flex lg:flex-1 lg:justify-end" />
+      <div class="hidden lg:flex lg:flex-1 lg:justify-end relative">
+        <img
+          :src="useAuth().user().value?.avatar"
+          class="size-10 rounded-full cursor-pointer"
+          @click="userMenuOpen = !userMenuOpen"
+        >
+
+        <Dropdown
+          class="user-menu right-0 top-full mt-2 !w-[fit-content]"
+          :show="userMenuOpen"
+          :items="userMenu"
+          @select="select(`${$event}`)"
+        >
+          <template #default="{ data }">
+            <span class="whitespace-nowrap">
+              {{ data.label }}
+            </span>
+          </template>
+        </Dropdown>
+      </div>
     </nav>
     <Dialog
       class="lg:hidden"
@@ -74,6 +104,10 @@ const mobileMenuOpen = ref(false);
                 @click="mobileMenuOpen = false"
                 >{{ item.name }}</NuxtLink
               >
+            </div>
+            <div class="py-6">
+              <a href="#" class="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">Profile</a>
+              <a href="#" class="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">Log out</a>
             </div>
           </div>
         </div>

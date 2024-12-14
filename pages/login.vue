@@ -10,7 +10,7 @@ const errorMessage = ref<string>();
 
 const formSchema = toTypedSchema(
   zod.object({
-    user: zod.string().min(1),
+    name: zod.string().min(1),
     password: zod.string().min(6),
   }),
 );
@@ -18,14 +18,26 @@ const formSchema = toTypedSchema(
 const { handleSubmit, isSubmitting } = useForm({
   validationSchema: formSchema,
   initialValues: {
-    user: "",
+    name: "",
     password: "",
   },
 });
 
-const login = handleSubmit(async () => {
-  errorMessage.value = "Your credentials do not match our records.";
-  return;
+const login = handleSubmit(async (values) => {
+  const { error } = await useApi("/login", {
+    method: "post",
+    body: {
+      name: values.name,
+      password: values.password,
+    },
+  });
+
+  if (error.value) {
+    errorMessage.value = error.value.data.message;
+    return;
+  }
+
+  await navigateTo("/");
 });
 
 const discordOAuthUrl = ref(
@@ -59,7 +71,7 @@ onMounted(() => {
       >
         <form class="space-y-4" @submit.prevent="login">
           <FieldInput
-            name="user"
+            name="name"
             label="Username"
             placeholder="you@example.com"
           />
