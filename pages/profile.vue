@@ -1,10 +1,15 @@
 <script lang="ts" setup>
-import { ref } from "vue"
+import { ref, watchEffect } from "vue"
 import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/vue/24/solid";
 
 const errorMessage = ref("");
+const showPassword = ref(true)
+const showPasswordConfirm = ref(true)
+const passwordType = ref<"password" | "text">("password")
+const passwordConfirmType = ref<"password" | "text">("password")
 
 const { handleSubmit, setErrors, isSubmitting } =
   useForm({
@@ -16,7 +21,15 @@ const { handleSubmit, setErrors, isSubmitting } =
       zod.object({
         password: zod.string().min(12),
         password_confirmation: zod.string().min(12),
-      }),
+      }).superRefine(({ password_confirmation, password }, ctx) => {
+        if (password_confirmation !== password) {
+          ctx.addIssue({
+            code: "custom",
+            message: "The passwords did not match",
+            path: ['password_confirmation']
+          });
+        }
+      })
     ),
   });
 
@@ -38,6 +51,11 @@ const save = handleSubmit(async (values) => {
     navigateTo("/");
   }
 });
+
+watchEffect(() => {
+  passwordType.value = showPassword.value ? 'password' : 'text'
+  passwordConfirmType.value = showPasswordConfirm.value ? 'password' : 'text'
+})
 </script>
 
 <template>
@@ -45,9 +63,35 @@ const save = handleSubmit(async (values) => {
     <div class="w-full">
       <p class="mb-8 text-2xl">Profile</p>
 	    <form class="grid grid-cols-1 gap-4" @submit.prevent="save">
-				<FieldInput name="password" label="New password" />
+				<FieldInput :type="passwordType" name="password" label="New password">
+          <template #icon>
+            <EyeIcon
+              v-if="showPassword"
+              class="size-4 cursor-pointer"
+              @click="showPassword = !showPassword"
+            />
+            <EyeSlashIcon
+              v-else
+              class="size-4 cursor-pointer"
+              @click="showPassword = !showPassword"
+            />
+          </template>
+        </FieldInput>
 
-				<FieldInput name="password_confirmation" label="Confirm password" />
+				<FieldInput :type="passwordConfirmType" name="password_confirmation" label="Confirm password">
+          <template #icon>
+            <EyeIcon
+              v-if="showPasswordConfirm"
+              class="size-4 cursor-pointer"
+              @click="showPasswordConfirm = !showPasswordConfirm"
+            />
+            <EyeSlashIcon
+              v-else
+              class="size-4 cursor-pointer"
+              @click="showPasswordConfirm = !showPasswordConfirm"
+            />
+          </template>
+        </FieldInput>
 
         <div>
           <Button
