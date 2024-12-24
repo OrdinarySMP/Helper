@@ -1,4 +1,4 @@
-name: Linting
+name: CI
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
       - main
 jobs:
   run-linters:
-    name: Lint + Prettier
+    name: CI
     runs-on: ubuntu-latest
     steps:
       - name: Check out Git repository
@@ -24,3 +24,5 @@ jobs:
         run: yarn eslint-ci
       - name: Run prettier
         run: yarn prettier-ci
+      - name: Run build
+        run: yarn build
