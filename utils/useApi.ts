@@ -69,7 +69,7 @@ const handleError = async (
 };
 
 export const apiUrl = (path: string): string => {
-  const config = useRuntimeConfig()
+  const config = useRuntimeConfig();
 
   return `${config.public.apiBase}${path.startsWith("/") ? "" : "/"}${path}`;
 };

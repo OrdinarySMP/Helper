@@ -4,6 +4,7 @@ export type User = {
   nickname: string;
   name: string;
   avatar: string;
+  is_owner: boolean;
   created_at: string;
   updated_at: string;
 };

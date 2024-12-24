@@ -5,11 +5,11 @@ import * as zod from "zod";
 import { useForm } from "vee-validate";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/vue/24/solid";
 
-const config = useRuntimeConfig()
+const config = useRuntimeConfig();
 const route = useRoute();
 const errorMessage = ref<string>();
-const showPassword = ref(true)
-const passwordType = ref<"password" | "text">("password")
+const showPassword = ref(true);
+const passwordType = ref<"password" | "text">("password");
 
 const formSchema = toTypedSchema(
   zod.object({
@@ -51,9 +51,13 @@ definePageMeta({
   layout: "guest",
 });
 
+useHead({
+  title: "Login",
+});
+
 watchEffect(() => {
-  passwordType.value = showPassword.value ? 'password' : 'text'
-})
+  passwordType.value = showPassword.value ? "password" : "text";
+});
 
 onMounted(() => {
   if ("noPermission" in route.query) {

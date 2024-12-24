@@ -76,7 +76,7 @@ const hasErrors = computed(() => {
         @change="handleChange"
         @click="showDatalist = true"
         v-on="on"
-      >
+      />
       <div
         v-if="slots.icon"
         class="absolute inset-y-0 right-0 flex items-center pr-3"

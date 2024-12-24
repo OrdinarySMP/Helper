@@ -1,37 +1,38 @@
 <script lang="ts" setup>
-import { ref, watchEffect } from "vue"
+import { ref, watchEffect } from "vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/vue/24/solid";
 
 const errorMessage = ref("");
-const showPassword = ref(true)
-const showPasswordConfirm = ref(true)
-const passwordType = ref<"password" | "text">("password")
-const passwordConfirmType = ref<"password" | "text">("password")
+const showPassword = ref(true);
+const showPasswordConfirm = ref(true);
+const passwordType = ref<"password" | "text">("password");
+const passwordConfirmType = ref<"password" | "text">("password");
 
-const { handleSubmit, setErrors, isSubmitting } =
-  useForm({
-    initialValues: {
-      password: "",
-      password_confirmation: "",
-    },
-    validationSchema: toTypedSchema(
-      zod.object({
+const { handleSubmit, setErrors, isSubmitting } = useForm({
+  initialValues: {
+    password: "",
+    password_confirmation: "",
+  },
+  validationSchema: toTypedSchema(
+    zod
+      .object({
         password: zod.string().min(12),
         password_confirmation: zod.string().min(12),
-      }).superRefine(({ password_confirmation, password }, ctx) => {
+      })
+      .superRefine(({ password_confirmation, password }, ctx) => {
         if (password_confirmation !== password) {
           ctx.addIssue({
             code: "custom",
             message: "The passwords did not match",
-            path: ['password_confirmation']
+            path: ["password_confirmation"],
           });
         }
-      })
-    ),
-  });
+      }),
+  ),
+});
 
 const save = handleSubmit(async (values) => {
   errorMessage.value = "";
@@ -39,9 +40,9 @@ const save = handleSubmit(async (values) => {
   const { error } = await useApi(`/users/${useAuth().user().value?.id}`, {
     method: "patch",
     body: {
-	  	password: values.password,
-	  	password_confirmation: values.password_confirmation,
-	  },
+      password: values.password,
+      password_confirmation: values.password_confirmation,
+    },
   });
 
   if (error.value) {
@@ -52,18 +53,22 @@ const save = handleSubmit(async (values) => {
   }
 });
 
+useHead({
+  title: "Profile",
+});
+
 watchEffect(() => {
-  passwordType.value = showPassword.value ? 'password' : 'text'
-  passwordConfirmType.value = showPasswordConfirm.value ? 'password' : 'text'
-})
+  passwordType.value = showPassword.value ? "password" : "text";
+  passwordConfirmType.value = showPasswordConfirm.value ? "password" : "text";
+});
 </script>
 
 <template>
   <div class="flex grow">
     <div class="w-full">
       <p class="mb-8 text-2xl">Profile</p>
-	    <form class="grid grid-cols-1 gap-4" @submit.prevent="save">
-				<FieldInput :type="passwordType" name="password" label="New password">
+      <form class="grid grid-cols-1 gap-4" @submit.prevent="save">
+        <FieldInput :type="passwordType" name="password" label="New password">
           <template #icon>
             <EyeIcon
               v-if="showPassword"
@@ -78,7 +83,11 @@ watchEffect(() => {
           </template>
         </FieldInput>
 
-				<FieldInput :type="passwordConfirmType" name="password_confirmation" label="Confirm password">
+        <FieldInput
+          :type="passwordConfirmType"
+          name="password_confirmation"
+          label="Confirm password"
+        >
           <template #icon>
             <EyeIcon
               v-if="showPasswordConfirm"
@@ -107,7 +116,7 @@ watchEffect(() => {
             errorMessage
           }}</span>
         </div>
-			</form>
-		</div>
-	</div>
+      </form>
+    </div>
+  </div>
 </template>

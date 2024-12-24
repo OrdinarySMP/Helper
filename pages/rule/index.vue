@@ -32,7 +32,7 @@ const headers = ref([
 
 const loadRule = async () => {
   loading.value = true;
-  const { data } = await useApi<PaginatedResponse<Rule[]>>("/rules", {
+  const { data } = await useApi<PaginatedResponse<Rule[]>>("/rule", {
     method: "get",
   });
 
@@ -56,7 +56,7 @@ const remove = async () => {
   if (!toDeleteRule.value) {
     return;
   }
-  await useApi<Record<string, string>[]>(`/rules/${toDeleteRule.value.id}`, {
+  await useApi<Record<string, string>[]>(`/rule/${toDeleteRule.value.id}`, {
     method: "delete",
   });
   deleteDialog.value = false;
@@ -77,7 +77,7 @@ onMounted(() => {
   <div class="w-full">
     <p class="mb-4 flex items-center gap-4 text-2xl">
       Rules
-      <NuxtLink to="/rules/create">
+      <NuxtLink to="/rule/create">
         <Button size="sm" class="px-2" color="primary">
           <span class="flex items-center">
             <PlusIcon class="size-4 mr-2" />
@@ -94,7 +94,7 @@ onMounted(() => {
     >
       <template #body-actions="{ data }">
         <div class="flex gap-4">
-          <NuxtLink :to="`/rules/edit/${data.id}`">
+          <NuxtLink :to="`/rule/edit/${data.id}`">
             <Button size="sm" class="px-2" color="gray">
               <span class="flex items-center">
                 <PencilIcon class="size-4 mr-2" />

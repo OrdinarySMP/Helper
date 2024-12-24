@@ -4,10 +4,10 @@ import { Dialog, DialogPanel } from "@headlessui/vue";
 import { Bars3Icon, XMarkIcon } from "@heroicons/vue/24/outline";
 
 const navigation = [
-  { name: "FAQ", href: "/faqs" },
-  { name: "Rules", href: "/rules" },
-  { name: "Reaction roles", href: "/reaction-roles" },
-  { name: "Applications", href: "/applications" },
+  { name: "FAQ", href: "/faq" },
+  { name: "Rules", href: "/rule" },
+  { name: "Reaction roles", href: "/reaction-role" },
+  { name: "Applications", href: "/application" },
 ];
 
 const userMenuOpen = ref(false);
@@ -19,9 +19,9 @@ const select = (path: string) => {
 };
 
 const userMenu = ref([
-  {label: "Profile", value: "/profile"},
-  {label: "log out", value: "logout"},
-])
+  { label: "Profile", value: "/profile" },
+  { label: "log out", value: "logout" },
+]);
 </script>
 
 <template>
@@ -57,7 +57,7 @@ const userMenu = ref([
           :src="useAuth().user().value?.avatar"
           class="size-10 rounded-full cursor-pointer"
           @click="userMenuOpen = !userMenuOpen"
-        >
+        />
 
         <Dropdown
           class="user-menu right-0 top-full mt-2 !w-[fit-content]"
@@ -106,8 +106,16 @@ const userMenu = ref([
               >
             </div>
             <div class="py-6">
-              <a href="#" class="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">Profile</a>
-              <a href="#" class="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">Log out</a>
+              <a
+                href="#"
+                class="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
+                >Profile</a
+              >
+              <a
+                href="#"
+                class="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
+                >Log out</a
+              >
             </div>
           </div>
         </div>

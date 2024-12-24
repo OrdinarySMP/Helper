@@ -1,6 +1,10 @@
 <script lang="ts" setup>
 import { onMounted } from "vue";
 
+useHead({
+  title: "Logout",
+});
+
 onMounted(async () => {
   await useApi("/logout", { method: "post" });
   useAuth().logout();

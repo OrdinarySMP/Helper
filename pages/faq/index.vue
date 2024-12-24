@@ -28,7 +28,7 @@ const headers = ref([
 
 const loadFAQ = async () => {
   loading.value = true;
-  const { data } = await useApi<PaginatedResponse<FAQ[]>>("/faqs", {
+  const { data } = await useApi<PaginatedResponse<FAQ[]>>("/faq", {
     method: "get",
   });
 
@@ -52,7 +52,7 @@ const remove = async () => {
   if (!toDeleteFAQ.value) {
     return;
   }
-  await useApi<Record<string, string>[]>(`/faqs/${toDeleteFAQ.value.id}`, {
+  await useApi<Record<string, string>[]>(`/faq/${toDeleteFAQ.value.id}`, {
     method: "delete",
   });
   deleteDialog.value = false;
@@ -73,7 +73,7 @@ onMounted(() => {
   <div class="w-full">
     <p class="mb-4 flex items-center gap-4 text-2xl">
       FAQs
-      <NuxtLink to="/faqs/create">
+      <NuxtLink to="/faq/create">
         <Button size="sm" class="px-2" color="primary">
           <span class="flex items-center">
             <PlusIcon class="size-4 mr-2" />
@@ -90,7 +90,7 @@ onMounted(() => {
     >
       <template #body-actions="{ data }">
         <div class="flex gap-4">
-          <NuxtLink :to="`/faqs/edit/${data.id}`">
+          <NuxtLink :to="`/faq/edit/${data.id}`">
             <Button size="sm" class="px-2" color="gray">
               <span class="flex items-center">
                 <PencilIcon class="size-4 mr-2" />
