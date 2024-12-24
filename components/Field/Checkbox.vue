@@ -41,7 +41,7 @@ const hasErrors = computed(() => {
         class="focus:ring-primary size-5 rounded-md border border-gray-300 p-2 shadow-sm focus:border-white focus:outline-none focus:ring-1 disabled:cursor-not-allowed"
         :class="{ 'bg-red-50 text-red-700 ring-red-500': hasErrors }"
         @click="handleChange(trueValue === value ? false : trueValue)"
-      >
+      />
     </div>
     <div class="ml-2 leading-6">
       <label

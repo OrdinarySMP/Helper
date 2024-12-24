@@ -75,7 +75,7 @@ const hasErrors = computed(() => {
         :placeholder="placeholder"
         :disabled="disabled"
         :autocomplete="autocomplete"
-      >
+      />
       <div
         :id="`${name}-add-button`"
         class="flex items-center justify-center rounded-r-md bg-green-500 px-2 text-white hover:bg-green-400 active:bg-green-300 disabled:bg-green-200 peer-focus:ring-1 peer-focus:ring-green-500"

@@ -57,7 +57,7 @@ const userMenu = ref([
           :src="useAuth().user().value?.avatar"
           class="size-10 rounded-full cursor-pointer"
           @click="userMenuOpen = !userMenuOpen"
-        >
+        />
 
         <Dropdown
           class="user-menu right-0 top-full mt-2 !w-[fit-content]"

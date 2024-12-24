@@ -15,6 +15,6 @@ const image = {
 <template>
   <div class="cursor-pointer" @click="navigateTo(route)">
     <span class="sr-only">Ordinary SMP</span>
-    <img :src="image[size]" alt="Ordinary SMP" >
+    <img :src="image[size]" alt="Ordinary SMP" />
   </div>
 </template>
