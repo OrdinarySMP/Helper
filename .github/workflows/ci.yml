@@ -8,6 +8,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read # for checkout
+
 jobs:
   commitlint:
     runs-on: ubuntu-22.04
@@ -29,7 +32,7 @@ jobs:
         if: github.event_name == 'pull_request'
         run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
 
-  run-linters:
+  validate:
     runs-on: ubuntu-latest
     steps:
       - name: Check out Git repository
@@ -46,3 +49,29 @@ jobs:
         run: yarn prettier-ci
       - name: Run build
         run: yarn build
+
+  release:
+    name: Release
+    if: github.ref == 'refs/heads/main'
+    needs: [commitlint, validate]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # to be able to publish a GitHub release
+      issues: write # to be able to comment on released issues
+      pull-requests: write # to be able to comment on released pull requests
+      id-token: write # to enable use of OIDC for npm provenance
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
