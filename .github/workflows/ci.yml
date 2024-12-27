@@ -66,6 +66,8 @@ jobs:
       issues: write # to be able to comment on released issues
       pull-requests: write # to be able to comment on released pull requests
       id-token: write # to enable use of OIDC for npm provenance
+    outputs:
+      version: ${{ steps.release.outputs.version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -81,6 +83,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx semantic-release
+      - name: Version
+        run: echo "The next version is ${{ steps.release.outputs.version }}"
 
   push_to_registry:
     name: Push Docker image to Docker Hub
@@ -120,5 +124,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ steps.meta.outputs.tags }}, padbro/ordinary-helper-panel:latest
+          tags: |
+            padbro/ordinary-helper-panel:latest
+            padbro/ordinary-helper-panel:${{ needs.release.outputs.version }}
           labels: ${{ steps.meta.outputs.labels }}
