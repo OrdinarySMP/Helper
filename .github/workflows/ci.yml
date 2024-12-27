@@ -67,24 +67,17 @@ jobs:
       pull-requests: write # to be able to comment on released pull requests
       id-token: write # to enable use of OIDC for npm provenance
     outputs:
-      version: ${{ steps.release.outputs.version }}
+      version: ${{ steps.semantic-release.outputs.new_release_version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "lts/*"
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
-      - name: Release
+      - name: Semantic Release
+        uses: cycjimmy/semantic-release-action@v4
+        id: semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release
       - name: Version
-        run: echo "The next version is ${{ steps.release.outputs.version }}"
+        run: echo "The next version is ${{ steps.semantic-release.outputs.new_release_version }}"
 
   push_to_registry:
     name: Push Docker image to Docker Hub
