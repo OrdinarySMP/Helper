@@ -80,7 +80,7 @@ jobs:
   push_to_registry:
     name: Push Docker image to Docker Hub
     needs: release
-    if: steps.semantic-release.outputs.new_release_version != ''
+    if: needs.release.outputs.version != ''
     runs-on: ubuntu-latest
     permissions:
       packages: write
