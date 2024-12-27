@@ -48,7 +48,7 @@ useHead({
 
         <FieldInput name="name" label="Name" />
 
-        <FieldInput name="rule" label="Rule" />
+        <FieldTextArea name="rule" label="Rule" />
 
         <div>
           <Button

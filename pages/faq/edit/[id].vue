@@ -77,7 +77,7 @@ useHead({
       <form class="grid grid-cols-1 gap-4" @submit.prevent="save">
         <FieldInput name="question" label="Question" />
 
-        <FieldInput name="answer" label="Answer" />
+        <FieldTextArea name="answer" label="Answer" />
 
         <div>
           <Button
