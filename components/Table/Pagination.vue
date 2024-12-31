@@ -87,7 +87,7 @@ const pageClicked = (page: number | string) => {
     class="flex items-center justify-between border-t border-gray-200 bg-white py-3"
   >
     <div class="flex flex-1 justify-between sm:hidden">
-      <TButton
+      <Button
         class="relative px-4"
         size="md"
         background-color="bg-gray-300"
@@ -96,8 +96,8 @@ const pageClicked = (page: number | string) => {
         @click="pageClicked(pagination.currentPage - 1)"
       >
         Previous
-      </TButton>
-      <TButton
+      </Button>
+      <Button
         class="relative px-4"
         size="md"
         background-color="bg-gray-300"
@@ -106,7 +106,7 @@ const pageClicked = (page: number | string) => {
         @click="pageClicked(pagination.currentPage + 1)"
       >
         Next
-      </TButton>
+      </Button>
     </div>
     <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
       <div>

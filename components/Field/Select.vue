@@ -1,11 +1,17 @@
 <script lang="ts" setup>
 import { ref, computed } from "vue";
 import { useField } from "vee-validate";
+import {
+  XCircleIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  PlusIcon,
+} from "@heroicons/vue/24/solid";
 
 export interface Props {
   name: string;
   label?: string;
-  items: { label: string; value: string | number | null }[];
+  items: { label: string; value: string | number | boolean | null }[];
   disabled?: boolean;
   clearable?: boolean;
   addable?: boolean;
@@ -34,7 +40,7 @@ const toggleDropdown = () => {
   }
 };
 
-const select = (option: string | number | null) => {
+const select = (option: string | number | boolean | null) => {
   if (props.disabled) {
     return;
   }
@@ -88,18 +94,19 @@ const hasErrors = computed(() => {
         <span class="overflow-hidden">
           {{ selectedLabel }}
         </span>
-        <div class="block">
-          <Icon
+        <div class="flex">
+          <XCircleIcon
             v-if="clearable && hover && selectedLabel"
-            icon="x"
-            class="clear-icon mr-2 cursor-pointer"
+            class="clear-icon mr-1 cursor-pointer size-5"
             style="line-height: inherit"
             @click="clearSelect"
           />
-          <Icon
-            :icon="isDropdownOpen ? 'chevron-top' : 'chevron-bottom'"
+          <ChevronUpIcon
+            v-if="isDropdownOpen"
+            class="size-5"
             style="line-height: inherit"
           />
+          <ChevronDownIcon v-else class="size-5" style="line-height: inherit" />
         </div>
       </div>
       <div
@@ -107,7 +114,7 @@ const hasErrors = computed(() => {
         class="select-add-button flex items-center justify-center rounded-r-md bg-green-500 px-2 text-white hover:bg-green-400 active:bg-green-300 disabled:bg-green-200 group-focus:ring-1 group-focus:ring-green-500"
         @click="emit('add')"
       >
-        <Icon icon="plus" class="mt-1" />
+        <PlusIcon class="size-5 mt-1" />
       </div>
     </div>
     <Dropdown :show="isDropdownOpen" :items="items" @select="select">

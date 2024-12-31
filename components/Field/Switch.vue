@@ -11,14 +11,14 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   label: "",
   disabled: false,
-  size: "sm",
+  size: "md",
 });
 
 const emit = defineEmits<{
   (e: "change"): void;
 }>();
 
-const { value } = useField<boolean>(props.name, undefined, {
+const { errors, value } = useField(props.name, undefined, {
   validateOnValueUpdate: false,
 });
 
@@ -100,5 +100,8 @@ const setValue = () => {
         label
       }}</span>
     </span>
+    <p v-for="(error, key) in errors" :key="key" class="text-red-600">
+      {{ error }}
+    </p>
   </div>
 </template>

@@ -26,10 +26,14 @@ const headers = ref([
   },
 ]);
 
-const loadFAQ = async () => {
+const loadFAQ = async (page = 1) => {
   loading.value = true;
   const { data } = await useApi<PaginatedResponse<FAQ[]>>("/faq", {
     method: "get",
+    query: {
+      page_size: 10,
+      page,
+    },
   });
 
   if (data.value) {
@@ -60,6 +64,10 @@ const remove = async () => {
   await loadFAQ();
 };
 
+const pageChange = (page: number) => {
+  loadFAQ(page);
+};
+
 useHead({
   title: "FAQs",
 });
@@ -87,6 +95,7 @@ onMounted(() => {
       :headers="headers"
       :data="faqs"
       :pagination="pagination"
+      @page-change="pageChange"
     >
       <template #body-actions="{ data }">
         <div class="flex gap-4">

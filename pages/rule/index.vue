@@ -30,10 +30,14 @@ const headers = ref([
   },
 ]);
 
-const loadRule = async () => {
+const loadRule = async (page = 1) => {
   loading.value = true;
   const { data } = await useApi<PaginatedResponse<Rule[]>>("/rule", {
     method: "get",
+    query: {
+      page_size: 10,
+      page,
+    },
   });
 
   if (data.value) {
@@ -64,6 +68,10 @@ const remove = async () => {
   await loadRule();
 };
 
+const pageChange = (page: number) => {
+  loadRule(page);
+};
+
 useHead({
   title: "Rules",
 });
@@ -91,6 +99,7 @@ onMounted(() => {
       :headers="headers"
       :data="rules"
       :pagination="pagination"
+      @page-change="pageChange"
     >
       <template #body-actions="{ data }">
         <div class="flex gap-4">

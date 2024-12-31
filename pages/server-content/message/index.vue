@@ -3,20 +3,16 @@ import { ref, onMounted } from "vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
-import type { Rule } from "@/types/rule";
-import type { PaginatedResponse } from "@/types/response";
+import type { ServerContentMessage } from "@/types/serverContent";
 
-const route = useRoute();
-const ruleId = ref<Rule["id"]>();
-const rule = ref<Rule>();
 const loading = ref(true);
 const errorMessage = ref("");
 
 const formSchema = toTypedSchema(
   zod.object({
-    number: zod.number().min(1),
-    name: zod.string().min(1),
-    rule: zod.string().min(1),
+    heading: zod.string().min(1).max(1024),
+    not_recommended: zod.string().min(1).max(1024),
+    recommended: zod.string().min(1).max(1024),
   }),
 );
 
@@ -27,8 +23,8 @@ const { handleSubmit, setErrors, isSubmitting, setFieldValue } = useForm({
 const save = handleSubmit(async (values) => {
   errorMessage.value = "";
 
-  const { error } = await useApi(`/rule/${ruleId.value}`, {
-    method: "patch",
+  const { error } = await useApi("/server-content-message", {
+    method: "post",
     body: values,
   });
 
@@ -36,36 +32,31 @@ const save = handleSubmit(async (values) => {
     errorMessage.value = error.value.data.message;
     setErrors(error.value.data.errors ?? []);
   } else {
-    navigateTo("/rule");
+    navigateTo("/server-content");
   }
 });
 
 onMounted(async () => {
   loading.value = true;
-  ruleId.value = parseRouteParameter(route.params.id);
 
-  const { data } = await useApi<PaginatedResponse<Rule[]>>("/rule", {
-    method: "get",
-    params: {
-      "filter[id]": ruleId.value,
+  const { data } = await useApi<ServerContentMessage>(
+    "/server-content-message",
+    {
+      method: "get",
     },
-  });
-  if (!data.value || !data.value?.data[0]) {
-    navigateTo("/rule");
-    return;
+  );
+
+  if (data.value) {
+    setFieldValue("heading", data.value.heading);
+    setFieldValue("not_recommended", data.value.not_recommended);
+    setFieldValue("recommended", data.value.recommended);
   }
-
-  rule.value = data.value.data[0];
-
-  setFieldValue("number", rule.value.number);
-  setFieldValue("name", rule.value.name);
-  setFieldValue("rule", rule.value.rule);
 
   loading.value = false;
 });
 
 useHead({
-  title: "Edit Rule",
+  title: "Mod/Datapack Messages",
 });
 </script>
 
@@ -75,13 +66,11 @@ useHead({
       <Spinner />
     </div>
     <div v-else class="w-full">
-      <p class="mb-8 text-2xl">Edit Rule</p>
+      <p class="mb-8 text-2xl">Mods and Datapacks Messages</p>
       <form class="grid grid-cols-1 gap-4" @submit.prevent="save">
-        <FieldInput name="number" label="Number" type="number" />
-
-        <FieldInput name="name" label="Name" />
-
-        <FieldTextArea name="rule" label="Rule" />
+        <FieldTextArea name="heading" label="Heading" />
+        <FieldTextArea name="not_recommended" label="Not recommended" />
+        <FieldTextArea name="recommended" label="Recommended" />
 
         <div>
           <Button

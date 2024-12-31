@@ -38,8 +38,8 @@ const toggleDropdown = () => {
   }
 };
 
-const select = (option: string | number | null) => {
-  if (props.disabled || !option) {
+const select = (option: string | number | boolean | null) => {
+  if (props.disabled || option === null) {
     return;
   }
   const data = [...(value.value ?? [])];
@@ -64,13 +64,11 @@ const clearSelect = () => {
   emit("change");
 };
 
-const { errors, handleChange, value } = useField<Array<string | number>>(
-  props.name,
-  undefined,
-  {
-    validateOnValueUpdate: false,
-  },
-);
+const { errors, handleChange, value } = useField<
+  Array<string | number | boolean>
+>(props.name, undefined, {
+  validateOnValueUpdate: false,
+});
 
 const hasErrors = computed(() => {
   return errors.value.length > 0;

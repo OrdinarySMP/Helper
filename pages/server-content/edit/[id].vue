@@ -1,22 +1,23 @@
 <script lang="ts" setup>
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
+import type { ServerContent } from "@/types/serverContent";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
-import type { Rule } from "@/types/rule";
 import type { PaginatedResponse } from "@/types/response";
 
 const route = useRoute();
-const ruleId = ref<Rule["id"]>();
-const rule = ref<Rule>();
+const serverContentId = ref<ServerContent["id"]>();
+const serverContent = ref<ServerContent>();
 const loading = ref(true);
 const errorMessage = ref("");
 
 const formSchema = toTypedSchema(
   zod.object({
-    number: zod.number().min(1),
-    name: zod.string().min(1),
-    rule: zod.string().min(1),
+    name: zod.string().min(1).max(128),
+    url: zod.string().url(),
+    description: zod.string().min(1).max(512),
+    is_recommended: zod.boolean(),
   }),
 );
 
@@ -27,7 +28,7 @@ const { handleSubmit, setErrors, isSubmitting, setFieldValue } = useForm({
 const save = handleSubmit(async (values) => {
   errorMessage.value = "";
 
-  const { error } = await useApi(`/rule/${ruleId.value}`, {
+  const { error } = await useApi(`/server-content/${serverContentId.value}`, {
     method: "patch",
     body: values,
   });
@@ -36,52 +37,55 @@ const save = handleSubmit(async (values) => {
     errorMessage.value = error.value.data.message;
     setErrors(error.value.data.errors ?? []);
   } else {
-    navigateTo("/rule");
+    navigateTo("/server-content");
   }
 });
 
 onMounted(async () => {
   loading.value = true;
-  ruleId.value = parseRouteParameter(route.params.id);
+  serverContentId.value = parseRouteParameter(route.params.id);
 
-  const { data } = await useApi<PaginatedResponse<Rule[]>>("/rule", {
-    method: "get",
-    params: {
-      "filter[id]": ruleId.value,
+  const { data } = await useApi<PaginatedResponse<ServerContent[]>>(
+    "/server-content",
+    {
+      method: "get",
+      params: {
+        "filter[id]": serverContentId.value,
+      },
     },
-  });
+  );
   if (!data.value || !data.value?.data[0]) {
-    navigateTo("/rule");
+    navigateTo("/server-content");
     return;
   }
 
-  rule.value = data.value.data[0];
+  serverContent.value = data.value.data[0];
 
-  setFieldValue("number", rule.value.number);
-  setFieldValue("name", rule.value.name);
-  setFieldValue("rule", rule.value.rule);
+  setFieldValue("name", serverContent.value.name);
+  setFieldValue("url", serverContent.value.url);
+  setFieldValue("description", serverContent.value.description);
+  setFieldValue("is_recommended", serverContent.value.is_recommended);
 
   loading.value = false;
 });
 
 useHead({
-  title: "Edit Rule",
+  title: "Edit Mod/Datapack",
 });
 </script>
 
 <template>
   <div class="flex grow">
-    <div v-if="loading" class="flex grow items-center justify-center">
-      <Spinner />
-    </div>
-    <div v-else class="w-full">
-      <p class="mb-8 text-2xl">Edit Rule</p>
+    <div class="w-full">
+      <p class="mb-8 text-2xl">Edit Mod/Datapack</p>
       <form class="grid grid-cols-1 gap-4" @submit.prevent="save">
-        <FieldInput name="number" label="Number" type="number" />
-
         <FieldInput name="name" label="Name" />
 
-        <FieldTextArea name="rule" label="Rule" />
+        <FieldInput name="url" label="URL" />
+
+        <FieldTextArea name="description" label="Description" />
+
+        <FieldSwitch name="is_recommended" label="Is recommended?" />
 
         <div>
           <Button
