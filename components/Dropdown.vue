@@ -1,13 +1,13 @@
 <script lang="ts" setup>
 export interface Props {
   show: boolean;
-  items: { label: string; value: string | number | null }[];
+  items: { label: string; value: string | number | boolean | null }[];
 }
 
 defineProps<Props>();
 
 const emit = defineEmits<{
-  (e: "select", value: string | number | null): void;
+  (e: "select", value: string | number | boolean | null): void;
 }>();
 </script>
 

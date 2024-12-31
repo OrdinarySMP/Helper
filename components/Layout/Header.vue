@@ -6,6 +6,7 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/vue/24/outline";
 const navigation = [
   { name: "FAQ", href: "/faq" },
   { name: "Rules", href: "/rule" },
+  { name: "Mods+Datapacks", href: "/server-content" },
   { name: "Reaction roles", href: "/reaction-role" },
   { name: "Applications", href: "/application" },
 ];
@@ -31,7 +32,7 @@ const userMenu = ref([
       aria-label="Global"
     >
       <div class="flex lg:flex-1">
-        <LayoutLogo />
+        <LayoutLogo class="size-12" />
       </div>
       <div class="flex lg:hidden">
         <button

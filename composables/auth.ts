@@ -12,7 +12,7 @@ export const useAuth = () => {
   };
 
   const bootstrap = async () => {
-    await useApi(`/csrf-cookie`, {
+    await useApi("/csrf-cookie", {
       method: "get",
     });
 

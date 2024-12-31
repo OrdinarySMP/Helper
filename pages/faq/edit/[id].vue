@@ -43,7 +43,7 @@ onMounted(async () => {
   loading.value = true;
   faqId.value = parseRouteParameter(route.params.id);
 
-  const { data } = await useApi<PaginatedResponse<FAQ[]>>(`/faq`, {
+  const { data } = await useApi<PaginatedResponse<FAQ[]>>("/faq", {
     method: "get",
     params: {
       "filter[id]": faqId.value,

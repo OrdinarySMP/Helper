@@ -83,7 +83,10 @@ const setSorting = (header: Header) => {
     <div v-if="loading" class="text-center">
       <Spinner />
     </div>
-    <table v-else class="min-w-full divide-y divide-gray-300">
+    <TableSearchBar>
+      <slot name="search-bar" />
+    </TableSearchBar>
+    <table v-if="!loading" class="min-w-full divide-y divide-gray-300">
       <thead>
         <tr>
           <th
