@@ -15,7 +15,7 @@ const errorMessage = ref("");
 const formSchema = toTypedSchema(
   zod.object({
     name: zod.string().min(1).max(128),
-    url: zod.string().url(),
+    url: zod.string().url().max(256),
     description: zod.string().min(1).max(512),
     is_recommended: zod.boolean(),
   }),

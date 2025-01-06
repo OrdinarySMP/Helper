@@ -10,9 +10,9 @@ const errorMessage = ref("");
 
 const formSchema = toTypedSchema(
   zod.object({
-    heading: zod.string().min(1).max(1024),
-    not_recommended: zod.string().min(1).max(1024),
-    recommended: zod.string().min(1).max(1024),
+    heading: zod.string().min(1).max(2000),
+    not_recommended: zod.string().min(1).max(2000),
+    recommended: zod.string().min(1).max(2000),
   }),
 );
 

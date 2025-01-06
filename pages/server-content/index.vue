@@ -126,6 +126,9 @@ const remove = async () => {
 const pageChange = (page: number) => {
   loadServerContent(page);
 };
+const truncatedString = (string: string) => {
+  return string.length > 100 ? string.substring(0, 100) + "..." : string;
+};
 
 const filters = computed(() => {
   const newFilters: Record<string, string | number | boolean | null> = {};
@@ -208,6 +211,12 @@ onMounted(() => {
           label="Recommended"
           @change="changeFilter"
         />
+      </template>
+      <template #body-name="{ data }">
+        {{ truncatedString(data.name as string) }}
+      </template>
+      <template #body-description="{ data }">
+        {{ truncatedString(data.description as string) }}
       </template>
       <template #body-is_recommended="{ data }">
         <CheckIcon v-if="data.is_recommended" class="size-6 text-green-500" />
