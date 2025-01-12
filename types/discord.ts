@@ -12,3 +12,18 @@ export type TextChannel = {
   permission_overwrites: Array<unknown>;
   nsfw: boolean;
 };
+
+export type Role = {
+  id: string;
+  name: string;
+  description?: string;
+  permissions: string;
+  position: number;
+  color: number;
+  hoist: boolean;
+  managed: boolean;
+  mentionable: boolean;
+  icon?: string;
+  unicode_emoji?: string;
+  flags: number;
+};
