@@ -20,3 +20,11 @@ export const parseRouteParameterString = (
   }
   return `${param}`;
 };
+
+export const hasPermissionTo = (permission: string): boolean => {
+  const user = useAuth().user().value;
+  if (!user) {
+    return false;
+  }
+  return user.permissions.includes(permission) || user.is_owner;
+};

@@ -5,6 +5,10 @@ import { PencilIcon, PlusIcon } from "@heroicons/vue/24/solid";
 import type { Pagination } from "@/types/table";
 import type { PaginatedResponse } from "@/types/response";
 
+if (!hasPermissionTo("faq.read")) {
+  await navigateTo("/");
+}
+
 const loading = ref(true);
 const faqs = ref<FAQ[]>([]);
 const toDeleteFAQ = ref();
@@ -81,7 +85,7 @@ onMounted(() => {
   <div class="w-full">
     <p class="mb-4 flex items-center gap-4 text-2xl">
       FAQs
-      <NuxtLink to="/faq/create">
+      <NuxtLink v-if="hasPermissionTo('faq.create')" to="/faq/create">
         <Button size="sm" class="px-2" color="primary">
           <span class="flex items-center">
             <PlusIcon class="size-4 mr-2" />
@@ -99,7 +103,10 @@ onMounted(() => {
     >
       <template #body-actions="{ data }">
         <div class="flex gap-4">
-          <NuxtLink :to="`/faq/edit/${data.id}`">
+          <NuxtLink
+            v-if="hasPermissionTo('faq.update')"
+            :to="`/faq/edit/${data.id}`"
+          >
             <Button size="sm" class="px-2" color="gray">
               <span class="flex items-center">
                 <PencilIcon class="size-4 mr-2" />
@@ -109,6 +116,7 @@ onMounted(() => {
           </NuxtLink>
 
           <Button
+            v-if="hasPermissionTo('faq.delete')"
             size="sm"
             class="px-2"
             color="error"

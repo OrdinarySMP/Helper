@@ -2,7 +2,10 @@ type UseFetchOptions = {
   method?: "get" | "post" | "patch" | "put" | "delete";
   query?: Record<string, unknown> | [key: string, value: string][];
   params?: Record<string, unknown> | [key: string, value: string][];
-  body?: RequestInit["body"] | Record<string, unknown>;
+  body?:
+    | RequestInit["body"]
+    | Record<string, unknown>
+    | Record<string, unknown>[];
   headers?: Record<string, string> | [key: string, value: string][] | Headers;
   watch?: boolean;
   baseURL?: string;

@@ -14,6 +14,7 @@ interface Props {
 
 const props = defineProps<Props>();
 
+const slots = useSlots();
 const sorting = ref(
   props.initialSort ?? {
     column: null,
@@ -83,7 +84,7 @@ const setSorting = (header: Header) => {
     <div v-if="loading" class="text-center">
       <Spinner />
     </div>
-    <TableSearchBar>
+    <TableSearchBar v-if="slots['search-bar']">
       <slot name="search-bar" />
     </TableSearchBar>
     <table v-if="!loading" class="min-w-full divide-y divide-gray-300">

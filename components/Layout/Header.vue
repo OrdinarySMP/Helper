@@ -3,13 +3,30 @@ import { ref } from "vue";
 import { Dialog, DialogPanel } from "@headlessui/vue";
 import { Bars3Icon, XMarkIcon } from "@heroicons/vue/24/outline";
 
-const navigation = [
-  { name: "FAQ", href: "/faq" },
-  { name: "Rules", href: "/rule" },
-  { name: "Mods+Datapacks", href: "/server-content" },
-  { name: "Reaction roles", href: "/reaction-role" },
-  { name: "Applications", href: "/application" },
+const navigations = [
+  { name: "FAQ", href: "/faq", permission: "faq.read" },
+  { name: "Rules", href: "/rule", permission: "rule.read" },
+  {
+    name: "Mods+Datapacks",
+    href: "/server-content",
+    permission: "serverContent.read",
+  },
+  {
+    name: "Reaction roles",
+    href: "/reaction-role",
+    permission: "reactionRole.read",
+  },
+  {
+    name: "Applications",
+    href: "/application",
+    permission: "application.read",
+  },
+  { name: "Permissions", href: "/permission", permission: "owner" },
 ];
+
+const userNavigation = navigations.filter((navigation) =>
+  hasPermissionTo(navigation.permission),
+);
 
 const userMenuOpen = ref(false);
 const mobileMenuOpen = ref(false);
@@ -46,7 +63,7 @@ const userMenu = ref([
       </div>
       <div class="hidden lg:flex lg:gap-x-12">
         <NuxtLink
-          v-for="item in navigation"
+          v-for="item in userNavigation"
           :key="item.name"
           :to="item.href"
           class="text- text-sm font-semibold leading-6"
@@ -98,7 +115,7 @@ const userMenu = ref([
           <div class="-my-6 divide-y divide-gray-500/10">
             <div class="space-y-2 py-6">
               <NuxtLink
-                v-for="item in navigation"
+                v-for="item in userNavigation"
                 :key="item.name"
                 :to="item.href"
                 class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"

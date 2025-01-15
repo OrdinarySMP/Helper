@@ -5,6 +5,10 @@ import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
 
+if (!hasPermissionTo("reactionRole.create")) {
+  await navigateTo("/");
+}
+
 const errorMessage = ref("");
 const roles = ref<{ label: string; value: string }[]>([]);
 const loading = ref(true);
