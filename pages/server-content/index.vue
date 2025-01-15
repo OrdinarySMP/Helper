@@ -13,6 +13,10 @@ import {
 import type { Pagination } from "@/types/table";
 import type { PaginatedResponse } from "@/types/response";
 
+if (!hasPermissionTo("serverContent.read")) {
+  await navigateTo("/");
+}
+
 const loading = ref(true);
 const serverContents = ref<ServerContent[]>([]);
 const toDeleteServerContent = ref();
@@ -174,7 +178,10 @@ onMounted(() => {
     <div class="flex justify-between items-center mb-4">
       <div class="flex items-center gap-4">
         <p class="text-2xl">Mods and Datapacks</p>
-        <NuxtLink to="/server-content/create">
+        <NuxtLink
+          v-if="hasPermissionTo('serverContent.create')"
+          to="/server-content/create"
+        >
           <Button size="sm" class="px-2" color="primary">
             <span class="flex items-center">
               <PlusIcon class="size-4 mr-2" />
@@ -185,10 +192,17 @@ onMounted(() => {
       </div>
       <div class="flex gap-4">
         <div>
-          <TextChannelSelector title="Resend" @select="resend" />
+          <TextChannelSelector
+            v-if="hasPermissionTo('serverContent.resend')"
+            title="Resend"
+            @select="resend"
+          />
         </div>
 
-        <NuxtLink to="/server-content/message">
+        <NuxtLink
+          v-if="hasPermissionTo('serverContentMessage.read')"
+          to="/server-content/message"
+        >
           <Button size="sm" class="px-2" color="primary">
             <span class="flex items-center"> Messages </span>
           </Button>
@@ -225,7 +239,10 @@ onMounted(() => {
       </template>
       <template #body-actions="{ data }">
         <div class="flex gap-4">
-          <NuxtLink :to="`/server-content/edit/${data.id}`">
+          <NuxtLink
+            v-if="hasPermissionTo('serverContent.update')"
+            :to="`/server-content/edit/${data.id}`"
+          >
             <Button size="sm" class="px-2" color="gray">
               <span class="flex items-center">
                 <PencilIcon class="size-4 mr-2" />
@@ -235,6 +252,7 @@ onMounted(() => {
           </NuxtLink>
 
           <Button
+            v-if="hasPermissionTo('serverContent.delete')"
             size="sm"
             class="px-2"
             color="error"

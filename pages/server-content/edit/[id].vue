@@ -6,6 +6,10 @@ import * as zod from "zod";
 import { useForm } from "vee-validate";
 import type { PaginatedResponse } from "@/types/response";
 
+if (!hasPermissionTo("serverContent.update")) {
+  await navigateTo("/server-content");
+}
+
 const route = useRoute();
 const serverContentId = ref<ServerContent["id"]>();
 const serverContent = ref<ServerContent>();

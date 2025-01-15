@@ -7,6 +7,10 @@ import type { ReactionRole } from "@/types/reactionRole";
 import type { Role } from "@/types/discord";
 import type { PaginatedResponse } from "@/types/response";
 
+if (!hasPermissionTo("reactionRole.update")) {
+  await navigateTo("/");
+}
+
 const route = useRoute();
 const reactionRoleId = ref<ReactionRole["id"]>();
 const reactionRole = ref<ReactionRole>();

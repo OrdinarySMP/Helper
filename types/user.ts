@@ -5,6 +5,7 @@ export type User = {
   name: string;
   avatar: string;
   is_owner: boolean;
+  permissions: string[];
   created_at: string;
   updated_at: string;
 };

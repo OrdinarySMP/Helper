@@ -5,6 +5,10 @@ import * as zod from "zod";
 import { useForm } from "vee-validate";
 import type { ServerContentMessage } from "@/types/serverContent";
 
+if (!hasPermissionTo("serverContentMessage.read")) {
+  await navigateTo("/server-content");
+}
+
 const loading = ref(true);
 const errorMessage = ref("");
 
@@ -55,6 +59,10 @@ onMounted(async () => {
   loading.value = false;
 });
 
+const canCreate = computed(() =>
+  hasPermissionTo("serverContentMessage.create"),
+);
+
 useHead({
   title: "Mod/Datapack Messages",
 });
@@ -68,13 +76,21 @@ useHead({
     <div v-else class="w-full">
       <p class="mb-8 text-2xl">Mods and Datapacks Messages</p>
       <form class="grid grid-cols-1 gap-4" @submit.prevent="save">
-        <FieldTextArea name="heading" label="Heading" />
-        <FieldTextArea name="not_recommended" label="Not recommended" />
-        <FieldTextArea name="recommended" label="Recommended" />
+        <FieldTextArea name="heading" label="Heading" :disabled="!canCreate" />
+        <FieldTextArea
+          name="not_recommended"
+          label="Not recommended"
+          :disabled="!canCreate"
+        />
+        <FieldTextArea
+          name="recommended"
+          label="Recommended"
+          :disabled="!canCreate"
+        />
 
         <div>
           <Button
-            :disabled="isSubmitting"
+            :disabled="isSubmitting || !canCreate"
             :loading="isSubmitting"
             class="mr-2 px-4"
             size="md"

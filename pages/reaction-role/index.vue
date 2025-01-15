@@ -5,6 +5,10 @@ import { PencilIcon, PlusIcon } from "@heroicons/vue/24/solid";
 import type { Pagination } from "@/types/table";
 import type { PaginatedResponse } from "@/types/response";
 
+if (!hasPermissionTo("reactionRole.read")) {
+  await navigateTo("/");
+}
+
 const loading = ref(true);
 const reactionRoles = ref<ReactionRole[]>([]);
 const toDeleteReactionRole = ref();
@@ -95,7 +99,10 @@ onMounted(() => {
   <div class="w-full">
     <p class="mb-4 flex items-center gap-4 text-2xl">
       Reaction roles
-      <NuxtLink to="/reaction-role/create">
+      <NuxtLink
+        v-if="hasPermissionTo('reactionRole.create')"
+        to="/reaction-role/create"
+      >
         <Button size="sm" class="px-2" color="primary">
           <span class="flex items-center">
             <PlusIcon class="size-4 mr-2" />
@@ -118,7 +125,10 @@ onMounted(() => {
       </template>
       <template #body-actions="{ data }">
         <div class="flex gap-4">
-          <NuxtLink :to="`/reaction-role/edit/${data.id}`">
+          <NuxtLink
+            v-if="hasPermissionTo('reactionRole.update')"
+            :to="`/reaction-role/edit/${data.id}`"
+          >
             <Button size="sm" class="px-2" color="gray">
               <span class="flex items-center">
                 <PencilIcon class="size-4 mr-2" />
@@ -128,6 +138,7 @@ onMounted(() => {
           </NuxtLink>
 
           <Button
+            v-if="hasPermissionTo('reactionRole.delete')"
             size="sm"
             class="px-2"
             color="error"

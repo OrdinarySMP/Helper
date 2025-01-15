@@ -6,6 +6,10 @@ import { useForm } from "vee-validate";
 import type { FAQ } from "@/types/faq";
 import type { PaginatedResponse } from "@/types/response";
 
+if (!hasPermissionTo("faq.update")) {
+  await navigateTo("/faq");
+}
+
 const route = useRoute();
 const faqId = ref<FAQ["id"]>();
 const faq = ref<FAQ>();

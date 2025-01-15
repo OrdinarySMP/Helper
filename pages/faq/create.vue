@@ -4,6 +4,10 @@ import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
 
+if (!hasPermissionTo("faq.create")) {
+  await navigateTo("/faq");
+}
+
 const errorMessage = ref("");
 
 const formSchema = toTypedSchema(

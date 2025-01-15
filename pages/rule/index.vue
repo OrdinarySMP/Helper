@@ -5,6 +5,10 @@ import { PencilIcon, PlusIcon } from "@heroicons/vue/24/solid";
 import type { Pagination } from "@/types/table";
 import type { PaginatedResponse } from "@/types/response";
 
+if (!hasPermissionTo("rule.read")) {
+  await navigateTo("/");
+}
+
 const loading = ref(true);
 const rules = ref<Rule[]>([]);
 const toDeleteRule = ref();
@@ -85,7 +89,7 @@ onMounted(() => {
   <div class="w-full">
     <p class="mb-4 flex items-center gap-4 text-2xl">
       Rules
-      <NuxtLink to="/rule/create">
+      <NuxtLink v-if="hasPermissionTo('rule.create')" to="/rule/create">
         <Button size="sm" class="px-2" color="primary">
           <span class="flex items-center">
             <PlusIcon class="size-4 mr-2" />
@@ -103,7 +107,10 @@ onMounted(() => {
     >
       <template #body-actions="{ data }">
         <div class="flex gap-4">
-          <NuxtLink :to="`/rule/edit/${data.id}`">
+          <NuxtLink
+            v-if="hasPermissionTo('rule.update')"
+            :to="`/rule/edit/${data.id}`"
+          >
             <Button size="sm" class="px-2" color="gray">
               <span class="flex items-center">
                 <PencilIcon class="size-4 mr-2" />
@@ -113,6 +120,7 @@ onMounted(() => {
           </NuxtLink>
 
           <Button
+            v-if="hasPermissionTo('rule.delete')"
             size="sm"
             class="px-2"
             color="error"

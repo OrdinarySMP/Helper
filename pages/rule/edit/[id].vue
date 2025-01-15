@@ -6,6 +6,10 @@ import { useForm } from "vee-validate";
 import type { Rule } from "@/types/rule";
 import type { PaginatedResponse } from "@/types/response";
 
+if (!hasPermissionTo("rule.update")) {
+  await navigateTo("/rule");
+}
+
 const route = useRoute();
 const ruleId = ref<Rule["id"]>();
 const rule = ref<Rule>();
