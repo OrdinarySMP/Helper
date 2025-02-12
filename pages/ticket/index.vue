@@ -1,0 +1,210 @@
+<script lang="ts" setup>
+import { ref, onMounted } from "vue";
+import { toTypedSchema } from "@vee-validate/zod";
+import * as zod from "zod";
+import { useForm } from "vee-validate";
+import type { Ticket, TicketFilter } from "@/types/ticket";
+import type { User } from "@/types/discord";
+import { TicketState } from "@/types/ticket";
+import { DocumentTextIcon } from "@heroicons/vue/24/solid";
+import type { Pagination } from "@/types/table";
+import type { PaginatedResponse } from "@/types/response";
+
+if (!hasPermissionTo("ticket.read")) {
+  await navigateTo("/");
+}
+
+const loading = ref(true);
+const tickets = ref<Ticket[]>([]);
+const pagination = ref<Pagination | null>();
+const filterValues = ref<TicketFilter>({
+  state: TicketState.Open,
+  id: null,
+});
+
+const headers = ref([
+  {
+    title: "ID",
+    key: "id",
+  },
+  {
+    title: "Button",
+    key: "ticket_button.text",
+  },
+  {
+    title: "Channel",
+    key: "channel_name",
+  },
+  {
+    title: "Created by",
+    key: "created_by",
+  },
+  {
+    title: "",
+    key: "actions",
+  },
+]);
+
+const ticketState = ref([
+  {
+    label: "All",
+    value: null,
+  },
+  {
+    label: "Open",
+    value: TicketState.Open,
+  },
+  {
+    label: "Closed",
+    value: TicketState.Closed,
+  },
+]);
+
+const formSchema = toTypedSchema(
+  zod.object({
+    state: zod.number().nullable(),
+    id: zod.number().nullable(),
+  }),
+);
+
+const { handleSubmit } = useForm({
+  initialValues: filterValues.value,
+  validationSchema: formSchema,
+});
+
+const changeFilter = handleSubmit((values) => {
+  filterValues.value = values;
+  loadTicket();
+});
+
+const loadTicket = async (page = 1) => {
+  loading.value = true;
+  const { data } = await useApi<PaginatedResponse<Ticket[]>>("/ticket", {
+    method: "get",
+    query: {
+      page_size: 10,
+      page,
+      include: "ticketButton",
+      ...filters.value,
+    },
+  });
+
+  if (data.value) {
+    tickets.value = data.value.data ?? [];
+
+    pagination.value = {
+      total: data.value.meta.total,
+      currentPage: data.value.meta.current_page,
+      perPage: data.value.meta.per_page,
+      from: data.value.meta.from,
+      to: data.value.meta.to,
+      totalPages: data.value.meta.last_page,
+    };
+  }
+
+  loading.value = false;
+};
+
+const pageChange = (page: number) => {
+  loadTicket(page);
+};
+
+const filters = computed(() => {
+  const newFilters: Record<string, string | number | boolean | null> = {};
+
+  if (filterValues.value.id) {
+    newFilters["filter[id]"] = filterValues.value.id;
+  }
+
+  if (filterValues.value.state !== null) {
+    newFilters["filter[state]"] = filterValues.value.state;
+  }
+
+  return newFilters;
+});
+
+useHead({
+  title: "Tickets",
+});
+
+onMounted(() => {
+  loadTicket();
+});
+</script>
+
+<template>
+  <div class="w-full">
+    <div class="flex justify-between items-center mb-4">
+      <div class="flex items-center gap-4">
+        <p class="text-2xl">Tickets</p>
+      </div>
+      <div class="flex items-center gap-4">
+        <NuxtLink
+          v-if="hasPermissionTo('ticketConfig.read')"
+          to="/ticket/config"
+        >
+          <Button size="sm" class="px-2" color="primary">
+            <span class="flex items-center"> Config </span>
+          </Button>
+        </NuxtLink>
+        <NuxtLink
+          v-if="hasPermissionTo('ticketButton.read')"
+          to="/ticket/button"
+        >
+          <Button size="sm" class="px-2" color="primary">
+            <span class="flex items-center"> Button </span>
+          </Button>
+        </NuxtLink>
+        <NuxtLink v-if="hasPermissionTo('ticketPanel.read')" to="/ticket/panel">
+          <Button size="sm" class="px-2" color="primary">
+            <span class="flex items-center"> Panel </span>
+          </Button>
+        </NuxtLink>
+        <NuxtLink v-if="hasPermissionTo('ticketTeam.read')" to="/ticket/team">
+          <Button size="sm" class="px-2" color="primary">
+            <span class="flex items-center"> Team </span>
+          </Button>
+        </NuxtLink>
+      </div>
+    </div>
+    <Table
+      :loading="loading"
+      :headers="headers"
+      :data="tickets"
+      :pagination="pagination"
+      @page-change="pageChange"
+    >
+      <template #search-bar>
+        <FieldSelect
+          :items="ticketState"
+          clearable
+          name="state"
+          label="State"
+          @change="changeFilter"
+        />
+        <FieldInput name="id" label="ID" type="number" @change="changeFilter" />
+      </template>
+      <template #body-created_by="{ data }">
+        {{
+          (data.created_by_discord_user as User | null)?.global_name ??
+          data.created_by_discord_user_id
+        }}
+      </template>
+      <template #body-actions="{ data }">
+        <div class="flex gap-4">
+          <NuxtLink
+            v-if="hasPermissionTo('ticketTranscript.read')"
+            :to="`/ticket/transcript/${data.id}`"
+          >
+            <Button size="sm" class="px-2" color="gray">
+              <span class="flex items-center">
+                <DocumentTextIcon class="size-4 mr-2" />
+                Transcript
+              </span>
+            </Button>
+          </NuxtLink>
+        </div>
+      </template>
+    </Table>
+  </div>
+</template>

@@ -81,13 +81,13 @@ const setSorting = (header: Header) => {
 </script>
 <template>
   <div>
-    <div v-if="loading" class="text-center">
-      <Spinner />
-    </div>
     <TableSearchBar v-if="slots['search-bar']">
       <slot name="search-bar" />
     </TableSearchBar>
-    <table v-if="!loading" class="min-w-full divide-y divide-gray-300">
+    <div v-if="loading" class="text-center my-4">
+      <Spinner />
+    </div>
+    <table v-else class="min-w-full divide-y divide-gray-300">
       <thead>
         <tr>
           <th

@@ -28,3 +28,26 @@ export const hasPermissionTo = (permission: string): boolean => {
   }
   return user.permissions.includes(permission) || user.is_owner;
 };
+
+export const discordButtonItems = [
+  {
+    label: "Primary",
+    value: 1,
+    color: "#5865f2",
+  },
+  {
+    label: "Secondary",
+    value: 2,
+    color: "#4e5058",
+  },
+  {
+    label: "Success",
+    value: 3,
+    color: "#248045",
+  },
+  {
+    label: "Danger",
+    value: 4,
+    color: "#da373c",
+  },
+];

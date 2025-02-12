@@ -4,7 +4,7 @@ import { computed } from "vue";
 
 export interface Props {
   name: string;
-  type?: "text" | "email" | "password" | "number";
+  type?: "text" | "email" | "password" | "number" | "color";
   step?: number;
   label?: string;
   placeholder?: string;
