@@ -6,6 +6,7 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/vue/24/outline";
 const navigations = [
   { name: "FAQ", href: "/faq", permission: "faq.read" },
   { name: "Rules", href: "/rule", permission: "rule.read" },
+  { name: "Tickets", href: "/ticket", permission: "ticket.read" },
   {
     name: "Mods+Datapacks",
     href: "/server-content",

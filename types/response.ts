@@ -27,3 +27,7 @@ export type PaginatedResponse<T> = {
   links: Links;
   meta: Meta;
 };
+
+export type FullResponse<T> = {
+  data: T;
+};

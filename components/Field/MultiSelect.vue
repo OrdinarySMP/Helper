@@ -1,6 +1,11 @@
 <script lang="ts" setup>
 import { ref, computed } from "vue";
 import { useField } from "vee-validate";
+import {
+  XCircleIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+} from "@heroicons/vue/24/solid";
 
 export interface Props {
   name: string;
@@ -101,17 +106,18 @@ const hasErrors = computed(() => {
         {{ selectedLabel !== "" ? selectedLabel : "&nbsp;" }}
       </span>
       <div>
-        <Icon
+        <XCircleIcon
           v-if="clearable && hover && selectedLabel"
-          icon="x"
-          class="clear-icon mr-2 cursor-pointer"
+          class="clear-icon mr-1 cursor-pointer size-5"
           style="line-height: inherit"
           @click="clearSelect"
         />
-        <Icon
-          :icon="isDropdownOpen ? 'chevron-top' : 'chevron-bottom'"
+        <ChevronUpIcon
+          v-if="isDropdownOpen"
+          class="size-5"
           style="line-height: inherit"
         />
+        <ChevronDownIcon v-else class="size-5" style="line-height: inherit" />
       </div>
     </div>
     <Dropdown :show="isDropdownOpen" :items="items" @select="select">

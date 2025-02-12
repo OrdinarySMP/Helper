@@ -13,6 +13,17 @@ export type TextChannel = {
   nsfw: boolean;
 };
 
+export type Category = {
+  id: string;
+  type: number;
+  flags: number;
+  guild_id: string;
+  name: string;
+  parent_id: string;
+  position: number;
+  permission_overwrites: Array<unknown>;
+};
+
 export type Role = {
   id: string;
   name: string;
@@ -26,4 +37,20 @@ export type Role = {
   icon?: string;
   unicode_emoji?: string;
   flags: number;
+};
+
+export type User = {
+  id: string;
+  username: string;
+  avatar: string;
+  discriminator: string;
+  public_flags: number;
+  flags: number;
+  banner?: string;
+  accent_color: number;
+  global_name: string;
+  avatar_decoration_data?: string;
+  banner_color: string;
+  clan?: string;
+  primary_guild?: string;
 };
