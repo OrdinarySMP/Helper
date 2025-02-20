@@ -87,7 +87,11 @@ onMounted(() => {
           />
           <div>
             <span class="mr-2">
-              {{ transcript.user?.global_name ?? transcript.user?.username ?? transcript.discord_user_id }}
+              {{
+                transcript.user?.global_name ??
+                transcript.user?.username ??
+                transcript.discord_user_id
+              }}
             </span>
             <span class="text-sm text-gray-800">
               {{ dayjs(transcript.updated_at).format("DD.MM.YYYY HH:mm:ss") }}
@@ -95,7 +99,13 @@ onMounted(() => {
             <br />
             <p>{{ transcript?.message }}</p>
             <p v-if="transcript?.attachments !== '[]'">
-              {{ transcript?.attachments }}
+              <TicketTranscriptAttachement
+                v-for="(attachment, attachmentKey) in JSON.parse(
+                  transcript?.attachments ?? '[]',
+                )"
+                :key="attachmentKey"
+                :attachment="attachment"
+              />
             </p>
             <p v-if="transcript?.embeds !== '[]'">{{ transcript?.embeds }}</p>
           </div>

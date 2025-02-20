@@ -54,3 +54,49 @@ export type User = {
   clan?: string;
   primary_guild?: string;
 };
+
+export type GifAttachment = {
+  video: {
+    width: number;
+    url: string;
+    proxy_url: string;
+    placeholder_version: number;
+    placeholder: string;
+    height: number;
+    flags: number;
+  };
+  url: string;
+  type: "gifv";
+  thumbnail: {
+    width: number;
+    url: string;
+    proxy_url: string;
+    placeholder_version: number;
+    placeholder: string;
+    height: number;
+    flags: number;
+  };
+  provider: {
+    url: string;
+    name: string;
+  };
+  content_scan_version: number;
+};
+
+export type FileAttachment = {
+  attachment: string;
+  name: string;
+  id: string;
+  size: number;
+  url: string;
+  proxyURL: string;
+  height: number;
+  width: number;
+  contentType: string;
+  description: string | null;
+  ephemeral: boolean;
+  duration: string | number | null;
+  waveform: string | number | null;
+  flags: number;
+  title: string | null;
+};
