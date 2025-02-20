@@ -100,3 +100,16 @@ export type FileAttachment = {
   flags: number;
   title: string | null;
 };
+
+export type EmbedField = {
+  name: string;
+  value: string;
+  inline: boolean;
+};
+
+export type Embed = {
+  title: string;
+  description: string;
+  color: number;
+  fields: EmbedField[];
+};
