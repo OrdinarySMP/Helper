@@ -87,7 +87,7 @@ onMounted(() => {
           />
           <div>
             <span class="mr-2">
-              {{ transcript.user?.global_name ?? transcript.discord_user_id }}
+              {{ transcript.user?.global_name ?? transcript.user?.username ?? transcript.discord_user_id }}
             </span>
             <span class="text-sm text-gray-800">
               {{ dayjs(transcript.updated_at).format("DD.MM.YYYY HH:mm:ss") }}
