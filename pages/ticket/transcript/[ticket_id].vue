@@ -107,7 +107,15 @@ onMounted(() => {
                 :attachment="attachment"
               />
             </p>
-            <p v-if="transcript?.embeds !== '[]'">{{ transcript?.embeds }}</p>
+            <p v-if="transcript?.embeds !== '[]'">
+              <TicketTranscriptEmbed
+                v-for="(embed, embedKey) in JSON.parse(
+                  transcript?.embeds ?? '[]',
+                )"
+                :key="embedKey"
+                :embed="embed"
+              />
+            </p>
           </div>
         </div>
       </div>
