@@ -210,15 +210,6 @@ onMounted(() => {
       </template>
       <template #body-actions="{ data }">
         <div class="flex gap-4">
-          <Button
-            v-if="data.state === TicketState.Open"
-            size="sm"
-            class="px-2"
-            color="error"
-            @click="closeTicket(data.id as number)"
-          >
-            Close
-          </Button>
           <NuxtLink
             v-if="hasPermissionTo('ticketTranscript.read')"
             :to="`/ticket/transcript/${data.id}`"
@@ -230,6 +221,15 @@ onMounted(() => {
               </span>
             </Button>
           </NuxtLink>
+          <Button
+            v-if="data.state === TicketState.Open"
+            size="sm"
+            class="px-2"
+            color="error"
+            @click="closeTicket(data.id as number)"
+          >
+            Close
+          </Button>
         </div>
       </template>
     </Table>
