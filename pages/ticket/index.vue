@@ -123,6 +123,24 @@ const filters = computed(() => {
   return newFilters;
 });
 
+const closeTicket = async (ticketId: number) => {
+  const { error } = await useApi(`/ticket/${ticketId}/close`, {
+    method: "post",
+    body: {
+      closed_by_discord_user_id: useAuth().user().value?.discord_id,
+    },
+  });
+  if (error.value) {
+    useNotification().error(
+      "Could not close ticket!",
+      error.value.data.message,
+    );
+  } else {
+    useNotification().error("Ticket close", "Ticket successfully closed");
+    reloadNuxtApp();
+  }
+};
+
 useHead({
   title: "Tickets",
 });
@@ -192,6 +210,15 @@ onMounted(() => {
       </template>
       <template #body-actions="{ data }">
         <div class="flex gap-4">
+          <Button
+            v-if="data.state === TicketState.Open"
+            size="sm"
+            class="px-2"
+            color="error"
+            @click="closeTicket(data.id as number)"
+          >
+            Close
+          </Button>
           <NuxtLink
             v-if="hasPermissionTo('ticketTranscript.read')"
             :to="`/ticket/transcript/${data.id}`"
