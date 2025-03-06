@@ -85,6 +85,7 @@ const loadTicket = async (page = 1) => {
       page_size: 10,
       page,
       include: "ticketButton",
+      sort: "-created_at",
       ...filters.value,
     },
   });
