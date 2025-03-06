@@ -3,10 +3,10 @@ import { ref } from "vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
-import type { Button } from "@/types/ticket/button";
 import type { Panel } from "@/types/ticket/panel";
 import type { Team } from "@/types/ticket/team";
 import type { FullResponse } from "@/types/response";
+import type { Role } from "@/types/discord";
 import { FaceSmileIcon } from "@heroicons/vue/24/outline";
 import EmojiPicker from "vue3-emoji-picker";
 import "vue3-emoji-picker/css";
@@ -16,6 +16,7 @@ if (!hasPermissionTo("ticketButton.create")) {
 }
 
 const errorMessage = ref("");
+const roles = ref<{ label: string; value: string }[]>([]);
 const teams = ref<{ label: string; value: number }[]>([]);
 const panels = ref<{ label: string; value: number }[]>([]);
 const showEmojiPicker = ref(false);
@@ -30,6 +31,7 @@ const formSchema = toTypedSchema(
     initial_message: zod.string().min(1).max(1000),
     emoji: zod.string().min(1),
     naming_scheme: zod.string().min(1).max(128),
+    ticket_button_ping_role_ids: zod.string().array(),
   }),
 );
 
@@ -81,6 +83,18 @@ const loadPanel = async () => {
     })) ?? ([] as { label: string; value: number }[]);
 };
 
+const loadRole = async () => {
+  const { data } = await useApi<Role[]>("/discord/roles", {
+    method: "get",
+  });
+
+  roles.value =
+    data.value?.map((role) => ({
+      label: role.name,
+      value: role.id,
+    })) ?? ([] as { label: string; value: string }[]);
+};
+
 const onSelectEmoji = (data: { i: string }) => {
   setFieldValue("emoji", data.i);
   showEmojiPicker.value = false;
@@ -90,6 +104,7 @@ onMounted(async () => {
   loading.value = true;
   await loadTeam();
   await loadPanel();
+  await loadRole();
   loading.value = false;
 });
 
@@ -106,6 +121,11 @@ useHead({
       <form class="grid grid-cols-1 gap-4" @submit.prevent="save">
         <FieldSelect :items="teams" name="ticket_team_id" label="Team" />
         <FieldSelect :items="panels" name="ticket_panel_id" label="Panel" />
+        <FieldMultiSelect
+          :items="roles"
+          name="ticket_button_ping_role_ids"
+          label="Ping Roles"
+        />
         <FieldInput name="text" label="Text" />
         <FieldSelect
           :items="discordButtonItems"
