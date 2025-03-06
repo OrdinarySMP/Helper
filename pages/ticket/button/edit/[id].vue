@@ -6,6 +6,7 @@ import { useForm } from "vee-validate";
 import type { Button } from "@/types/ticket/button";
 import type { Panel } from "@/types/ticket/panel";
 import type { Team } from "@/types/ticket/team";
+import type { Role } from "@/types/discord";
 import type { PaginatedResponse, FullResponse } from "@/types/response";
 import { FaceSmileIcon } from "@heroicons/vue/24/outline";
 import EmojiPicker from "vue3-emoji-picker";
@@ -21,6 +22,7 @@ const ticketButton = ref<Button>();
 const showEmojiPicker = ref(false);
 const loading = ref(true);
 const errorMessage = ref("");
+const roles = ref<{ label: string; value: string }[]>([]);
 const teams = ref<{ label: string; value: number }[]>([]);
 const panels = ref<{ label: string; value: number }[]>([]);
 
@@ -33,6 +35,7 @@ const formSchema = toTypedSchema(
     initial_message: zod.string().min(1).max(1000),
     emoji: zod.string().min(1),
     naming_scheme: zod.string().min(1).max(128),
+    ticket_button_ping_role_ids: zod.string().array(),
   }),
 );
 
@@ -89,6 +92,18 @@ const onSelectEmoji = (data: { i: string }) => {
   showEmojiPicker.value = false;
 };
 
+const loadRole = async () => {
+  const { data } = await useApi<Role[]>("/discord/roles", {
+    method: "get",
+  });
+
+  roles.value =
+    data.value?.map((role) => ({
+      label: role.name,
+      value: role.id,
+    })) ?? ([] as { label: string; value: string }[]);
+};
+
 onMounted(async () => {
   loading.value = true;
   ticketButtonId.value = parseRouteParameter(route.params.id);
@@ -96,6 +111,7 @@ onMounted(async () => {
   const { data } = await useApi<PaginatedResponse<Button[]>>("/ticket/button", {
     method: "get",
     params: {
+      include: "ticketButtonPingRoles",
       "filter[id]": ticketButtonId.value,
     },
   });
@@ -105,6 +121,7 @@ onMounted(async () => {
   }
   await loadTeam();
   await loadPanel();
+  await loadRole();
 
   ticketButton.value = data.value.data[0];
 
@@ -115,6 +132,13 @@ onMounted(async () => {
   setFieldValue("initial_message", ticketButton.value.initial_message);
   setFieldValue("emoji", ticketButton.value.emoji);
   setFieldValue("naming_scheme", ticketButton.value.naming_scheme);
+  console.log(ticketButton.value);
+  setFieldValue(
+    "ticket_button_ping_role_ids",
+    ticketButton.value.ticket_button_ping_roles?.map(
+      (ticketButtonPingRole) => ticketButtonPingRole.role_id,
+    ) ?? [],
+  );
 
   loading.value = false;
 });
@@ -134,6 +158,11 @@ useHead({
       <form class="grid grid-cols-1 gap-4" @submit.prevent="save">
         <FieldSelect :items="teams" name="ticket_team_id" label="Team" />
         <FieldSelect :items="panels" name="ticket_panel_id" label="Panel" />
+        <FieldMultiSelect
+          :items="roles"
+          name="ticket_button_ping_role_ids"
+          label="Ping Roles"
+        />
         <FieldInput name="text" label="Text" />
         <FieldSelect
           :items="discordButtonItems"
@@ -157,7 +186,6 @@ useHead({
           </template>
         </FieldInput>
         <FieldInput name="naming_scheme" label="Naming scheme" />
-
         <div>
           <Button
             :disabled="isSubmitting"
