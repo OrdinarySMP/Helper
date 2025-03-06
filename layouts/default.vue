@@ -12,6 +12,5 @@ useHead({
       <slot />
     </div>
     <Notification />
-    <LayoutFooter />
   </div>
 </template>
