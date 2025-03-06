@@ -11,6 +11,7 @@ export type Button = {
   initial_message: string;
   emoji: string;
   naming_scheme: string;
+  disabled: boolean;
   ticket_button_ping_roles?: ButtonPingRole[];
   created_at: string;
   updated_at: string;

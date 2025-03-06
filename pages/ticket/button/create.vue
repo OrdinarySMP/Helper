@@ -31,12 +31,16 @@ const formSchema = toTypedSchema(
     initial_message: zod.string().min(1).max(1000),
     emoji: zod.string().min(1),
     naming_scheme: zod.string().min(1).max(128),
+    disabled: zod.boolean(),
     ticket_button_ping_role_ids: zod.string().array(),
   }),
 );
 
 const { handleSubmit, setErrors, isSubmitting, setFieldValue } = useForm({
   validationSchema: formSchema,
+  initialValues: {
+    disabled: false,
+  },
 });
 
 const save = handleSubmit(async (values) => {
@@ -149,6 +153,7 @@ useHead({
           </template>
         </FieldInput>
         <FieldInput name="naming_scheme" label="Naming scheme" />
+        <FieldCheckbox name="disabled" label="Disabled?" />
         <div>
           <Button
             :disabled="isSubmitting"

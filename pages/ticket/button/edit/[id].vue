@@ -35,6 +35,7 @@ const formSchema = toTypedSchema(
     initial_message: zod.string().min(1).max(1000),
     emoji: zod.string().min(1),
     naming_scheme: zod.string().min(1).max(128),
+    disabled: zod.boolean(),
     ticket_button_ping_role_ids: zod.string().array(),
   }),
 );
@@ -132,6 +133,7 @@ onMounted(async () => {
   setFieldValue("initial_message", ticketButton.value.initial_message);
   setFieldValue("emoji", ticketButton.value.emoji);
   setFieldValue("naming_scheme", ticketButton.value.naming_scheme);
+  setFieldValue("disabled", ticketButton.value.disabled);
   console.log(ticketButton.value);
   setFieldValue(
     "ticket_button_ping_role_ids",
@@ -186,6 +188,7 @@ useHead({
           </template>
         </FieldInput>
         <FieldInput name="naming_scheme" label="Naming scheme" />
+        <FieldCheckbox name="disabled" label="Disabled?" />
         <div>
           <Button
             :disabled="isSubmitting"
