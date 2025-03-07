@@ -93,11 +93,16 @@ onMounted(() => {
                 transcript.discord_user_id
               }}
             </span>
-            <span class="text-sm text-gray-800">
+            <span class="text-sm text-gray-800 mr-2">
               {{ dayjs(transcript.updated_at).format("DD.MM.YYYY HH:mm:ss") }}
             </span>
+            <span v-if="transcript.deleted_at" class="text-sm text-red-600">
+              {{ dayjs(transcript.deleted_at).format("DD.MM.YYYY HH:mm:ss") }}
+            </span>
             <br />
-            <p>{{ transcript?.message }}</p>
+            <p :class="{ 'line-through': transcript.deleted_at }">
+              {{ transcript?.message }}
+            </p>
             <p v-if="transcript?.attachments !== '[]'">
               <TicketTranscriptAttachement
                 v-for="(attachment, attachmentKey) in JSON.parse(

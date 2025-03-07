@@ -11,5 +11,6 @@ export type Transcript = {
   embeds?: string;
   created_at: string;
   updated_at: string;
+  deleted_at: string;
   user?: User;
 };
