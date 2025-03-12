@@ -14,6 +14,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
 
   if (!isGuestPath(to.path) && useAuth().guest) {
+    localStorage.setItem("return", to.path);
     return navigateTo("/login");
   }
 });

@@ -10,7 +10,9 @@ onMounted(async () => {
   });
 
   if (!error.value) {
-    return navigateTo("/");
+    const returnUrl = localStorage.getItem("return");
+    localStorage.removeItem("return");
+    return navigateTo(returnUrl ?? "/");
   } else {
     return navigateTo("/login?noPermission");
   }
