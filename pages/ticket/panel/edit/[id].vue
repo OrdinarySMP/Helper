@@ -4,7 +4,6 @@ import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
 import type { Panel } from "@/types/ticket/panel";
-import type { TextChannel } from "@/types/discord";
 import type { PaginatedResponse } from "@/types/response";
 
 if (!hasPermissionTo("ticketPanel.update")) {
@@ -16,7 +15,7 @@ const ticketPanelId = ref<Panel["id"]>();
 const ticketPanel = ref<Panel>();
 const loading = ref(true);
 const errorMessage = ref("");
-const textChannels = ref<{ label: string; value: string }[]>([]);
+const textChannels = ref(await loadTextChannels());
 
 const formSchema = toTypedSchema(
   zod.object({
@@ -65,31 +64,6 @@ const sendPanel = async () => {
   }
 };
 
-const loadTextChannels = async () => {
-  const { data, error } = await useApi<TextChannel[]>(
-    "/discord/text-channels",
-    {
-      method: "get",
-    },
-  );
-
-  if (error.value) {
-    useNotification().error(
-      "Could not load text channels!",
-      error.value.data.message,
-    );
-  }
-
-  textChannels.value =
-    data.value
-      ?.map((channel): { label: string; value: string } => ({
-        label: channel.name,
-        value: channel.id,
-      }))
-      .sort((a, b) => a.label.localeCompare(b.label)) ??
-    ([] as { label: string; value: string }[]);
-};
-
 onMounted(async () => {
   loading.value = true;
   ticketPanelId.value = parseRouteParameter(route.params.id);
@@ -104,7 +78,6 @@ onMounted(async () => {
     navigateTo("/ticket/panel");
     return;
   }
-  await loadTextChannels();
 
   ticketPanel.value = data.value.data[0];
 

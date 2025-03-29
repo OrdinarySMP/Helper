@@ -105,7 +105,7 @@ const hasErrors = computed(() => {
       <span>
         {{ selectedLabel !== "" ? selectedLabel : "&nbsp;" }}
       </span>
-      <div>
+      <div class="flex">
         <XCircleIcon
           v-if="clearable && hover && selectedLabel"
           class="clear-icon mr-1 cursor-pointer size-5"

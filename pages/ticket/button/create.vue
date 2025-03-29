@@ -6,7 +6,6 @@ import { useForm } from "vee-validate";
 import type { Panel } from "@/types/ticket/panel";
 import type { Team } from "@/types/ticket/team";
 import type { FullResponse } from "@/types/response";
-import type { Role } from "@/types/discord";
 import { FaceSmileIcon } from "@heroicons/vue/24/outline";
 import EmojiPicker from "vue3-emoji-picker";
 import "vue3-emoji-picker/css";
@@ -16,7 +15,7 @@ if (!hasPermissionTo("ticketButton.create")) {
 }
 
 const errorMessage = ref("");
-const roles = ref<{ label: string; value: string }[]>([]);
+const roles = ref(await loadRoles());
 const teams = ref<{ label: string; value: number }[]>([]);
 const panels = ref<{ label: string; value: number }[]>([]);
 const showEmojiPicker = ref(false);
@@ -87,18 +86,6 @@ const loadPanel = async () => {
     })) ?? ([] as { label: string; value: number }[]);
 };
 
-const loadRole = async () => {
-  const { data } = await useApi<Role[]>("/discord/roles", {
-    method: "get",
-  });
-
-  roles.value =
-    data.value?.map((role) => ({
-      label: role.name,
-      value: role.id,
-    })) ?? ([] as { label: string; value: string }[]);
-};
-
 const onSelectEmoji = (data: { i: string }) => {
   setFieldValue("emoji", data.i);
   showEmojiPicker.value = false;
@@ -108,7 +95,6 @@ onMounted(async () => {
   loading.value = true;
   await loadTeam();
   await loadPanel();
-  await loadRole();
   loading.value = false;
 });
 

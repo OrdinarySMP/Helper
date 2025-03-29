@@ -4,7 +4,6 @@ import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
 import type { ReactionRole } from "@/types/reactionRole";
-import type { Role } from "@/types/discord";
 import type { PaginatedResponse } from "@/types/response";
 
 if (!hasPermissionTo("reactionRole.update")) {
@@ -16,7 +15,7 @@ const reactionRoleId = ref<ReactionRole["id"]>();
 const reactionRole = ref<ReactionRole>();
 const loading = ref(true);
 const errorMessage = ref("");
-const roles = ref<{ label: string; value: string }[]>([]);
+const roles = ref(await loadRoles());
 
 const formSchema = toTypedSchema(
   zod.object({
@@ -50,18 +49,6 @@ const save = handleSubmit(async (values) => {
   }
 });
 
-const loadRole = async () => {
-  const { data } = await useApi<Role[]>("/discord/roles", {
-    method: "get",
-  });
-
-  roles.value =
-    data.value?.map((role) => ({
-      label: role.name,
-      value: role.id,
-    })) ?? ([] as { label: string; value: string }[]);
-};
-
 onMounted(async () => {
   loading.value = true;
   reactionRoleId.value = parseRouteParameter(route.params.id);
@@ -79,7 +66,6 @@ onMounted(async () => {
     navigateTo("/reaction-role");
     return;
   }
-  await loadRole();
 
   reactionRole.value = data.value.data[0];
 
