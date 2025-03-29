@@ -3,18 +3,22 @@ import { ref } from "vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
+import type { Application } from "@/types/application";
+import { ApplicationResponseType } from "@/types/application/response";
 
-if (!hasPermissionTo("ticketTeam.create")) {
-  await navigateTo("/ticket/team");
+const applicationId = ref<Application["id"]>();
+if (!hasPermissionTo("applicationResponse.create")) {
+  await navigateTo(`/application/${applicationId.value}/response`);
 }
 
+const route = useRoute();
 const errorMessage = ref("");
-const roles = ref(await loadRoles());
 
 const formSchema = toTypedSchema(
   zod.object({
-    name: zod.string().min(1).max(100),
-    ticket_team_role_ids: zod.string().array(),
+    name: zod.string().min(1),
+    response: zod.string().min(1),
+    type: zod.nativeEnum(ApplicationResponseType),
   }),
 );
 
@@ -25,36 +29,50 @@ const { handleSubmit, setErrors, isSubmitting } = useForm({
 const save = handleSubmit(async (values) => {
   errorMessage.value = "";
 
-  const { error } = await useApi("/ticket/team", {
+  const { error } = await useApi("/application-response", {
     method: "post",
-    body: values,
+    body: {
+      ...values,
+      application_id: applicationId.value,
+    },
   });
 
   if (error.value) {
     errorMessage.value = error.value.data.message;
     setErrors(error.value.data.errors ?? []);
   } else {
-    navigateTo("/ticket/team");
+    navigateTo(`/application/${applicationId.value}/response`);
   }
 });
 
+const types = computed(() =>
+  Object.entries(ApplicationResponseType)
+    .filter(([_, value]) => typeof value === "number")
+    .map(([key, value]) => ({
+      label: key,
+      value: value as number,
+    })),
+);
+
 useHead({
-  title: "Create Ticket Team",
+  title: "Create Application Response",
+});
+
+onMounted(() => {
+  applicationId.value = parseRouteParameter(route.params.applicationId);
 });
 </script>
 
 <template>
   <div class="flex grow">
     <div class="w-full">
-      <p class="mb-8 text-2xl">Create Team</p>
+      <p class="mb-8 text-2xl">Create Application Response</p>
       <form class="grid grid-cols-1 gap-4" @submit.prevent="save">
         <FieldInput name="name" label="Name" />
 
-        <FieldMultiSelect
-          :items="roles"
-          name="ticket_team_role_ids"
-          label="Role"
-        />
+        <FieldTextArea name="response" label="Response" />
+
+        <FieldSelect :items="types" name="type" label="Type" />
 
         <div>
           <Button
