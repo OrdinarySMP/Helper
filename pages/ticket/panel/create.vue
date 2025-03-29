@@ -3,15 +3,13 @@ import { ref } from "vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
-import type { TextChannel } from "@/types/discord";
 
 if (!hasPermissionTo("ticketPanel.create")) {
   await navigateTo("/ticket/panel");
 }
 
 const errorMessage = ref("");
-const textChannels = ref<{ label: string; value: string }[]>([]);
-const loading = ref(true);
+const textChannels = ref(await loadTextChannels());
 
 const formSchema = toTypedSchema(
   zod.object({
@@ -40,37 +38,6 @@ const save = handleSubmit(async (values) => {
   } else {
     navigateTo("/ticket/panel");
   }
-});
-
-const loadTextChannels = async () => {
-  const { data, error } = await useApi<TextChannel[]>(
-    "/discord/text-channels",
-    {
-      method: "get",
-    },
-  );
-
-  if (error.value) {
-    useNotification().error(
-      "Could not load text channels!",
-      error.value.data.message,
-    );
-  }
-
-  textChannels.value =
-    data.value
-      ?.map((channel): { label: string; value: string } => ({
-        label: channel.name,
-        value: channel.id,
-      }))
-      .sort((a, b) => a.label.localeCompare(b.label)) ??
-    ([] as { label: string; value: string }[]);
-};
-
-onMounted(async () => {
-  loading.value = true;
-  await loadTextChannels();
-  loading.value = false;
 });
 
 useHead({

@@ -1,24 +1,21 @@
 <script lang="ts" setup>
 import { ref, onMounted } from "vue";
+import type { ApplicationResponse } from "@/types/application/response";
+import { ApplicationResponseType } from "@/types/application/response";
 import type { Application } from "@/types/application";
-import {
-  PencilIcon,
-  PlusIcon,
-  CheckIcon,
-  XMarkIcon,
-  PaperAirplaneIcon,
-} from "@heroicons/vue/24/solid";
-import { QuestionMarkCircleIcon } from "@heroicons/vue/24/outline";
+import { PencilIcon, PlusIcon } from "@heroicons/vue/24/solid";
 import type { Pagination } from "@/types/table";
 import type { PaginatedResponse } from "@/types/response";
 
-if (!hasPermissionTo("application.read")) {
+if (!hasPermissionTo("applicationResponse.read")) {
   await navigateTo("/");
 }
 
 const loading = ref(true);
-const applications = ref<Application[]>([]);
-const toDeleteApplication = ref();
+const route = useRoute();
+const applicationResponses = ref<ApplicationResponse[]>([]);
+const applicationId = ref<Application["id"]>();
+const toDeleteApplicationResponse = ref();
 const deleteDialog = ref(false);
 const pagination = ref<Pagination | null>();
 
@@ -32,8 +29,12 @@ const headers = ref([
     key: "name",
   },
   {
-    title: "Active",
-    key: "active",
+    title: "Response",
+    key: "response",
+  },
+  {
+    title: "Type",
+    key: "type",
   },
   {
     title: "",
@@ -41,13 +42,14 @@ const headers = ref([
   },
 ]);
 
-const loadApplication = async (page = 1) => {
+const loadApplicationResponse = async (page = 1) => {
   loading.value = true;
-  const { data } = await useApi<PaginatedResponse<Application[]>>(
-    "/application",
+  const { data } = await useApi<PaginatedResponse<ApplicationResponse[]>>(
+    "/application-response",
     {
       method: "get",
       query: {
+        "filter[application_id]": applicationId.value,
         page_size: 10,
         page,
       },
@@ -55,7 +57,7 @@ const loadApplication = async (page = 1) => {
   );
 
   if (data.value) {
-    applications.value = data.value.data ?? [];
+    applicationResponses.value = data.value.data ?? [];
 
     pagination.value = {
       total: data.value.meta.total,
@@ -71,40 +73,41 @@ const loadApplication = async (page = 1) => {
 };
 
 const remove = async () => {
-  if (!toDeleteApplication.value) {
+  if (!toDeleteApplicationResponse.value) {
     return;
   }
   await useApi<Record<string, string>[]>(
-    `/application/${toDeleteApplication.value.id}`,
+    `/application-response/${toDeleteApplicationResponse.value.id}`,
     {
       method: "delete",
     },
   );
   deleteDialog.value = false;
-  toDeleteApplication.value = undefined;
-  await loadApplication();
+  toDeleteApplicationResponse.value = undefined;
+  await loadApplicationResponse();
 };
 
 const pageChange = (page: number) => {
-  loadApplication(page);
+  loadApplicationResponse(page);
 };
 
 useHead({
-  title: "Applications",
+  title: "Application Responses",
 });
 
 onMounted(() => {
-  loadApplication();
+  applicationId.value = parseRouteParameter(route.params.applicationId);
+  loadApplicationResponse();
 });
 </script>
 
 <template>
   <div class="w-full">
     <p class="mb-4 flex items-center gap-4 text-2xl">
-      Applications
+      Application Responses
       <NuxtLink
-        v-if="hasPermissionTo('application.create')"
-        to="/application/create"
+        v-if="hasPermissionTo('applicationResponse.create')"
+        :to="`/application/${applicationId}/response/create`"
       >
         <Button size="sm" class="px-2" color="primary">
           <span class="flex items-center">
@@ -117,19 +120,18 @@ onMounted(() => {
     <Table
       :loading="loading"
       :headers="headers"
-      :data="applications"
+      :data="applicationResponses"
       :pagination="pagination"
       @page-change="pageChange"
     >
-      <template #body-active="{ data }">
-        <CheckIcon v-if="data.is_active" class="size-6 text-green-500" />
-        <XMarkIcon v-else class="size-6 text-red-500" />
+      <template #body-type="{ data }">
+        {{ ApplicationResponseType[(data as ApplicationResponse).type] }}
       </template>
       <template #body-actions="{ data }">
         <div class="flex gap-4">
           <NuxtLink
-            v-if="hasPermissionTo('application.update')"
-            :to="`/application/edit/${data.id}`"
+            v-if="hasPermissionTo('applicationResponse.update')"
+            :to="`/application/${applicationId}/response/edit/${data.id}`"
           >
             <Button size="sm" class="px-2" color="gray">
               <span class="flex items-center">
@@ -139,38 +141,14 @@ onMounted(() => {
             </Button>
           </NuxtLink>
 
-          <NuxtLink
-            v-if="hasPermissionTo('applicationQuestion.read')"
-            :to="`/application/${data.id}/question`"
-          >
-            <Button size="sm" class="px-2" color="gray">
-              <span class="flex items-center">
-                <QuestionMarkCircleIcon class="size-4 mr-2" />
-                Questions
-              </span>
-            </Button>
-          </NuxtLink>
-
-          <NuxtLink
-            v-if="hasPermissionTo('applicationResponse.read')"
-            :to="`/application/${data.id}/response`"
-          >
-            <Button size="sm" class="px-2" color="gray">
-              <span class="flex items-center">
-                <PaperAirplaneIcon class="size-4 mr-2" />
-                Responses
-              </span>
-            </Button>
-          </NuxtLink>
-
           <Button
-            v-if="hasPermissionTo('application.delete')"
+            v-if="hasPermissionTo('applicationResponse.delete')"
             size="sm"
             class="px-2"
             color="error"
             @click="
               () => {
-                toDeleteApplication = data;
+                toDeleteApplicationResponse = data;
                 deleteDialog = true;
               }
             "
@@ -184,7 +162,7 @@ onMounted(() => {
       v-if="deleteDialog"
       @close="
         () => {
-          toDeleteApplication = undefined;
+          toDeleteApplicationResponse = undefined;
           deleteDialog = false;
         }
       "
@@ -194,14 +172,14 @@ onMounted(() => {
       </template>
       <template #body>
         <p class="mb-2">
-          Delete the Application:
-          <span class="font-bold">{{ toDeleteApplication?.name }}</span>
+          Delete the response:
+          <span class="font-bold">{{ toDeleteApplicationResponse?.name }}</span>
           ?
         </p>
         <p
           class="rounded border border-red-400 bg-red-200 px-4 py-2 text-red-600"
         >
-          This Application will be deleted
+          This response will be deleted
         </p>
       </template>
       <template #footer>
@@ -214,7 +192,7 @@ onMounted(() => {
           size="sm"
           @click="
             () => {
-              toDeleteApplication = undefined;
+              toDeleteApplicationResponse = undefined;
               deleteDialog = false;
             }
           "

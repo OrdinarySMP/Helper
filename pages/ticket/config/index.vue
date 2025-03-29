@@ -4,7 +4,7 @@ import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
 import type { Config } from "@/types/ticket/config";
-import type { TextChannel, Category } from "@/types/discord";
+import type { Category } from "@/types/discord";
 
 if (!hasPermissionTo("ticketConfig.read")) {
   await navigateTo("/ticket");
@@ -12,7 +12,7 @@ if (!hasPermissionTo("ticketConfig.read")) {
 
 const loading = ref(true);
 const errorMessage = ref("");
-const textChannels = ref<{ label: string; value: string }[]>([]);
+const textChannels = ref(await loadTextChannels());
 const categories = ref<{ label: string; value: string }[]>([]);
 
 const formSchema = toTypedSchema(
@@ -41,31 +41,6 @@ const save = handleSubmit(async (values) => {
     navigateTo("/ticket");
   }
 });
-
-const loadTextChannels = async () => {
-  const { data, error } = await useApi<TextChannel[]>(
-    "/discord/text-channels",
-    {
-      method: "get",
-    },
-  );
-
-  if (error.value) {
-    useNotification().error(
-      "Could not load text channels!",
-      error.value.data.message,
-    );
-  }
-
-  textChannels.value =
-    data.value
-      ?.map((channel): { label: string; value: string } => ({
-        label: channel.name,
-        value: channel.id,
-      }))
-      .sort((a, b) => a.label.localeCompare(b.label)) ??
-    ([] as { label: string; value: string }[]);
-};
 
 const loadCategories = async () => {
   const { data, error } = await useApi<Category[]>("/discord/categories", {
@@ -111,7 +86,6 @@ const canCreate = computed(() => hasPermissionTo("ticketConfig.create"));
 
 onMounted(async () => {
   loading.value = true;
-  await loadTextChannels();
   await loadCategories();
   loading.value = false;
 });

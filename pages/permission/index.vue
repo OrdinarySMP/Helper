@@ -3,11 +3,10 @@ import { ref, onMounted } from "vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
-import type { Role } from "@/types/discord";
 import type { PermissionTemplate, PermissionMap } from "@/types/permission";
 
 const loading = ref(true);
-const roles = ref<{ label: string; value: string }[]>([]);
+const roles = ref(await loadRoles());
 const permissionMaps = ref<PermissionMap[]>([]);
 const permissionTemplate = ref<PermissionTemplate>({});
 const errorMessage = ref("");
@@ -29,23 +28,6 @@ const formSchema = toTypedSchema(
 const { values, setFieldValue, setErrors } = useForm({
   validationSchema: formSchema,
 });
-
-const loadRoles = async () => {
-  const { data, error } = await useApi<Role[]>("/discord/roles", {
-    method: "get",
-  });
-
-  if (error.value) {
-    useNotification().error("Could not load roles:", error.value.message);
-    return;
-  }
-
-  roles.value =
-    data.value?.map((role) => ({
-      label: role.name,
-      value: role.id,
-    })) ?? ([] as { label: string; value: string }[]);
-};
 
 const loadPermission = async () => {
   const { data, error } = await useApi<PermissionMap[]>("/permissions", {
@@ -124,7 +106,7 @@ const save = async () => {
 
 onMounted(async () => {
   loading.value = true;
-  await Promise.all([loadRoles(), loadPermission(), loadPermissionTemplate()]);
+  await Promise.all([loadPermission(), loadPermissionTemplate()]);
   loading.value = false;
 });
 </script>

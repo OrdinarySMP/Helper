@@ -3,19 +3,21 @@ import { ref } from "vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
+import type { Application } from "@/types/application";
 
-if (!hasPermissionTo("reactionRole.create")) {
-  await navigateTo("/");
+const applicationId = ref<Application["id"]>();
+if (!hasPermissionTo("applicationQuestion.create")) {
+  await navigateTo(`/application/${applicationId.value}/question`);
 }
 
+const route = useRoute();
 const errorMessage = ref("");
-const roles = ref(await loadRoles());
 
 const formSchema = toTypedSchema(
   zod.object({
-    message_link: zod.string().min(1),
-    emoji: zod.string().min(1),
-    role_id: zod.string().min(1),
+    order: zod.number().min(1),
+    question: zod.string().min(1),
+    is_active: zod.boolean(),
   }),
 );
 
@@ -26,34 +28,41 @@ const { handleSubmit, setErrors, isSubmitting } = useForm({
 const save = handleSubmit(async (values) => {
   errorMessage.value = "";
 
-  const { error } = await useApi("/reaction-role", {
+  const { error } = await useApi("/application-question", {
     method: "post",
-    body: values,
+    body: {
+      ...values,
+      application_id: applicationId.value,
+    },
   });
 
   if (error.value) {
     errorMessage.value = error.value.data.message;
     setErrors(error.value.data.errors ?? []);
   } else {
-    navigateTo("/reaction-role");
+    navigateTo(`/application/${applicationId.value}/question`);
   }
 });
 
 useHead({
-  title: "Create Reaction role",
+  title: "Create Application Question",
+});
+
+onMounted(() => {
+  applicationId.value = parseRouteParameter(route.params.applicationId);
 });
 </script>
 
 <template>
   <div class="flex grow">
     <div class="w-full">
-      <p class="mb-8 text-2xl">Create Reaction role</p>
+      <p class="mb-8 text-2xl">Create Application Question</p>
       <form class="grid grid-cols-1 gap-4" @submit.prevent="save">
-        <FieldInput name="message_link" label="Message link" />
+        <FieldInput name="order" label="Order" type="number" />
 
-        <FieldInput name="emoji" label="Emoji" />
+        <FieldTextArea name="question" label="Question" />
 
-        <FieldSelect :items="roles" name="role_id" label="Role" />
+        <FieldSwitch name="is_active" label="Active?" />
 
         <div>
           <Button

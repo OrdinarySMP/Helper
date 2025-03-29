@@ -3,44 +3,7 @@ import { ref } from "vue";
 import { Dialog, DialogPanel } from "@headlessui/vue";
 import { Bars3Icon, XMarkIcon } from "@heroicons/vue/24/outline";
 
-const navigations = [
-  { name: "FAQ", href: "/faq", permission: "faq.read" },
-  { name: "Rules", href: "/rule", permission: "rule.read" },
-  { name: "Tickets", href: "/ticket", permission: "ticket.read" },
-  {
-    name: "Mods+Datapacks",
-    href: "/server-content",
-    permission: "serverContent.read",
-  },
-  {
-    name: "Reaction roles",
-    href: "/reaction-role",
-    permission: "reactionRole.read",
-  },
-  {
-    name: "Applications",
-    href: "/application",
-    permission: "application.read",
-  },
-  { name: "Permissions", href: "/permission", permission: "owner" },
-];
-
-const userNavigation = navigations.filter((navigation) =>
-  hasPermissionTo(navigation.permission),
-);
-
-const userMenuOpen = ref(false);
 const mobileMenuOpen = ref(false);
-
-const select = (path: string) => {
-  navigateTo(path);
-  userMenuOpen.value = false;
-};
-
-const userMenu = ref([
-  { label: "Profile", value: "/profile" },
-  { label: "log out", value: "logout" },
-]);
 </script>
 
 <template>
@@ -62,44 +25,14 @@ const userMenu = ref([
           <Bars3Icon class="size-6" aria-hidden="true" />
         </button>
       </div>
-      <div class="hidden lg:flex lg:gap-x-12">
-        <NuxtLink
-          v-for="item in userNavigation"
-          :key="item.name"
-          :to="item.href"
-          class="text- text-sm font-semibold leading-6"
-          >{{ item.name }}</NuxtLink
-        >
-      </div>
-      <div class="hidden lg:flex lg:flex-1 lg:justify-end relative">
-        <img
-          :src="useAuth().user().value?.avatar"
-          class="size-10 rounded-full cursor-pointer"
-          @click="userMenuOpen = !userMenuOpen"
-        />
-
-        <Dropdown
-          class="user-menu right-0 top-full mt-2 !w-[fit-content]"
-          :show="userMenuOpen"
-          :items="userMenu"
-          @select="select(`${$event}`)"
-        >
-          <template #default="{ data }">
-            <span class="whitespace-nowrap">
-              {{ data.label }}
-            </span>
-          </template>
-        </Dropdown>
-      </div>
     </nav>
     <Dialog
       class="lg:hidden"
       :open="mobileMenuOpen"
       @close="mobileMenuOpen = false"
     >
-      <div class="fixed inset-0 z-50" />
       <DialogPanel
-        class="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white p-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10"
+        class="flex flex-col fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white p-6 sm:max-w-64 sm:ring-1 sm:ring-gray-900/10"
       >
         <div class="flex items-center justify-between">
           <LayoutLogo />
@@ -112,32 +45,7 @@ const userMenu = ref([
             <XMarkIcon class="size-6" aria-hidden="true" />
           </button>
         </div>
-        <div class="mt-6 flow-root">
-          <div class="-my-6 divide-y divide-gray-500/10">
-            <div class="space-y-2 py-6">
-              <NuxtLink
-                v-for="item in userNavigation"
-                :key="item.name"
-                :to="item.href"
-                class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
-                @click="mobileMenuOpen = false"
-                >{{ item.name }}</NuxtLink
-              >
-            </div>
-            <div class="py-6">
-              <a
-                href="#"
-                class="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
-                >Profile</a
-              >
-              <a
-                href="#"
-                class="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
-                >Log out</a
-              >
-            </div>
-          </div>
-        </div>
+        <LayoutNavigation />
       </DialogPanel>
     </Dialog>
   </header>
