@@ -6,7 +6,6 @@ import { useForm } from "vee-validate";
 import type { Button } from "@/types/ticket/button";
 import type { Panel } from "@/types/ticket/panel";
 import type { Team } from "@/types/ticket/team";
-import type { Role } from "@/types/discord";
 import type { PaginatedResponse, FullResponse } from "@/types/response";
 import { FaceSmileIcon } from "@heroicons/vue/24/outline";
 import EmojiPicker from "vue3-emoji-picker";
@@ -22,7 +21,7 @@ const ticketButton = ref<Button>();
 const showEmojiPicker = ref(false);
 const loading = ref(true);
 const errorMessage = ref("");
-const roles = ref<{ label: string; value: string }[]>([]);
+const roles = ref(await loadRoles());
 const teams = ref<{ label: string; value: number }[]>([]);
 const panels = ref<{ label: string; value: number }[]>([]);
 
@@ -93,18 +92,6 @@ const onSelectEmoji = (data: { i: string }) => {
   showEmojiPicker.value = false;
 };
 
-const loadRole = async () => {
-  const { data } = await useApi<Role[]>("/discord/roles", {
-    method: "get",
-  });
-
-  roles.value =
-    data.value?.map((role) => ({
-      label: role.name,
-      value: role.id,
-    })) ?? ([] as { label: string; value: string }[]);
-};
-
 onMounted(async () => {
   loading.value = true;
   ticketButtonId.value = parseRouteParameter(route.params.id);
@@ -122,7 +109,6 @@ onMounted(async () => {
   }
   await loadTeam();
   await loadPanel();
-  await loadRole();
 
   ticketButton.value = data.value.data[0];
 
