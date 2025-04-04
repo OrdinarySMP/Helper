@@ -4,6 +4,7 @@ export type ServerContent = {
   url: string;
   description: string;
   is_recommended: boolean;
+  is_active: boolean;
   created_at: string;
   updated_at: string;
 };
@@ -11,6 +12,7 @@ export type ServerContent = {
 export type ServerContentFilter = {
   name: string | null;
   is_recommended: boolean | null;
+  is_active: boolean | null;
 };
 
 export type ServerContentMessage = {

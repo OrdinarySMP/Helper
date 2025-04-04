@@ -25,6 +25,7 @@ const pagination = ref<Pagination | null>();
 const filterValues = ref<ServerContentFilter>({
   name: null,
   is_recommended: null,
+  is_active: null,
 });
 
 const headers = ref([
@@ -43,6 +44,10 @@ const headers = ref([
   {
     title: "Recommended?",
     key: "is_recommended",
+  },
+  {
+    title: "Active?",
+    key: "is_active",
   },
   {
     title: "",
@@ -65,10 +70,26 @@ const recommendedItems = ref([
   },
 ]);
 
+const activeItems = ref([
+  {
+    label: "All",
+    value: null,
+  },
+  {
+    label: "active",
+    value: true,
+  },
+  {
+    label: "inactive",
+    value: false,
+  },
+]);
+
 const formSchema = toTypedSchema(
   zod.object({
     name: zod.string().max(128).nullable(),
     is_recommended: zod.boolean().nullable(),
+    is_active: zod.boolean().nullable(),
   }),
 );
 
@@ -76,6 +97,7 @@ const { handleSubmit } = useForm({
   initialValues: {
     name: "",
     is_recommended: null,
+    is_active: null,
   },
   validationSchema: formSchema,
 });
@@ -143,6 +165,10 @@ const filters = computed(() => {
 
   if (filterValues.value.is_recommended !== null) {
     newFilters["filter[is_recommended]"] = filterValues.value.is_recommended;
+  }
+
+  if (filterValues.value.is_active !== null) {
+    newFilters["filter[is_active]"] = filterValues.value.is_active;
   }
 
   return newFilters;
@@ -226,6 +252,14 @@ onMounted(() => {
           label="Recommended"
           @change="changeFilter"
         />
+
+        <FieldSelect
+          :items="activeItems"
+          clearable
+          name="is_active"
+          label="Active"
+          @change="changeFilter"
+        />
       </template>
       <template #body-name="{ data }">
         {{ truncatedString(data.name as string) }}
@@ -235,6 +269,10 @@ onMounted(() => {
       </template>
       <template #body-is_recommended="{ data }">
         <CheckIcon v-if="data.is_recommended" class="size-6 text-green-500" />
+        <XMarkIcon v-else class="size-6 text-red-500" />
+      </template>
+      <template #body-is_active="{ data }">
+        <CheckIcon v-if="data.is_active" class="size-6 text-green-500" />
         <XMarkIcon v-else class="size-6 text-red-500" />
       </template>
       <template #body-actions="{ data }">

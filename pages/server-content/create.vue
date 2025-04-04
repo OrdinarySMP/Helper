@@ -16,6 +16,7 @@ const formSchema = toTypedSchema(
     url: zod.string().url().max(256),
     description: zod.string().min(1).max(512),
     is_recommended: zod.boolean(),
+    is_active: zod.boolean(),
   }),
 );
 
@@ -26,6 +27,7 @@ const { handleSubmit, setErrors, isSubmitting } = useForm({
     url: "",
     description: "",
     is_recommended: false,
+    is_active: false,
   },
 });
 
@@ -62,6 +64,8 @@ useHead({
         <FieldTextArea name="description" label="Description" />
 
         <FieldSwitch name="is_recommended" label="Is recommended?" />
+
+        <FieldSwitch name="is_active" label="Active?" />
 
         <div>
           <Button
