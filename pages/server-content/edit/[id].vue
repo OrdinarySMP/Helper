@@ -22,6 +22,7 @@ const formSchema = toTypedSchema(
     url: zod.string().url().max(256),
     description: zod.string().min(1).max(512),
     is_recommended: zod.boolean(),
+    is_active: zod.boolean(),
   }),
 );
 
@@ -69,6 +70,7 @@ onMounted(async () => {
   setFieldValue("url", serverContent.value.url);
   setFieldValue("description", serverContent.value.description);
   setFieldValue("is_recommended", serverContent.value.is_recommended);
+  setFieldValue("is_active", serverContent.value.is_active);
 
   loading.value = false;
 });
@@ -90,6 +92,8 @@ useHead({
         <FieldTextArea name="description" label="Description" />
 
         <FieldSwitch name="is_recommended" label="Is recommended?" />
+
+        <FieldSwitch name="is_active" label="Active?" />
 
         <div>
           <Button
