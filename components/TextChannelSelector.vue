@@ -3,14 +3,13 @@ import { ref } from "vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
-import type { TextChannel } from "@/types/discord";
 
 defineProps<{
   title: string;
 }>();
 
 const showSelector = ref(false);
-const textChannels = ref<{ label: string; value: string }[]>([]);
+const textChannels = ref(await loadTextChannels());
 
 const formSchema = toTypedSchema(
   zod.object({
@@ -27,33 +26,7 @@ const select = handleSubmit(async (values) => {
   showSelector.value = false;
 });
 
-const getTextChannels = async () => {
-  const { data, error } = await useApi<TextChannel[]>(
-    "/discord/text-channels",
-    {
-      method: "get",
-    },
-  );
-
-  if (error.value) {
-    useNotification().error(
-      "Could not load text channels!",
-      error.value.data.message,
-    );
-  }
-
-  textChannels.value =
-    data.value
-      ?.map((channel): { label: string; value: string } => ({
-        label: channel.name,
-        value: channel.id,
-      }))
-      .sort((a, b) => a.label.localeCompare(b.label)) ??
-    ([] as { label: string; value: string }[]);
-};
-
 const openSelector = async () => {
-  await getTextChannels();
   showSelector.value = true;
 };
 
