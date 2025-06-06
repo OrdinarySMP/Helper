@@ -47,6 +47,7 @@ const updateSubmission = async (
       body: {
         state,
         custom_response: reason,
+        handled_by: useAuth().user().value?.discord_id,
       },
     },
   );
