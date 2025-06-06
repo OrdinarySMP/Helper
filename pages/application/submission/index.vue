@@ -20,6 +20,8 @@ if (!hasPermissionTo("applicationSubmission.read")) {
 const loading = ref(true);
 const applicationSubmissions = ref<ApplicationSubmission[]>([]);
 const pagination = ref<Pagination | null>();
+const toDeleteApplicationSubmission = ref();
+const deleteDialog = ref(false);
 const sorting = ref<Sorting>({
   column: "submitted_at",
   order: "asc",
@@ -116,6 +118,21 @@ const setSorting = (newSorting: Sorting) => {
   loadApplication();
 };
 
+const remove = async () => {
+  if (!toDeleteApplicationSubmission.value) {
+    return;
+  }
+  await useApi<Record<string, string>[]>(
+    `/application-submission/${toDeleteApplicationSubmission.value.id}`,
+    {
+      method: "delete",
+    },
+  );
+  deleteDialog.value = false;
+  toDeleteApplicationSubmission.value = undefined;
+  await loadApplication();
+};
+
 const applicationSubmissionState = computed(() => {
   const states = Object.entries(ApplicationSubmissionState)
     .filter(([_, value]) => typeof value === "number")
@@ -210,8 +227,72 @@ onMounted(() => {
               </span>
             </Button>
           </NuxtLink>
+
+          <Button
+            v-if="hasPermissionTo('applicationSubmission.delete')"
+            size="sm"
+            class="px-2"
+            color="error"
+            @click="
+              () => {
+                toDeleteApplicationSubmission = data;
+                deleteDialog = true;
+              }
+            "
+          >
+            <span class="flex items-center"> Delete </span>
+          </Button>
         </div>
       </template>
     </Table>
+    <Dialog
+      v-if="deleteDialog"
+      @close="
+        () => {
+          toDeleteApplicationSubmission = undefined;
+          deleteDialog = false;
+        }
+      "
+    >
+      <template #title>
+        <p>Delete</p>
+      </template>
+      <template #body>
+        <p class="mb-2">
+          Do you want to delete the submission from:
+
+          <span class="font-bold">{{
+            toDeleteApplicationSubmission?.member?.nick ??
+            toDeleteApplicationSubmission?.member?.user?.global_name ??
+            toDeleteApplicationSubmission?.member?.user?.username ??
+            toDeleteApplicationSubmission?.discord_id
+          }}</span>
+          ?
+        </p>
+        <p
+          class="rounded border border-red-400 bg-red-200 px-4 py-2 text-red-600"
+        >
+          The submission will be deleted the user will NOT receive a response
+        </p>
+      </template>
+      <template #footer>
+        <Button class="ml-4 px-4" color="error" size="sm" @click="remove">
+          Delete
+        </Button>
+        <Button
+          class="px-4"
+          color="gray"
+          size="sm"
+          @click="
+            () => {
+              toDeleteApplicationSubmission = undefined;
+              deleteDialog = false;
+            }
+          "
+        >
+          Cancel
+        </Button>
+      </template>
+    </Dialog>
   </div>
 </template>

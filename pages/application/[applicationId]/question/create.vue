@@ -23,6 +23,9 @@ const formSchema = toTypedSchema(
 
 const { handleSubmit, setErrors, isSubmitting } = useForm({
   validationSchema: formSchema,
+  initialValues: {
+    is_active: false,
+  },
 });
 
 const save = handleSubmit(async (values) => {

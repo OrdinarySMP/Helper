@@ -39,6 +39,7 @@ const { handleSubmit, setErrors, isSubmitting, setFieldValue } = useForm({
   validationSchema: formSchema,
   initialValues: {
     disabled: false,
+    ticket_button_ping_role_ids: [],
   },
 });
 
