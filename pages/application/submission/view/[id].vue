@@ -142,7 +142,8 @@ useHead({
 
         <div
           v-if="
-            applicationSubmission?.state === ApplicationSubmissionState.Pending &&
+            applicationSubmission?.state ===
+              ApplicationSubmissionState.Pending &&
             hasPermissionTo('applicationSubmission.update')
           "
           class="flex gap-2"

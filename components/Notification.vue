@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { XMarkIcon } from "@heroicons/vue/24/solid";
+import { XMarkIcon as CloseIcon } from "@heroicons/vue/24/solid";
+import { XMarkIcon, CheckCircleIcon } from "@heroicons/vue/24/outline";
 </script>
 <template>
   <div
@@ -30,13 +31,12 @@ import { XMarkIcon } from "@heroicons/vue/24/solid";
             >
               <div class="p-4">
                 <div class="flex items-start">
-                  <div>
-                    <p
+                  <div class="self-center">
+                    <CheckCircleIcon
                       v-if="notification.type === 'success'"
-                      icon="circle-check"
-                      class="text-2xl text-green-500"
+                      class="size-8 text-green-500"
                     />
-                    <p v-else icon="x" class="text-2xl text-red-500" />
+                    <XMarkIcon v-else class="size-8 text-red-500" />
                   </div>
                   <div class="ml-3 w-0 flex-1 pt-0.5">
                     <p class="text-sm font-medium text-gray-900">
@@ -53,7 +53,7 @@ import { XMarkIcon } from "@heroicons/vue/24/solid";
                       @click="useNotification().dissmiss(key)"
                     >
                       <span class="sr-only">Close</span>
-                      <XMarkIcon class="size-4" />
+                      <CloseIcon class="size-4" />
                     </button>
                   </div>
                 </div>
