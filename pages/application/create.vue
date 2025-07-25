@@ -28,10 +28,11 @@ const formSchema = toTypedSchema(
     accept_removal_role_ids: zod.string().array().optional(),
     deny_removal_role_ids: zod.string().array().optional(),
     pending_role_ids: zod.string().array().optional(),
+    required_role_ids: zod.string().array().optional(),
   }),
 );
 
-const { handleSubmit, setErrors, isSubmitting } = useForm({
+const { handleSubmit, setErrors, isSubmitting, setFieldValue } = useForm({
   validationSchema: formSchema,
   initialValues: {
     is_active: true,
@@ -53,6 +54,11 @@ const save = handleSubmit(async (values) => {
     navigateTo("/application");
   }
 });
+
+onMounted(() => {
+  setFieldValue("confirmation_message", "Are you sure you want to apply?\n\nOnce you start the application I will send you a series of questions. You will have 10 minutes to complete each question. If you do not complete a question in time, you will have to restart.");
+  setFieldValue("completion_message", "Thank you for submitting your application.\n\nPlease be patient while our staff team reviews your application.");
+})
 
 useHead({
   title: "Create Application",
@@ -124,6 +130,12 @@ useHead({
               clearable
               name="restricted_role_ids"
               label="Restricted role"
+            />
+            <FieldMultiSelect
+              :items="roles"
+              clearable
+              name="required_role_ids"
+              label="Required role (requires all)"
             />
             <FieldMultiSelect
               :items="roles"

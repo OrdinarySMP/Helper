@@ -20,4 +20,5 @@ export type Application = {
   accept_removal_roles: ApplicationRole[];
   deny_removal_roles: ApplicationRole[];
   pending_roles: ApplicationRole[];
+  required_roles: ApplicationRole[];
 };
