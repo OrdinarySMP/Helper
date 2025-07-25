@@ -37,6 +37,10 @@ const headers = ref([
     key: "id",
   },
   {
+    title: "Application",
+    key: "application.name",
+  },
+  {
     title: "State",
     key: "state",
   },
@@ -45,7 +49,17 @@ const headers = ref([
     key: "member",
   },
   {
-    title: "submitted_at",
+    title: "Created at",
+    key: "created_at",
+    sortable: true,
+  },
+  {
+    title: "Updated at",
+    key: "updated_at",
+    sortable: true,
+  },
+  {
+    title: "Submitted at",
     key: "submitted_at",
     sortable: true,
   },
@@ -89,6 +103,7 @@ const loadApplication = async (page = 1) => {
         page,
         ...filters.value,
         sort,
+        include: "application"
       },
     },
   );
@@ -207,11 +222,26 @@ onMounted(() => {
           (data as ApplicationSubmission).discord_id
         }}
       </template>
-      <template #body-submitted_at="{ data }">
+      <template #body-created_at="{ data }">
         {{
-          dayjs((data as ApplicationSubmission).submitted_at).format(
+          dayjs((data as ApplicationSubmission).created_at).format(
             "DD.MM.YYYY HH:mm:ss",
           )
+        }}
+      </template>
+      <template #body-updated_at="{ data }">
+        {{
+          dayjs((data as ApplicationSubmission).updated_at).format(
+            "DD.MM.YYYY HH:mm:ss",
+          )
+        }}
+      </template>
+      <template #body-submitted_at="{ data }">
+        {{
+          (data as ApplicationSubmission).submitted_at ?
+          dayjs((data as ApplicationSubmission).submitted_at).format(
+            "DD.MM.YYYY HH:mm:ss",
+          ) : '---'
         }}
       </template>
       <template #body-actions="{ data }">
