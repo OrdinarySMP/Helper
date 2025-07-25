@@ -34,6 +34,7 @@ const formSchema = toTypedSchema(
     accept_removal_role_ids: zod.string().array().optional(),
     deny_removal_role_ids: zod.string().array().optional(),
     pending_role_ids: zod.string().array().optional(),
+    required_role_ids: zod.string().array().optional(),
   }),
 );
 
@@ -75,6 +76,7 @@ onMounted(async () => {
           "acceptRemovalRoles",
           "denyRemovalRoles",
           "pendingRoles",
+          "requiredRoles",
         ],
       },
     },
@@ -121,6 +123,10 @@ onMounted(async () => {
   setFieldValue(
     "pending_role_ids",
     application.value.pending_roles.map((role) => role.role_id),
+  );
+  setFieldValue(
+    "required_role_ids",
+    application.value.required_roles.map((role) => role.role_id),
   );
 
   loading.value = false;
@@ -199,6 +205,12 @@ useHead({
               clearable
               name="restricted_role_ids"
               label="Restricted role"
+            />
+            <FieldMultiSelect
+              :items="roles"
+              clearable
+              name="required_role_ids"
+              label="Required role (requires all)"
             />
             <FieldMultiSelect
               :items="roles"
