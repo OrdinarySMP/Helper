@@ -7,6 +7,10 @@ import type { ApplicationSubmission } from "@/types/application/submission";
 import { ApplicationSubmissionState } from "@/types/application/submission";
 import type { PaginatedResponse } from "@/types/response";
 
+if (!hasPermissionTo("applicationSubmission.read")) {
+  await navigateTo("/");
+}
+
 const route = useRoute();
 const applicationSubmissionId = ref<ApplicationSubmission["id"]>();
 const applicationSubmission = ref<ApplicationSubmission>();
@@ -138,7 +142,8 @@ useHead({
 
         <div
           v-if="
-            applicationSubmission?.state === ApplicationSubmissionState.Pending
+            applicationSubmission?.state === ApplicationSubmissionState.Pending &&
+            hasPermissionTo('applicationSubmission.update')
           "
           class="flex gap-2"
         >
