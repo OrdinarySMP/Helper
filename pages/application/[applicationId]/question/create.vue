@@ -24,7 +24,7 @@ const formSchema = toTypedSchema(
 const { handleSubmit, setErrors, isSubmitting } = useForm({
   validationSchema: formSchema,
   initialValues: {
-    is_active: false,
+    is_active: true,
   },
 });
 
