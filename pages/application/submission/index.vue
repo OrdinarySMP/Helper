@@ -217,7 +217,7 @@ onMounted(() => {
       <template #body-actions="{ data }">
         <div class="flex gap-4">
           <NuxtLink
-            v-if="hasPermissionTo('applicationSubmission.Read')"
+            v-if="hasPermissionTo('applicationSubmission.read')"
             :to="`/application/submission/view/${data.id}`"
           >
             <Button size="sm" class="px-2" color="gray">
