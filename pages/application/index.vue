@@ -89,6 +89,23 @@ const pageChange = (page: number) => {
   loadApplication(page);
 };
 
+const sendButton = async (application: Application) => {
+  if (
+    !application.embed_channel_id ||
+    !application.embed_title ||
+    !application.embed_color ||
+    !application.embed_description
+  ) {
+    useNotification().error("Send button", "Please fill all embed fields");
+    return;
+  }
+  const { data } = await useApi(`/application/${application.id}/send-button`);
+
+  if (data.value) {
+    useNotification().success("Send button", "Embed send");
+  }
+};
+
 useHead({
   title: "Applications",
 });
@@ -162,6 +179,19 @@ onMounted(() => {
               </span>
             </Button>
           </NuxtLink>
+
+          <Button
+            v-if="hasPermissionTo('application.update')"
+            size="sm"
+            class="px-2"
+            color="primary"
+            @click="sendButton(data as Application)"
+          >
+            <span class="flex items-center">
+              <PaperAirplaneIcon class="size-4 mr-2" />
+              Send button
+            </span>
+          </Button>
 
           <Button
             v-if="hasPermissionTo('application.delete')"

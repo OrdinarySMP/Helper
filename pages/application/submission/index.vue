@@ -103,7 +103,7 @@ const loadApplication = async (page = 1) => {
         page,
         ...filters.value,
         sort,
-        include: "application"
+        include: "application",
       },
     },
   );
@@ -238,10 +238,11 @@ onMounted(() => {
       </template>
       <template #body-submitted_at="{ data }">
         {{
-          (data as ApplicationSubmission).submitted_at ?
-          dayjs((data as ApplicationSubmission).submitted_at).format(
-            "DD.MM.YYYY HH:mm:ss",
-          ) : '---'
+          (data as ApplicationSubmission).submitted_at
+            ? dayjs((data as ApplicationSubmission).submitted_at).format(
+                "DD.MM.YYYY HH:mm:ss",
+              )
+            : "---"
         }}
       </template>
       <template #body-actions="{ data }">

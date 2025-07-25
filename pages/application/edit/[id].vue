@@ -35,6 +35,12 @@ const formSchema = toTypedSchema(
     deny_removal_role_ids: zod.string().array().optional(),
     pending_role_ids: zod.string().array().optional(),
     required_role_ids: zod.string().array().optional(),
+    embed_title: zod.string().max(100).optional(),
+    embed_description: zod.string().max(1000).optional(),
+    embed_color: zod.string().max(7).optional(),
+    embed_channel_id: zod.string().optional(),
+    embed_button_text: zod.string().max(50).optional(),
+    embed_button_color: zod.number().optional(),
   }),
 );
 
@@ -95,6 +101,13 @@ onMounted(async () => {
   setFieldValue("deny_message", application.value.deny_message);
   setFieldValue("confirmation_message", application.value.confirmation_message);
   setFieldValue("completion_message", application.value.completion_message);
+
+  setFieldValue("embed_title", application.value.embed_title);
+  setFieldValue("embed_description", application.value.embed_description);
+  setFieldValue("embed_color", application.value.embed_color);
+  setFieldValue("embed_channel_id", application.value.embed_channel_id);
+  setFieldValue("embed_button_text", application.value.embed_button_text);
+  setFieldValue("embed_button_color", application.value.embed_button_color);
 
   setFieldValue(
     "restricted_role_ids",
@@ -225,6 +238,24 @@ useHead({
               label="Pending role"
             />
           </div>
+        </div>
+        <div class="col-span-2">
+          <hr />
+          <p class="my-4 text-xl">Application Button</p>
+          <FieldSelect
+            :items="textChannels"
+            name="embed_channel_id"
+            label="Channel"
+          />
+          <FieldInput name="embed_title" label="Title" />
+          <FieldInput type="color" name="embed_color" label="Color" />
+          <FieldTextArea name="embed_description" label="Description" />
+          <FieldSelect
+            :items="discordButtonItems"
+            name="embed_button_color"
+            label="Button Color"
+          />
+          <FieldInput name="embed_button_text" label="Button text" />
         </div>
 
         <div>

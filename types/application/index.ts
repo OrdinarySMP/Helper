@@ -21,4 +21,10 @@ export type Application = {
   deny_removal_roles: ApplicationRole[];
   pending_roles: ApplicationRole[];
   required_roles: ApplicationRole[];
+  embed_title?: string;
+  embed_description?: string;
+  embed_color?: string;
+  embed_channel_id?: string;
+  embed_button_text?: string;
+  embed_button_color?: string;
 };

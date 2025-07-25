@@ -29,6 +29,12 @@ const formSchema = toTypedSchema(
     deny_removal_role_ids: zod.string().array().optional(),
     pending_role_ids: zod.string().array().optional(),
     required_role_ids: zod.string().array().optional(),
+    embed_title: zod.string().max(100).optional(),
+    embed_description: zod.string().max(1000).optional(),
+    embed_color: zod.string().max(7).optional(),
+    embed_channel_id: zod.string().optional(),
+    embed_button_text: zod.string().max(50).optional(),
+    embed_button_color: zod.number().optional(),
   }),
 );
 
@@ -56,9 +62,18 @@ const save = handleSubmit(async (values) => {
 });
 
 onMounted(() => {
-  setFieldValue("confirmation_message", "Are you sure you want to apply?\n\nOnce you start the application I will send you a series of questions. You will have 10 minutes to complete each question. If you do not complete a question in time, you will have to restart.");
-  setFieldValue("completion_message", "Thank you for submitting your application.\n\nPlease be patient while our staff team reviews your application.");
-})
+  setFieldValue(
+    "confirmation_message",
+    "Are you sure you want to apply?\n\nOnce you start the application I will send you a series of questions. You will have 10 minutes to complete each question. If you do not complete a question in time, you will have to restart.",
+  );
+  setFieldValue(
+    "completion_message",
+    "Thank you for submitting your application.\n\nPlease be patient while our staff team reviews your application.",
+  );
+  setFieldValue("embed_color", "#f0833a");
+  setFieldValue("embed_button_color", 1);
+  setFieldValue("embed_button_text", "Apply now");
+});
 
 useHead({
   title: "Create Application",
@@ -150,6 +165,24 @@ useHead({
               label="Pending role"
             />
           </div>
+        </div>
+        <div class="col-span-2">
+          <hr />
+          <p class="my-4 text-xl">Application Button</p>
+          <FieldSelect
+            :items="textChannels"
+            name="embed_channel_id"
+            label="Channel"
+          />
+          <FieldInput name="embed_title" label="Title" />
+          <FieldInput type="color" name="embed_color" label="Color" />
+          <FieldTextArea name="embed_description" label="Description" />
+          <FieldSelect
+            :items="discordButtonItems"
+            name="embed_button_color"
+            label="Button Color"
+          />
+          <FieldInput name="embed_button_text" label="Button text" />
         </div>
 
         <div>
