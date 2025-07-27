@@ -26,5 +26,5 @@ export type Application = {
   embed_color?: string;
   embed_channel_id?: string;
   embed_button_text?: string;
-  embed_button_color?: string;
+  embed_button_color?: number;
 };
