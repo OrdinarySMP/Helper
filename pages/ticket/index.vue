@@ -9,6 +9,7 @@ import { TicketState } from "@/types/ticket";
 import { DocumentTextIcon } from "@heroicons/vue/24/solid";
 import type { Pagination } from "@/types/table";
 import type { PaginatedResponse } from "@/types/response";
+import dayjs from "dayjs";
 
 if (!hasPermissionTo("ticket.read")) {
   await navigateTo("/");
@@ -38,6 +39,14 @@ const headers = ref([
   {
     title: "Created by",
     key: "created_by",
+  },
+  {
+    title: "Created at",
+    key: "created_at",
+  },
+  {
+    title: "Updated at",
+    key: "updated_at",
   },
   {
     title: "",
@@ -208,6 +217,12 @@ onMounted(() => {
           (data.created_by_discord_user as User | null)?.global_name ??
           data.created_by_discord_user_id
         }}
+      </template>
+      <template #body-created_at="{ data }">
+        {{ dayjs((data as Ticket).created_at).format("DD.MM.YYYY HH:mm:ss") }}
+      </template>
+      <template #body-updated_at="{ data }">
+        {{ dayjs((data as Ticket).updated_at).format("DD.MM.YYYY HH:mm:ss") }}
       </template>
       <template #body-actions="{ data }">
         <div class="flex gap-4">

@@ -35,18 +35,22 @@ const headers = ref([
   {
     title: "ID",
     key: "id",
+    sortable: true,
   },
   {
     title: "Application",
     key: "application.name",
+    sortable: false,
   },
   {
     title: "State",
     key: "state",
+    sortable: true,
   },
   {
     title: "Member",
     key: "member",
+    sortable: false,
   },
   {
     title: "Created at",
@@ -66,6 +70,7 @@ const headers = ref([
   {
     title: "",
     key: "actions",
+    sortable: false,
   },
 ]);
 
