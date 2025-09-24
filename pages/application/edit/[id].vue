@@ -27,6 +27,7 @@ const formSchema = toTypedSchema(
     deny_message: zod.string().min(1),
     confirmation_message: zod.string().min(1),
     completion_message: zod.string().min(1),
+    activity_channel: zod.string().min(1).nullable(),
     restricted_role_ids: zod.string().array().optional(),
     accepted_role_ids: zod.string().array().optional(),
     denied_role_ids: zod.string().array().optional(),
@@ -101,6 +102,7 @@ onMounted(async () => {
   setFieldValue("deny_message", application.value.deny_message);
   setFieldValue("confirmation_message", application.value.confirmation_message);
   setFieldValue("completion_message", application.value.completion_message);
+  setFieldValue("activity_channel", application.value.activity_channel);
 
   setFieldValue("embed_title", application.value.embed_title);
   setFieldValue("embed_description", application.value.embed_description);
@@ -168,6 +170,12 @@ useHead({
             :items="textChannels"
             name="log_channel"
             label="Log channel"
+          />
+          <FieldSelect
+            :items="textChannels"
+            name="activity_channel"
+            label="Activity channel"
+            clearable
           />
 
           <div class="grid grid-cols-2 gap-4">

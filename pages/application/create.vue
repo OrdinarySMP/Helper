@@ -21,6 +21,7 @@ const formSchema = toTypedSchema(
     deny_message: zod.string().min(1),
     confirmation_message: zod.string().min(1),
     completion_message: zod.string().min(1),
+    activity_channel: zod.string().min(1).nullable(),
     restricted_role_ids: zod.string().array().optional(),
     accepted_role_ids: zod.string().array().optional(),
     denied_role_ids: zod.string().array().optional(),
@@ -95,6 +96,12 @@ useHead({
             :items="textChannels"
             name="log_channel"
             label="Log channel"
+          />
+          <FieldSelect
+            :items="textChannels"
+            name="activity_channel"
+            label="Activity channel"
+            clearable
           />
 
           <div class="grid grid-cols-2 gap-4">
