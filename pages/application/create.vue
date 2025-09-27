@@ -30,12 +30,12 @@ const formSchema = toTypedSchema(
     deny_removal_role_ids: zod.string().array().optional(),
     pending_role_ids: zod.string().array().optional(),
     required_role_ids: zod.string().array().optional(),
-    embed_title: zod.string().max(100).optional(),
-    embed_description: zod.string().max(1000).optional(),
-    embed_color: zod.string().max(7).optional(),
-    embed_channel_id: zod.string().optional(),
-    embed_button_text: zod.string().max(50).optional(),
-    embed_button_color: zod.number().optional(),
+    embed_title: zod.string().max(100).nullable().optional(),
+    embed_description: zod.string().max(1000).nullable().optional(),
+    embed_color: zod.string().max(7).nullable().optional(),
+    embed_channel_id: zod.string().nullable().optional(),
+    embed_button_text: zod.string().max(50).nullable().optional(),
+    embed_button_color: zod.number().nullable().optional(),
   }),
 );
 
