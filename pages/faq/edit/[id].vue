@@ -6,10 +6,6 @@ import { useForm } from "vee-validate";
 import type { FAQ } from "@/types/faq";
 import type { PaginatedResponse } from "@/types/response";
 
-if (!hasPermissionTo("faq.update")) {
-  await navigateTo("/faq");
-}
-
 const route = useRoute();
 const faqId = ref<FAQ["id"]>();
 const faq = ref<FAQ>();
@@ -64,6 +60,13 @@ onMounted(async () => {
   setFieldValue("answer", faq.value.answer);
 
   loading.value = false;
+});
+
+definePageMeta({
+  permission: {
+    permission: "faq.update",
+    fallback: "/faq",
+  },
 });
 
 useHead({

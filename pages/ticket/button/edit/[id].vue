@@ -11,10 +11,6 @@ import { FaceSmileIcon } from "@heroicons/vue/24/outline";
 import EmojiPicker from "vue3-emoji-picker";
 import "vue3-emoji-picker/css";
 
-if (!hasPermissionTo("ticketButton.update")) {
-  await navigateTo("/ticket/button");
-}
-
 const route = useRoute();
 const ticketButtonId = ref<Button["id"]>();
 const ticketButton = ref<Button>();
@@ -91,6 +87,13 @@ const onSelectEmoji = (data: { i: string }) => {
   setFieldValue("emoji", data.i);
   showEmojiPicker.value = false;
 };
+
+definePageMeta({
+  permission: {
+    permission: "ticketButton.update",
+    fallback: "/ticket/button",
+  },
+});
 
 onMounted(async () => {
   loading.value = true;

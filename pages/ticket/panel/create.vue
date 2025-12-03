@@ -4,10 +4,6 @@ import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
 
-if (!hasPermissionTo("ticketPanel.create")) {
-  await navigateTo("/ticket/panel");
-}
-
 const errorMessage = ref("");
 const textChannels = ref(await loadTextChannels());
 
@@ -38,6 +34,13 @@ const save = handleSubmit(async (values) => {
   } else {
     navigateTo("/ticket/panel");
   }
+});
+
+definePageMeta({
+  permission: {
+    permission: "ticketPanel.create",
+    fallback: "/ticket/panel",
+  },
 });
 
 useHead({

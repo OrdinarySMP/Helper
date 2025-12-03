@@ -8,9 +8,6 @@ import type { Application } from "@/types/application";
 import type { PaginatedResponse } from "@/types/response";
 
 const applicationId = ref<Application["id"]>();
-if (!hasPermissionTo("applicationQuestion.update")) {
-  await navigateTo(`/application/${applicationId.value}/question`);
-}
 
 const route = useRoute();
 const applicationQuestionId = ref<ApplicationQuestion["id"]>();
@@ -78,6 +75,13 @@ onMounted(async () => {
   setFieldValue("is_active", applicationQuestion.value.is_active);
 
   loading.value = false;
+});
+
+definePageMeta({
+  permission: {
+    permission: "applicationQuestion.update",
+    fallback: `/application/${applicationId.value}/question`,
+  },
 });
 
 useHead({

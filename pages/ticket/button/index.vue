@@ -10,10 +10,6 @@ import type { PaginatedResponse, FullResponse } from "@/types/response";
 import type { Panel } from "@/types/ticket/panel";
 import type { Team } from "@/types/ticket/team";
 
-if (!hasPermissionTo("ticket.read")) {
-  await navigateTo("/");
-}
-
 const loading = ref(true);
 const ticketButtons = ref<Button[]>([]);
 const toDeleteTicketButton = ref();
@@ -156,6 +152,12 @@ const filters = computed(() => {
   }
 
   return newFilters;
+});
+
+definePageMeta({
+  permission: {
+    permission: "ticket.read",
+  },
 });
 
 useHead({

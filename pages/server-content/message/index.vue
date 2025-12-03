@@ -5,10 +5,6 @@ import * as zod from "zod";
 import { useForm } from "vee-validate";
 import type { ServerContentMessage } from "@/types/serverContent";
 
-if (!hasPermissionTo("serverContentMessage.read")) {
-  await navigateTo("/server-content");
-}
-
 const loading = ref(true);
 const errorMessage = ref("");
 
@@ -62,6 +58,13 @@ onMounted(async () => {
 const canCreate = computed(() =>
   hasPermissionTo("serverContentMessage.create"),
 );
+
+definePageMeta({
+  permission: {
+    permission: "serverContentMessage.read",
+    fallback: "/server-content",
+  },
+});
 
 useHead({
   title: "Mod/Datapack Messages",

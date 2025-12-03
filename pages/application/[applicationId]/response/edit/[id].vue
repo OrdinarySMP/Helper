@@ -9,9 +9,6 @@ import type { PaginatedResponse } from "@/types/response";
 import { ApplicationResponseType } from "@/types/application/response";
 
 const applicationId = ref<Application["id"]>();
-if (!hasPermissionTo("applicationResponse.update")) {
-  await navigateTo(`/application/${applicationId.value}/response`);
-}
 
 const route = useRoute();
 const applicationResponseId = ref<ApplicationResponse["id"]>();
@@ -89,6 +86,13 @@ const types = computed(() =>
       value: value as number,
     })),
 );
+
+definePageMeta({
+  permission: {
+    permission: "applicationResponse.update",
+    fallback: `/application/${applicationId.value}/response`,
+  },
+});
 
 useHead({
   title: "Edit Application Response",

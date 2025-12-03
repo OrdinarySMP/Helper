@@ -6,9 +6,6 @@ import { useForm } from "vee-validate";
 import type { Application } from "@/types/application";
 
 const applicationId = ref<Application["id"]>();
-if (!hasPermissionTo("applicationQuestion.create")) {
-  await navigateTo(`/application/${applicationId.value}/question`);
-}
 
 const route = useRoute();
 const errorMessage = ref("");
@@ -49,6 +46,13 @@ const save = handleSubmit(async (values) => {
 
 useHead({
   title: "Create Application Question",
+});
+
+definePageMeta({
+  permission: {
+    permission: "applicationQuestion.create",
+    fallback: `/application/${applicationId.value}/question`,
+  },
 });
 
 onMounted(() => {

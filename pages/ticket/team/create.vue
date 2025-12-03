@@ -4,10 +4,6 @@ import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
 
-if (!hasPermissionTo("ticketTeam.create")) {
-  await navigateTo("/ticket/team");
-}
-
 const errorMessage = ref("");
 const roles = ref(await loadRoles());
 
@@ -36,6 +32,13 @@ const save = handleSubmit(async (values) => {
   } else {
     navigateTo("/ticket/team");
   }
+});
+
+definePageMeta({
+  permission: {
+    permission: "ticketTeam.create",
+    fallback: "/ticket/team",
+  },
 });
 
 useHead({

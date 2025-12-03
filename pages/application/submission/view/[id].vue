@@ -7,10 +7,6 @@ import type { ApplicationSubmission } from "@/types/application/submission";
 import { ApplicationSubmissionState } from "@/types/application/submission";
 import type { PaginatedResponse } from "@/types/response";
 
-if (!hasPermissionTo("applicationSubmission.read")) {
-  await navigateTo("/");
-}
-
 const user = useCurrentUser();
 const route = useRoute();
 const applicationSubmissionId = ref<ApplicationSubmission["id"]>();
@@ -113,12 +109,18 @@ const userName = computed(() => {
   );
 });
 
-onMounted(() => {
-  loadApplicationSubmission();
+definePageMeta({
+  permission: {
+    permission: "applicationSubmission.read",
+  },
 });
 
 useHead({
   title: "Edit Application",
+});
+
+onMounted(() => {
+  loadApplicationSubmission();
 });
 </script>
 

@@ -5,10 +5,6 @@ import { PencilIcon, PlusIcon } from "@heroicons/vue/24/solid";
 import type { Pagination } from "@/types/table";
 import type { PaginatedResponse } from "@/types/response";
 
-if (!hasPermissionTo("faq.read")) {
-  await navigateTo("/");
-}
-
 const loading = ref(true);
 const faqs = ref<FAQ[]>([]);
 const toDeleteFAQ = ref();
@@ -71,6 +67,12 @@ const remove = async () => {
 const pageChange = (page: number) => {
   loadFAQ(page);
 };
+
+definePageMeta({
+  permission: {
+    permission: "faq.read",
+  },
+});
 
 useHead({
   title: "FAQs",

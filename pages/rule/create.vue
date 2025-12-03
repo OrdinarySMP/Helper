@@ -4,10 +4,6 @@ import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
 
-if (!hasPermissionTo("rule.create")) {
-  await navigateTo("/rule");
-}
-
 const errorMessage = ref("");
 
 const formSchema = toTypedSchema(
@@ -36,6 +32,13 @@ const save = handleSubmit(async (values) => {
   } else {
     navigateTo("/rule");
   }
+});
+
+definePageMeta({
+  permission: {
+    permission: "rule.create",
+    fallback: "/rule",
+  },
 });
 
 useHead({

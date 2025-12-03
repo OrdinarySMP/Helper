@@ -4,10 +4,6 @@ import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
 
-if (!hasPermissionTo("reactionRole.create")) {
-  await navigateTo("/");
-}
-
 const errorMessage = ref("");
 const roles = ref(await loadRoles());
 
@@ -37,6 +33,12 @@ const save = handleSubmit(async (values) => {
   } else {
     navigateTo("/reaction-role");
   }
+});
+
+definePageMeta({
+  permission: {
+    permission: "reactionRole.create",
+  },
 });
 
 useHead({

@@ -4,10 +4,6 @@ import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
 
-if (!hasPermissionTo("application.create")) {
-  await navigateTo("/application");
-}
-
 const errorMessage = ref("");
 const textChannels = ref(await loadTextChannels());
 const roles = ref(await loadRoles());
@@ -74,6 +70,13 @@ onMounted(() => {
   setFieldValue("embed_color", "#f0833a");
   setFieldValue("embed_button_color", 1);
   setFieldValue("embed_button_text", "Apply now");
+});
+
+definePageMeta({
+  permission: {
+    permission: "application.create",
+    fallback: "/application",
+  },
 });
 
 useHead({

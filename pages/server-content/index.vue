@@ -13,10 +13,6 @@ import {
 import type { Pagination } from "@/types/table";
 import type { PaginatedResponse } from "@/types/response";
 
-if (!hasPermissionTo("serverContent.read")) {
-  await navigateTo("/");
-}
-
 const loading = ref(true);
 const serverContents = ref<ServerContent[]>([]);
 const toDeleteServerContent = ref();
@@ -189,6 +185,12 @@ const resend = async (channelId: string) => {
     );
   }
 };
+
+definePageMeta({
+  permission: {
+    permission: "serverContent.read",
+  },
+});
 
 useHead({
   title: "Mods and Datapacks",

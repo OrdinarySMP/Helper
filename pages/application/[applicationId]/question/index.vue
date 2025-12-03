@@ -11,10 +11,6 @@ import {
 import type { Pagination } from "@/types/table";
 import type { PaginatedResponse } from "@/types/response";
 
-if (!hasPermissionTo("applicationQuestion.read")) {
-  await navigateTo("/");
-}
-
 const loading = ref(true);
 const route = useRoute();
 const applicationQuestions = ref<ApplicationQuestion[]>([]);
@@ -94,6 +90,12 @@ const remove = async () => {
 const pageChange = (page: number) => {
   loadApplicationQuestion(page);
 };
+
+definePageMeta({
+  permission: {
+    permission: "applicationQuestion.read",
+  },
+});
 
 useHead({
   title: "Application Questions",

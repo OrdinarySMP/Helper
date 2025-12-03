@@ -7,10 +7,6 @@ import { PencilIcon, PlusIcon } from "@heroicons/vue/24/solid";
 import type { Pagination } from "@/types/table";
 import type { PaginatedResponse } from "@/types/response";
 
-if (!hasPermissionTo("applicationResponse.read")) {
-  await navigateTo("/");
-}
-
 const loading = ref(true);
 const route = useRoute();
 const applicationResponses = ref<ApplicationResponse[]>([]);
@@ -90,6 +86,12 @@ const remove = async () => {
 const pageChange = (page: number) => {
   loadApplicationResponse(page);
 };
+
+definePageMeta({
+  permission: {
+    permission: "applicationResponse.read",
+  },
+});
 
 useHead({
   title: "Application Responses",
