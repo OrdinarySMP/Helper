@@ -2,6 +2,7 @@
 import { onMounted } from "vue";
 
 const route = useRoute();
+const { refreshIdentity } = useSanctumAuth();
 
 onMounted(async () => {
   const { error } = await useApi("/discord/callback", {
@@ -12,6 +13,7 @@ onMounted(async () => {
   if (!error.value) {
     const returnUrl = localStorage.getItem("return");
     localStorage.removeItem("return");
+    await refreshIdentity();
     return navigateTo(returnUrl ?? "/");
   } else {
     return navigateTo("/login?noPermission");
@@ -20,6 +22,9 @@ onMounted(async () => {
 
 definePageMeta({
   layout: "guest",
+  sanctum: {
+    guestOnly: true,
+  }
 });
 </script>
 

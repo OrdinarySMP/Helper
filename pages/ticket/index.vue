@@ -15,6 +15,7 @@ if (!hasPermissionTo("ticket.read")) {
   await navigateTo("/");
 }
 
+const user = useCurrentUser();
 const loading = ref(true);
 const tickets = ref<Ticket[]>([]);
 const pagination = ref<Pagination | null>();
@@ -137,7 +138,7 @@ const closeTicket = async (ticketId: number) => {
   const { error } = await useApi(`/ticket/${ticketId}/close`, {
     method: "post",
     body: {
-      closed_by_discord_user_id: useAuth().user().value?.discord_id,
+      closed_by_discord_user_id: user.value?.discord_id,
     },
   });
   if (error.value) {

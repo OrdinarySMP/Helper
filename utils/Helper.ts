@@ -22,7 +22,7 @@ export const parseRouteParameterString = (
 };
 
 export const hasPermissionTo = (permission: string): boolean => {
-  const user = useAuth().user().value;
+  const user = useCurrentUser().value;
   if (!user) {
     return false;
   }

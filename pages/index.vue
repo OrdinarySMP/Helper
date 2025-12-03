@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 
+const user = useCurrentUser();
+
 const botToken = ref<string>();
 const createTokenDialog = ref(false);
 
@@ -28,9 +30,9 @@ useHead({
 
 <template>
   <div>
-    <p>Hello {{ useAuth().user().value?.nickname }}</p>
+    <p>Hello {{ user?.nickname }}</p>
     <Button
-      v-if="useAuth().user().value?.is_owner"
+      v-if="user?.is_owner"
       class="px-2"
       size="md"
       @click="createTokenDialog = true"
