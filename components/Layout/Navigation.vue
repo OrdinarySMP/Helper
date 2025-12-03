@@ -3,6 +3,7 @@ import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
 import { ChevronRightIcon } from "@heroicons/vue/20/solid";
 import type { Navigation, NavigationChild } from "@/types/navigation";
 
+const user = useCurrentUser();
 const route = useRoute();
 const navigations = [
   { name: "FAQ", href: "/faq", permission: "faq.read" },
@@ -155,11 +156,11 @@ const isCurrent = (item: Navigation | NavigationChild) => {
       >
         <img
           class="size-8 rounded-full bg-gray-50"
-          :src="useAuth().user().value?.avatar"
+          :src="user?.avatar"
           alt=""
         />
         <span class="sr-only">Your profile</span>
-        <span aria-hidden="true">{{ useAuth().user().value?.nickname }}</span>
+        <span aria-hidden="true">{{ user?.nickname }}</span>
       </a>
     </li>
   </ul>

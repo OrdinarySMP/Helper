@@ -11,6 +11,7 @@ if (!hasPermissionTo("applicationSubmission.read")) {
   await navigateTo("/");
 }
 
+const user = useCurrentUser();
 const route = useRoute();
 const applicationSubmissionId = ref<ApplicationSubmission["id"]>();
 const applicationSubmission = ref<ApplicationSubmission>();
@@ -51,7 +52,7 @@ const updateSubmission = async (
       body: {
         state,
         custom_response: reason,
-        handled_by: useAuth().user().value?.discord_id,
+        handled_by: user.value?.discord_id,
       },
     },
   );

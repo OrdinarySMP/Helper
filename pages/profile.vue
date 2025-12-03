@@ -5,6 +5,7 @@ import * as zod from "zod";
 import { useForm } from "vee-validate";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/vue/24/solid";
 
+const user = useCurrentUser();
 const errorMessage = ref("");
 const showPassword = ref(true);
 const showPasswordConfirm = ref(true);
@@ -37,7 +38,7 @@ const { handleSubmit, setErrors, isSubmitting } = useForm({
 const save = handleSubmit(async (values) => {
   errorMessage.value = "";
 
-  const { error } = await useApi(`/user/${useAuth().user().value?.id}`, {
+  const { error } = await useApi(`/user/${user.value?.id}`, {
     method: "patch",
     body: {
       password: values.password,

@@ -1,14 +1,14 @@
 <script lang="ts" setup>
 import { onMounted } from "vue";
 
+const { logout } = useSanctumAuth()
+
 useHead({
   title: "Logout",
 });
 
-onMounted(async () => {
-  await useApi("/logout", { method: "post" });
-  useAuth().logout();
-  navigateTo("/login");
+onMounted(() => {
+  logout()
 });
 </script>
 
