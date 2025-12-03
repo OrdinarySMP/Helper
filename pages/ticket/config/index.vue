@@ -6,10 +6,6 @@ import { useForm } from "vee-validate";
 import type { Config } from "@/types/ticket/config";
 import type { Category } from "@/types/discord";
 
-if (!hasPermissionTo("ticketConfig.read")) {
-  await navigateTo("/ticket");
-}
-
 const loading = ref(true);
 const errorMessage = ref("");
 const textChannels = ref(await loadTextChannels());
@@ -83,6 +79,13 @@ onMounted(async () => {
 });
 
 const canCreate = computed(() => hasPermissionTo("ticketConfig.create"));
+
+definePageMeta({
+  permission: {
+    permission: "ticketConfig.read",
+    fallback: "/ticket",
+  },
+});
 
 onMounted(async () => {
   loading.value = true;

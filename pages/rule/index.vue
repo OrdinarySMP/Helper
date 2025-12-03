@@ -5,10 +5,6 @@ import { PencilIcon, PlusIcon } from "@heroicons/vue/24/solid";
 import type { Pagination } from "@/types/table";
 import type { PaginatedResponse } from "@/types/response";
 
-if (!hasPermissionTo("rule.read")) {
-  await navigateTo("/");
-}
-
 const loading = ref(true);
 const rules = ref<Rule[]>([]);
 const toDeleteRule = ref();
@@ -75,6 +71,12 @@ const remove = async () => {
 const pageChange = (page: number) => {
   loadRule(page);
 };
+
+definePageMeta({
+  permission: {
+    permission: "rule.read",
+  },
+});
 
 useHead({
   title: "Rules",

@@ -6,10 +6,6 @@ import { useForm } from "vee-validate";
 import type { ReactionRole } from "@/types/reactionRole";
 import type { PaginatedResponse } from "@/types/response";
 
-if (!hasPermissionTo("reactionRole.update")) {
-  await navigateTo("/");
-}
-
 const route = useRoute();
 const reactionRoleId = ref<ReactionRole["id"]>();
 const reactionRole = ref<ReactionRole>();
@@ -74,6 +70,12 @@ onMounted(async () => {
   setFieldValue("role_id", reactionRole.value.role_id);
 
   loading.value = false;
+});
+
+definePageMeta({
+  permission: {
+    permission: "reactionRole.update",
+  },
 });
 
 useHead({

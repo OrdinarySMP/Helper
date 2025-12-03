@@ -5,10 +5,6 @@ import { PencilIcon, PlusIcon } from "@heroicons/vue/24/solid";
 import type { Pagination } from "@/types/table";
 import type { PaginatedResponse } from "@/types/response";
 
-if (!hasPermissionTo("ticket.read")) {
-  await navigateTo("/");
-}
-
 const loading = ref(true);
 const ticketPanels = ref<Panel[]>([]);
 const toDeleteTicketPanel = ref();
@@ -86,6 +82,12 @@ const remove = async () => {
 const pageChange = (page: number) => {
   loadTicketPanel(page);
 };
+
+definePageMeta({
+  permission: {
+    permission: "ticket.read",
+  },
+});
 
 useHead({
   title: "Ticket Panel",

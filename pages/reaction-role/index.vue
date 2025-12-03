@@ -5,10 +5,6 @@ import { PencilIcon, PlusIcon } from "@heroicons/vue/24/solid";
 import type { Pagination } from "@/types/table";
 import type { PaginatedResponse } from "@/types/response";
 
-if (!hasPermissionTo("reactionRole.read")) {
-  await navigateTo("/");
-}
-
 const loading = ref(true);
 const reactionRoles = ref<ReactionRole[]>([]);
 const toDeleteReactionRole = ref();
@@ -85,6 +81,12 @@ const remove = async () => {
 const pageChange = (page: number) => {
   loadReactionRole(page);
 };
+
+definePageMeta({
+  permission: {
+    permission: "reactionRole.read",
+  },
+});
 
 useHead({
   title: "Reaction roles",

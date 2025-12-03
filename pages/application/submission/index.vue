@@ -13,10 +13,6 @@ import type {
 import type { Pagination, Sorting } from "@/types/table";
 import type { PaginatedResponse } from "@/types/response";
 
-if (!hasPermissionTo("applicationSubmission.read")) {
-  await navigateTo("/");
-}
-
 const loading = ref(true);
 const applicationSubmissions = ref<ApplicationSubmission[]>([]);
 const pagination = ref<Pagination | null>();
@@ -179,6 +175,12 @@ const filters = computed(() => {
   }
 
   return newFilters;
+});
+
+definePageMeta({
+  permission: {
+    permission: "applicationSubmission.read",
+  },
 });
 
 useHead({

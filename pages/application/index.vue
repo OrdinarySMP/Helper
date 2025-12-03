@@ -12,10 +12,6 @@ import { QuestionMarkCircleIcon } from "@heroicons/vue/24/outline";
 import type { Pagination } from "@/types/table";
 import type { PaginatedResponse } from "@/types/response";
 
-if (!hasPermissionTo("application.read")) {
-  await navigateTo("/");
-}
-
 const loading = ref(true);
 const applications = ref<Application[]>([]);
 const toDeleteApplication = ref();
@@ -105,6 +101,12 @@ const sendButton = async (application: Application) => {
     useNotification().success("Send button", "Embed send");
   }
 };
+
+definePageMeta({
+  permission: {
+    permission: "application.read",
+  },
+});
 
 useHead({
   title: "Applications",

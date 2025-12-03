@@ -11,10 +11,6 @@ import type { Pagination } from "@/types/table";
 import type { PaginatedResponse } from "@/types/response";
 import dayjs from "dayjs";
 
-if (!hasPermissionTo("ticket.read")) {
-  await navigateTo("/");
-}
-
 const user = useCurrentUser();
 const loading = ref(true);
 const tickets = ref<Ticket[]>([]);
@@ -151,6 +147,12 @@ const closeTicket = async (ticketId: number) => {
     reloadNuxtApp();
   }
 };
+
+definePageMeta({
+  permission: {
+    permission: "ticket.read",
+  },
+});
 
 useHead({
   title: "Tickets",

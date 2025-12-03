@@ -6,10 +6,6 @@ import { useForm } from "vee-validate";
 import type { Team } from "@/types/ticket/team";
 import type { PaginatedResponse } from "@/types/response";
 
-if (!hasPermissionTo("ticketTeam.update")) {
-  await navigateTo("/ticket/team");
-}
-
 const route = useRoute();
 const ticketTeamId = ref<Team["id"]>();
 const ticketTeam = ref<Team>();
@@ -42,6 +38,13 @@ const save = handleSubmit(async (values) => {
   } else {
     navigateTo("/ticket/team");
   }
+});
+
+definePageMeta({
+  permission: {
+    permission: "ticketTeam.update",
+    fallback: "/ticket/team",
+  },
 });
 
 onMounted(async () => {

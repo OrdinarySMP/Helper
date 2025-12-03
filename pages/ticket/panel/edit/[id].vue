@@ -6,10 +6,6 @@ import { useForm } from "vee-validate";
 import type { Panel } from "@/types/ticket/panel";
 import type { PaginatedResponse } from "@/types/response";
 
-if (!hasPermissionTo("ticketPanel.update")) {
-  await navigateTo("/ticket/panel");
-}
-
 const route = useRoute();
 const ticketPanelId = ref<Panel["id"]>();
 const ticketPanel = ref<Panel>();
@@ -63,6 +59,13 @@ const sendPanel = async () => {
     );
   }
 };
+
+definePageMeta({
+  permission: {
+    permission: "ticketPanel.update",
+    fallback: "/ticket/panel",
+  },
+});
 
 onMounted(async () => {
   loading.value = true;

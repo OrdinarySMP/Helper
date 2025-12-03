@@ -7,9 +7,6 @@ import type { Application } from "@/types/application";
 import { ApplicationResponseType } from "@/types/application/response";
 
 const applicationId = ref<Application["id"]>();
-if (!hasPermissionTo("applicationResponse.create")) {
-  await navigateTo(`/application/${applicationId.value}/response`);
-}
 
 const route = useRoute();
 const errorMessage = ref("");
@@ -53,6 +50,13 @@ const types = computed(() =>
       value: value as number,
     })),
 );
+
+definePageMeta({
+  permission: {
+    permission: "applicationResponse.create",
+    fallback: `/application/${applicationId.value}/response`,
+  },
+});
 
 useHead({
   title: "Create Application Response",

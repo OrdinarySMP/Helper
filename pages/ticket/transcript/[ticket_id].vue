@@ -5,10 +5,6 @@ import { TicketState } from "@/types/ticket";
 import dayjs from "dayjs";
 import type { PaginatedResponse } from "@/types/response";
 
-if (!hasPermissionTo("ticketTranscript.read")) {
-  await navigateTo("/");
-}
-
 const route = useRoute();
 const loading = ref(true);
 const ticket = ref<Ticket>();
@@ -34,6 +30,12 @@ const loadTicket = async (page = 1) => {
 
   loading.value = false;
 };
+
+definePageMeta({
+  permission: {
+    permission: "ticketTranscript.read",
+  },
+});
 
 useHead({
   title: "Ticket Transcript",

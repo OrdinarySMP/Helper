@@ -6,10 +6,6 @@ import { useForm } from "vee-validate";
 import type { Application } from "@/types/application";
 import type { PaginatedResponse } from "@/types/response";
 
-if (!hasPermissionTo("application.update")) {
-  await navigateTo("/application");
-}
-
 const route = useRoute();
 const applicationId = ref<Application["id"]>();
 const application = ref<Application>();
@@ -145,6 +141,13 @@ onMounted(async () => {
   );
 
   loading.value = false;
+});
+
+definePageMeta({
+  permission: {
+    permission: "application.update",
+    fallback: "/application",
+  },
 });
 
 useHead({

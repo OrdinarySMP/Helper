@@ -10,10 +10,6 @@ import { FaceSmileIcon } from "@heroicons/vue/24/outline";
 import EmojiPicker from "vue3-emoji-picker";
 import "vue3-emoji-picker/css";
 
-if (!hasPermissionTo("ticketButton.create")) {
-  await navigateTo("/ticket/button");
-}
-
 const errorMessage = ref("");
 const roles = ref(await loadRoles());
 const teams = ref<{ label: string; value: number }[]>([]);
@@ -91,6 +87,13 @@ const onSelectEmoji = (data: { i: string }) => {
   setFieldValue("emoji", data.i);
   showEmojiPicker.value = false;
 };
+
+definePageMeta({
+  permission: {
+    permission: "ticketButton.create",
+    fallback: "/ticket/button",
+  },
+});
 
 onMounted(async () => {
   loading.value = true;

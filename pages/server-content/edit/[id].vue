@@ -6,10 +6,6 @@ import * as zod from "zod";
 import { useForm } from "vee-validate";
 import type { PaginatedResponse } from "@/types/response";
 
-if (!hasPermissionTo("serverContent.update")) {
-  await navigateTo("/server-content");
-}
-
 const route = useRoute();
 const serverContentId = ref<ServerContent["id"]>();
 const serverContent = ref<ServerContent>();
@@ -73,6 +69,13 @@ onMounted(async () => {
   setFieldValue("is_active", serverContent.value.is_active);
 
   loading.value = false;
+});
+
+definePageMeta({
+  permission: {
+    permission: "serverContent.update",
+    fallback: "/server-content",
+  },
 });
 
 useHead({
