@@ -3,7 +3,7 @@ import { ref, onMounted } from "vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
-import type { Config } from "@/types/ticket/config";
+import type { TicketConfigData } from "@ordinary/api-types";
 import type { Category } from "@/types/discord";
 
 const loading = ref(true);
@@ -63,7 +63,7 @@ const loadCategories = async () => {
 onMounted(async () => {
   loading.value = true;
 
-  const { data } = await useApi<{ data: Config }>("/ticket/config", {
+  const { data } = await useApi<{ data: TicketConfigData }>("/ticket/config", {
     method: "get",
   });
 

@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import { ref, onMounted } from "vue";
-import type { Panel } from "@/types/ticket/panel";
+import type { TicketPanelData } from "@ordinary/api-types";
 import { PencilIcon, PlusIcon } from "@heroicons/vue/24/solid";
 import type { Pagination } from "@/types/table";
 import type { PaginatedResponse } from "@/types/response";
 
 const loading = ref(true);
-const ticketPanels = ref<Panel[]>([]);
+const ticketPanels = ref<TicketPanelData[]>([]);
 const toDeleteTicketPanel = ref();
 const deleteDialog = ref(false);
 const pagination = ref<Pagination | null>();
@@ -40,7 +40,7 @@ const headers = ref([
 
 const loadTicketPanel = async (page = 1) => {
   loading.value = true;
-  const { data } = await useApi<PaginatedResponse<Panel[]>>("/ticket/panel", {
+  const { data } = await useApi<PaginatedResponse<TicketPanelData[]>>("/ticket/panel", {
     method: "get",
     query: {
       page_size: 10,

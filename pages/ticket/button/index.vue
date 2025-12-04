@@ -3,15 +3,14 @@ import { ref, onMounted } from "vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
-import type { Button, ButtonFilter } from "@/types/ticket/button";
+import type { ButtonFilter } from "@/types/ticket/button";
 import { PencilIcon, PlusIcon } from "@heroicons/vue/24/solid";
 import type { Pagination } from "@/types/table";
 import type { PaginatedResponse, FullResponse } from "@/types/response";
-import type { Panel } from "@/types/ticket/panel";
-import type { Team } from "@/types/ticket/team";
+import type { TicketPanelData, TicketTeamData, TicketButtonData } from "@ordinary/api-types";
 
 const loading = ref(true);
-const ticketButtons = ref<Button[]>([]);
+const ticketButtons = ref<TicketButtonData[]>([]);
 const toDeleteTicketButton = ref();
 const deleteDialog = ref(false);
 const pagination = ref<Pagination | null>();
@@ -68,7 +67,7 @@ const changeFilter = handleSubmit((values) => {
 
 const loadTicketButton = async (page = 1) => {
   loading.value = true;
-  const { data } = await useApi<PaginatedResponse<Button[]>>("/ticket/button", {
+  const { data } = await useApi<PaginatedResponse<TicketButtonData[]>>("/ticket/button", {
     method: "get",
     query: {
       page_size: 10,
@@ -94,7 +93,7 @@ const loadTicketButton = async (page = 1) => {
 };
 
 const loadTeam = async () => {
-  const { data } = await useApi<FullResponse<Team[]>>("/ticket/team", {
+  const { data } = await useApi<FullResponse<TicketTeamData[]>>("/ticket/team", {
     method: "get",
     query: {
       full: true,
@@ -108,7 +107,7 @@ const loadTeam = async () => {
 };
 
 const loadPanel = async () => {
-  const { data } = await useApi<FullResponse<Panel[]>>("/ticket/panel", {
+  const { data } = await useApi<FullResponse<TicketPanelData[]>>("/ticket/panel", {
     method: "get",
     query: {
       full: true,

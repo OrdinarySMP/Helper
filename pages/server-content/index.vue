@@ -3,7 +3,8 @@ import { ref, onMounted } from "vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
-import type { ServerContent, ServerContentFilter } from "@/types/serverContent";
+import type { ServerContentData } from "@ordinary/api-types";
+import type { ServerContentFilter } from "@/types/serverContent";
 import {
   PencilIcon,
   PlusIcon,
@@ -14,7 +15,7 @@ import type { Pagination } from "@/types/table";
 import type { PaginatedResponse } from "@/types/response";
 
 const loading = ref(true);
-const serverContents = ref<ServerContent[]>([]);
+const serverContents = ref<ServerContentData[]>([]);
 const toDeleteServerContent = ref();
 const deleteDialog = ref(false);
 const pagination = ref<Pagination | null>();
@@ -105,7 +106,7 @@ const changeFilter = handleSubmit((values) => {
 
 const loadServerContent = async (page = 1) => {
   loading.value = true;
-  const { data } = await useApi<PaginatedResponse<ServerContent[]>>(
+  const { data } = await useApi<PaginatedResponse<ServerContentData[]>>(
     "/server-content",
     {
       method: "get",

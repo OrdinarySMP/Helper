@@ -3,12 +3,12 @@ import { ref, onMounted } from "vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
-import type { FAQ } from "@/types/faq";
+import type { FaqData } from "@ordinary/api-types";
 import type { PaginatedResponse } from "@/types/response";
 
 const route = useRoute();
-const faqId = ref<FAQ["id"]>();
-const faq = ref<FAQ>();
+const faqId = ref<FaqData["id"]>();
+const faq = ref<FaqData>();
 const loading = ref(true);
 const errorMessage = ref("");
 
@@ -43,7 +43,7 @@ onMounted(async () => {
   loading.value = true;
   faqId.value = parseRouteParameter(route.params.id);
 
-  const { data } = await useApi<PaginatedResponse<FAQ[]>>("/faq", {
+  const { data } = await useApi<PaginatedResponse<FaqData[]>>("/faq", {
     method: "get",
     params: {
       "filter[id]": faqId.value,

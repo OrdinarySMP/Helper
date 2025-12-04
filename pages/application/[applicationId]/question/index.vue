@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { ref, onMounted } from "vue";
-import type { ApplicationQuestion } from "@/types/application/question";
-import type { Application } from "@/types/application";
+import type { ApplicationQuestionData, ApplicationData } from "@ordinary/api-types";
 import {
   PencilIcon,
   PlusIcon,
@@ -13,8 +12,8 @@ import type { PaginatedResponse } from "@/types/response";
 
 const loading = ref(true);
 const route = useRoute();
-const applicationQuestions = ref<ApplicationQuestion[]>([]);
-const applicationId = ref<Application["id"]>();
+const applicationQuestions = ref<ApplicationQuestionData[]>([]);
+const applicationId = ref<ApplicationData["id"]>();
 const toDeleteApplicationQuestion = ref();
 const deleteDialog = ref(false);
 const pagination = ref<Pagination | null>();
@@ -44,7 +43,7 @@ const headers = ref([
 
 const loadApplicationQuestion = async (page = 1) => {
   loading.value = true;
-  const { data } = await useApi<PaginatedResponse<ApplicationQuestion[]>>(
+  const { data } = await useApi<PaginatedResponse<ApplicationQuestionData[]>>(
     "/application-question",
     {
       method: "get",

@@ -1,14 +1,14 @@
 <script lang="ts" setup>
 import { ref } from "vue";
-import type { ServerContent } from "@/types/serverContent";
+import type { ServerContentData } from "@ordinary/api-types";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
 import type { PaginatedResponse } from "@/types/response";
 
 const route = useRoute();
-const serverContentId = ref<ServerContent["id"]>();
-const serverContent = ref<ServerContent>();
+const serverContentId = ref<ServerContentData["id"]>();
+const serverContent = ref<ServerContentData>();
 const loading = ref(true);
 const errorMessage = ref("");
 
@@ -46,7 +46,7 @@ onMounted(async () => {
   loading.value = true;
   serverContentId.value = parseRouteParameter(route.params.id);
 
-  const { data } = await useApi<PaginatedResponse<ServerContent[]>>(
+  const { data } = await useApi<PaginatedResponse<ServerContentData[]>>(
     "/server-content",
     {
       method: "get",

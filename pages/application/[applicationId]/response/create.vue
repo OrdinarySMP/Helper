@@ -3,10 +3,9 @@ import { ref } from "vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
-import type { Application } from "@/types/application";
-import { ApplicationResponseType } from "@/types/application/response";
+import { ApplicationResponseType, type ApplicationData } from "@ordinary/api-types";
 
-const applicationId = ref<Application["id"]>();
+const applicationId = ref<ApplicationData["id"]>();
 
 const route = useRoute();
 const errorMessage = ref("");

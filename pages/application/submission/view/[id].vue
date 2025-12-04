@@ -3,14 +3,13 @@ import { ref, onMounted, computed } from "vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
-import type { ApplicationSubmission } from "@/types/application/submission";
-import { ApplicationSubmissionState } from "@/types/application/submission";
+import { ApplicationSubmissionState, type ApplicationSubmissionData } from "@ordinary/api-types";
 import type { PaginatedResponse } from "@/types/response";
 
 const user = useCurrentUser();
 const route = useRoute();
-const applicationSubmissionId = ref<ApplicationSubmission["id"]>();
-const applicationSubmission = ref<ApplicationSubmission>();
+const applicationSubmissionId = ref<ApplicationSubmissionData["id"]>();
+const applicationSubmission = ref<ApplicationSubmissionData>();
 const toUpdateState = ref<ApplicationSubmissionState>();
 const updateWithReasonDialog = ref(false);
 const loading = ref(true);
@@ -67,7 +66,7 @@ const loadApplicationSubmission = async () => {
   loading.value = true;
   applicationSubmissionId.value = parseRouteParameter(route.params.id);
 
-  const { data } = await useApi<PaginatedResponse<ApplicationSubmission[]>>(
+  const { data } = await useApi<PaginatedResponse<ApplicationSubmissionData[]>>(
     "/application-submission",
     {
       method: "get",

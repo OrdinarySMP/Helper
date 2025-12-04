@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref, onMounted } from "vue";
-import type { Application } from "@/types/application";
+import type { ApplicationData } from "@ordinary/api-types";
 import {
   PencilIcon,
   PlusIcon,
@@ -13,7 +13,7 @@ import type { Pagination } from "@/types/table";
 import type { PaginatedResponse } from "@/types/response";
 
 const loading = ref(true);
-const applications = ref<Application[]>([]);
+const applications = ref<ApplicationData[]>([]);
 const toDeleteApplication = ref();
 const deleteDialog = ref(false);
 const pagination = ref<Pagination | null>();
@@ -39,7 +39,7 @@ const headers = ref([
 
 const loadApplication = async (page = 1) => {
   loading.value = true;
-  const { data } = await useApi<PaginatedResponse<Application[]>>(
+  const { data } = await useApi<PaginatedResponse<ApplicationData[]>>(
     "/application",
     {
       method: "get",
@@ -85,7 +85,7 @@ const pageChange = (page: number) => {
   loadApplication(page);
 };
 
-const sendButton = async (application: Application) => {
+const sendButton = async (application: ApplicationData) => {
   if (
     !application.embed_channel_id ||
     !application.embed_title ||
@@ -187,7 +187,7 @@ onMounted(() => {
             size="sm"
             class="px-2"
             color="primary"
-            @click="sendButton(data as Application)"
+            @click="sendButton(data as ApplicationData)"
           >
             <span class="flex items-center">
               <PaperAirplaneIcon class="size-4 mr-2" />

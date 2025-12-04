@@ -39,22 +39,6 @@ export type Role = {
   flags: number;
 };
 
-export type User = {
-  id: string;
-  username: string;
-  avatar: string;
-  discriminator: string;
-  public_flags: number;
-  flags: number;
-  banner?: string;
-  accent_color: number;
-  global_name: string;
-  avatar_decoration_data?: string;
-  banner_color: string;
-  clan?: string;
-  primary_guild?: string;
-};
-
 export type GifAttachment = {
   video: {
     width: number;
@@ -112,20 +96,4 @@ export type Embed = {
   description: string;
   color: number;
   fields: EmbedField[];
-};
-
-export type Member = {
-  avatar: string | null;
-  banner: string | null;
-  communication_disabled_until: string | null;
-  flags: number;
-  joined_at: string;
-  nick: string;
-  pending: boolean;
-  premium_since: string;
-  roles: Role["id"][];
-  unusual_dm_activity_until: string;
-  user: User;
-  mute: boolean;
-  deaf: boolean;
 };

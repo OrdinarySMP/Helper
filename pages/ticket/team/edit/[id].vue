@@ -3,12 +3,12 @@ import { ref, onMounted } from "vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
-import type { Team } from "@/types/ticket/team";
+import type { TicketTeamData } from "@ordinary/api-types";
 import type { PaginatedResponse } from "@/types/response";
 
 const route = useRoute();
-const ticketTeamId = ref<Team["id"]>();
-const ticketTeam = ref<Team>();
+const ticketTeamId = ref<TicketTeamData["id"]>();
+const ticketTeam = ref<TicketTeamData>();
 const loading = ref(true);
 const errorMessage = ref("");
 const roles = ref(await loadRoles());
@@ -51,7 +51,7 @@ onMounted(async () => {
   loading.value = true;
   ticketTeamId.value = parseRouteParameter(route.params.id);
 
-  const { data } = await useApi<PaginatedResponse<Team[]>>("/ticket/team", {
+  const { data } = await useApi<PaginatedResponse<TicketTeamData[]>>("/ticket/team", {
     method: "get",
     params: {
       "filter[id]": ticketTeamId.value,

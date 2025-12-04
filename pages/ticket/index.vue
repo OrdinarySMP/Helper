@@ -3,9 +3,8 @@ import { ref, onMounted } from "vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
-import type { Ticket, TicketFilter } from "@/types/ticket";
-import type { User } from "@/types/discord";
-import { TicketState } from "@/types/ticket";
+import type { TicketFilter } from "@/types/ticket";
+import { TicketState, type TicketData, type DiscordUserData } from "@ordinary/api-types";
 import { DocumentTextIcon } from "@heroicons/vue/24/solid";
 import type { Pagination } from "@/types/table";
 import type { PaginatedResponse } from "@/types/response";
@@ -13,7 +12,7 @@ import dayjs from "dayjs";
 
 const user = useCurrentUser();
 const loading = ref(true);
-const tickets = ref<Ticket[]>([]);
+const tickets = ref<TicketData[]>([]);
 const pagination = ref<Pagination | null>();
 const filterValues = ref<TicketFilter>({
   state: TicketState.Open,
@@ -85,7 +84,7 @@ const changeFilter = handleSubmit((values) => {
 
 const loadTicket = async (page = 1) => {
   loading.value = true;
-  const { data } = await useApi<PaginatedResponse<Ticket[]>>("/ticket", {
+  const { data } = await useApi<PaginatedResponse<TicketData[]>>("/ticket", {
     method: "get",
     query: {
       page_size: 10,
@@ -217,15 +216,15 @@ onMounted(() => {
       </template>
       <template #body-created_by="{ data }">
         {{
-          (data.created_by_discord_user as User | null)?.global_name ??
+          (data.created_by_discord_user as DiscordUserData | null)?.global_name ??
           data.created_by_discord_user_id
         }}
       </template>
       <template #body-created_at="{ data }">
-        {{ dayjs((data as Ticket).created_at).format("DD.MM.YYYY HH:mm:ss") }}
+        {{ dayjs((data as TicketData).created_at).format("DD.MM.YYYY HH:mm:ss") }}
       </template>
       <template #body-updated_at="{ data }">
-        {{ dayjs((data as Ticket).updated_at).format("DD.MM.YYYY HH:mm:ss") }}
+        {{ dayjs((data as TicketData).updated_at).format("DD.MM.YYYY HH:mm:ss") }}
       </template>
       <template #body-actions="{ data }">
         <div class="flex gap-4">

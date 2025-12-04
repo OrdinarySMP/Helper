@@ -3,12 +3,12 @@ import { ref, onMounted } from "vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
-import type { ReactionRole } from "@/types/reactionRole";
+import type { ReactionRoleData } from "@ordinary/api-types";
 import type { PaginatedResponse } from "@/types/response";
 
 const route = useRoute();
-const reactionRoleId = ref<ReactionRole["id"]>();
-const reactionRole = ref<ReactionRole>();
+const reactionRoleId = ref<ReactionRoleData["id"]>();
+const reactionRole = ref<ReactionRoleData>();
 const loading = ref(true);
 const errorMessage = ref("");
 const roles = ref(await loadRoles());
@@ -49,7 +49,7 @@ onMounted(async () => {
   loading.value = true;
   reactionRoleId.value = parseRouteParameter(route.params.id);
 
-  const { data } = await useApi<PaginatedResponse<ReactionRole[]>>(
+  const { data } = await useApi<PaginatedResponse<ReactionRoleData[]>>(
     "/reaction-role",
     {
       method: "get",

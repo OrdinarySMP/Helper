@@ -1,5 +1,5 @@
-import type { User } from "@/types/ticket/user";
+import type { UserData } from "@ordinary/api-types";
 
 export const useCurrentUser = () => {
-  return useSanctumUser<User>()
+  return useSanctumUser<UserData>()
 }
