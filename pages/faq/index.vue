@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import { ref, onMounted } from "vue";
-import type { FAQ } from "@/types/faq";
+import type { FaqData } from "@ordinary/api-types";
 import { PencilIcon, PlusIcon } from "@heroicons/vue/24/solid";
 import type { Pagination } from "@/types/table";
 import type { PaginatedResponse } from "@/types/response";
 
 const loading = ref(true);
-const faqs = ref<FAQ[]>([]);
+const faqs = ref<FaqData[]>([]);
 const toDeleteFAQ = ref();
 const deleteDialog = ref(false);
 const pagination = ref<Pagination | null>();
@@ -28,7 +28,7 @@ const headers = ref([
 
 const loadFAQ = async (page = 1) => {
   loading.value = true;
-  const { data } = await useApi<PaginatedResponse<FAQ[]>>("/faq", {
+  const { data } = await useApi<PaginatedResponse<FaqData[]>>("/faq", {
     method: "get",
     query: {
       page_size: 10,

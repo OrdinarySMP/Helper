@@ -1,16 +1,14 @@
 <script lang="ts" setup>
 import { ref, onMounted } from "vue";
-import type { ApplicationResponse } from "@/types/application/response";
-import { ApplicationResponseType } from "@/types/application/response";
-import type { Application } from "@/types/application";
+import { ApplicationResponseType, type ApplicationData, type ApplicationResponseData } from "@ordinary/api-types";
 import { PencilIcon, PlusIcon } from "@heroicons/vue/24/solid";
 import type { Pagination } from "@/types/table";
 import type { PaginatedResponse } from "@/types/response";
 
 const loading = ref(true);
 const route = useRoute();
-const applicationResponses = ref<ApplicationResponse[]>([]);
-const applicationId = ref<Application["id"]>();
+const applicationResponses = ref<ApplicationResponseData[]>([]);
+const applicationId = ref<ApplicationData["id"]>();
 const toDeleteApplicationResponse = ref();
 const deleteDialog = ref(false);
 const pagination = ref<Pagination | null>();
@@ -40,7 +38,7 @@ const headers = ref([
 
 const loadApplicationResponse = async (page = 1) => {
   loading.value = true;
-  const { data } = await useApi<PaginatedResponse<ApplicationResponse[]>>(
+  const { data } = await useApi<PaginatedResponse<ApplicationResponseData[]>>(
     "/application-response",
     {
       method: "get",
@@ -127,7 +125,7 @@ onMounted(() => {
       @page-change="pageChange"
     >
       <template #body-type="{ data }">
-        {{ ApplicationResponseType[(data as ApplicationResponse).type] }}
+        {{ ApplicationResponseType[(data as ApplicationResponseData).type] }}
       </template>
       <template #body-actions="{ data }">
         <div class="flex gap-4">

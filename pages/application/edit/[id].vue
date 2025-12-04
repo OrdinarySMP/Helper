@@ -3,12 +3,12 @@ import { ref, onMounted } from "vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
-import type { Application } from "@/types/application";
+import type { ApplicationData } from "@ordinary/api-types";
 import type { PaginatedResponse } from "@/types/response";
 
 const route = useRoute();
-const applicationId = ref<Application["id"]>();
-const application = ref<Application>();
+const applicationId = ref<ApplicationData["id"]>();
+const application = ref<ApplicationData>();
 const loading = ref(true);
 const errorMessage = ref("");
 const textChannels = ref(await loadTextChannels());
@@ -65,7 +65,7 @@ onMounted(async () => {
   loading.value = true;
   applicationId.value = parseRouteParameter(route.params.id);
 
-  const { data } = await useApi<PaginatedResponse<Application[]>>(
+  const { data } = await useApi<PaginatedResponse<ApplicationData[]>>(
     "/application",
     {
       method: "get",

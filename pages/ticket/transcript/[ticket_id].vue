@@ -1,18 +1,17 @@
 <script lang="ts" setup>
 import { ref, onMounted } from "vue";
-import type { Ticket } from "@/types/ticket";
-import { TicketState } from "@/types/ticket";
+import { TicketState, type TicketData } from "@ordinary/api-types";
 import dayjs from "dayjs";
 import type { PaginatedResponse } from "@/types/response";
 
 const route = useRoute();
 const loading = ref(true);
-const ticket = ref<Ticket>();
-const ticketId = ref<Ticket["id"]>();
+const ticket = ref<TicketData>();
+const ticketId = ref<TicketData["id"]>();
 
 const loadTicket = async (page = 1) => {
   loading.value = true;
-  const { data } = await useApi<PaginatedResponse<Ticket[]>>("/ticket", {
+  const { data } = await useApi<PaginatedResponse<TicketData[]>>("/ticket", {
     method: "get",
     query: {
       "filter[id]": ticketId.value,

@@ -3,17 +3,15 @@ import { ref, onMounted } from "vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
-import type { Button } from "@/types/ticket/button";
-import type { Panel } from "@/types/ticket/panel";
-import type { Team } from "@/types/ticket/team";
+import type { TicketPanelData, TicketTeamData, TicketButtonData } from "@ordinary/api-types"
 import type { PaginatedResponse, FullResponse } from "@/types/response";
 import { FaceSmileIcon } from "@heroicons/vue/24/outline";
 import EmojiPicker from "vue3-emoji-picker";
 import "vue3-emoji-picker/css";
 
 const route = useRoute();
-const ticketButtonId = ref<Button["id"]>();
-const ticketButton = ref<Button>();
+const ticketButtonId = ref<TicketButtonData["id"]>();
+const ticketButton = ref<TicketButtonData>();
 const showEmojiPicker = ref(false);
 const loading = ref(true);
 const errorMessage = ref("");
@@ -56,7 +54,7 @@ const save = handleSubmit(async (values) => {
 });
 
 const loadTeam = async () => {
-  const { data } = await useApi<FullResponse<Team[]>>("/ticket/team", {
+  const { data } = await useApi<FullResponse<TicketTeamData[]>>("/ticket/team", {
     method: "get",
     query: {
       full: true,
@@ -70,7 +68,7 @@ const loadTeam = async () => {
 };
 
 const loadPanel = async () => {
-  const { data } = await useApi<FullResponse<Panel[]>>("/ticket/panel", {
+  const { data } = await useApi<FullResponse<TicketPanelData[]>>("/ticket/panel", {
     method: "get",
     query: {
       full: true,
@@ -99,7 +97,7 @@ onMounted(async () => {
   loading.value = true;
   ticketButtonId.value = parseRouteParameter(route.params.id);
 
-  const { data } = await useApi<PaginatedResponse<Button[]>>("/ticket/button", {
+  const { data } = await useApi<PaginatedResponse<TicketButtonData[]>>("/ticket/button", {
     method: "get",
     params: {
       include: "ticketButtonPingRoles",

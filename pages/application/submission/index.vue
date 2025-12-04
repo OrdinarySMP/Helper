@@ -5,16 +5,15 @@ import * as zod from "zod";
 import { useForm } from "vee-validate";
 import dayjs from "dayjs";
 import { EyeIcon } from "@heroicons/vue/24/solid";
-import { ApplicationSubmissionState } from "@/types/application/submission";
+import { ApplicationSubmissionState, type ApplicationSubmissionData } from "@ordinary/api-types";
 import type {
-  ApplicationSubmission,
   ApplicationSubmissionFilter,
 } from "@/types/application/submission";
 import type { Pagination, Sorting } from "@/types/table";
 import type { PaginatedResponse } from "@/types/response";
 
 const loading = ref(true);
-const applicationSubmissions = ref<ApplicationSubmission[]>([]);
+const applicationSubmissions = ref<ApplicationSubmissionData[]>([]);
 const pagination = ref<Pagination | null>();
 const toDeleteApplicationSubmission = ref();
 const deleteDialog = ref(false);
@@ -95,7 +94,7 @@ const loadApplication = async (page = 1) => {
     sort = `${sorting.value.order === "asc" ? "-" : ""}${sorting.value.column}`;
   }
 
-  const { data } = await useApi<PaginatedResponse<ApplicationSubmission[]>>(
+  const { data } = await useApi<PaginatedResponse<ApplicationSubmissionData[]>>(
     "/application-submission",
     {
       method: "get",
@@ -219,34 +218,34 @@ onMounted(() => {
         />
       </template>
       <template #body-state="{ data }">
-        {{ ApplicationSubmissionState[(data as ApplicationSubmission).state] }}
+        {{ ApplicationSubmissionState[(data as ApplicationSubmissionData).state] }}
       </template>
       <template #body-member="{ data }">
         {{
-          (data as ApplicationSubmission).member?.nick ??
-          (data as ApplicationSubmission).member?.user?.global_name ??
-          (data as ApplicationSubmission).member?.user?.username ??
-          (data as ApplicationSubmission).discord_id
+          (data as ApplicationSubmissionData).member?.nick ??
+          (data as ApplicationSubmissionData).member?.user?.global_name ??
+          (data as ApplicationSubmissionData).member?.user?.username ??
+          (data as ApplicationSubmissionData).discord_id
         }}
       </template>
       <template #body-created_at="{ data }">
         {{
-          dayjs((data as ApplicationSubmission).created_at).format(
+          dayjs((data as ApplicationSubmissionData).created_at).format(
             "DD.MM.YYYY HH:mm:ss",
           )
         }}
       </template>
       <template #body-updated_at="{ data }">
         {{
-          dayjs((data as ApplicationSubmission).updated_at).format(
+          dayjs((data as ApplicationSubmissionData).updated_at).format(
             "DD.MM.YYYY HH:mm:ss",
           )
         }}
       </template>
       <template #body-submitted_at="{ data }">
         {{
-          (data as ApplicationSubmission).submitted_at
-            ? dayjs((data as ApplicationSubmission).submitted_at).format(
+          (data as ApplicationSubmissionData).submitted_at
+            ? dayjs((data as ApplicationSubmissionData).submitted_at).format(
                 "DD.MM.YYYY HH:mm:ss",
               )
             : "---"

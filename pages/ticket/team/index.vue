@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import { ref, onMounted } from "vue";
-import type { Team, TeamRole } from "@/types/ticket/team";
+import type { TicketTeamData, TicketTeamRoleData } from "@ordinary/api-types";
 import { PencilIcon, PlusIcon } from "@heroicons/vue/24/solid";
 import type { Pagination } from "@/types/table";
 import type { PaginatedResponse } from "@/types/response";
 
 const loading = ref(true);
-const ticketTeams = ref<Team[]>([]);
+const ticketTeams = ref<TicketTeamData[]>([]);
 const toDeleteTicketTeam = ref();
 const deleteDialog = ref(false);
 const pagination = ref<Pagination | null>();
@@ -32,7 +32,7 @@ const headers = ref([
 
 const loadTicketTeam = async (page = 1) => {
   loading.value = true;
-  const { data } = await useApi<PaginatedResponse<Team[]>>("/ticket/team", {
+  const { data } = await useApi<PaginatedResponse<TicketTeamData[]>>("/ticket/team", {
     method: "get",
     query: {
       page_size: 10,
@@ -116,7 +116,7 @@ onMounted(() => {
     >
       <template #body-roles="{ data }">
         {{
-          (data.ticket_team_roles as TeamRole[])
+          (data.ticket_team_roles as TicketTeamRoleData[])
             .map((role) => role.role_name)
             .join(", ")
         }}

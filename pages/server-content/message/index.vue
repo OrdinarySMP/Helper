@@ -3,7 +3,7 @@ import { ref, onMounted } from "vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
-import type { ServerContentMessage } from "@/types/serverContent";
+import type { ServerContentMessageData } from "@ordinary/api-types";
 
 const loading = ref(true);
 const errorMessage = ref("");
@@ -39,7 +39,7 @@ const save = handleSubmit(async (values) => {
 onMounted(async () => {
   loading.value = true;
 
-  const { data } = await useApi<ServerContentMessage>(
+  const { data } = await useApi<ServerContentMessageData>(
     "/server-content-message",
     {
       method: "get",

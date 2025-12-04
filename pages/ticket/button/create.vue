@@ -3,8 +3,7 @@ import { ref } from "vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
-import type { Panel } from "@/types/ticket/panel";
-import type { Team } from "@/types/ticket/team";
+import type { TicketPanelData, TicketTeamData } from "@ordinary/api-types"
 import type { FullResponse } from "@/types/response";
 import { FaceSmileIcon } from "@heroicons/vue/24/outline";
 import EmojiPicker from "vue3-emoji-picker";
@@ -56,7 +55,7 @@ const save = handleSubmit(async (values) => {
 });
 
 const loadTeam = async () => {
-  const { data } = await useApi<FullResponse<Team[]>>("/ticket/team", {
+  const { data } = await useApi<FullResponse<TicketTeamData[]>>("/ticket/team", {
     method: "get",
     query: {
       full: true,
@@ -70,7 +69,7 @@ const loadTeam = async () => {
 };
 
 const loadPanel = async () => {
-  const { data } = await useApi<FullResponse<Panel[]>>("/ticket/panel", {
+  const { data } = await useApi<FullResponse<TicketPanelData[]>>("/ticket/panel", {
     method: "get",
     query: {
       full: true,

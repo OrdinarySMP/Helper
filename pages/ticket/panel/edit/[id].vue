@@ -3,12 +3,12 @@ import { ref, onMounted } from "vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
-import type { Panel } from "@/types/ticket/panel";
+import type { TicketPanelData } from "@ordinary/api-types";
 import type { PaginatedResponse } from "@/types/response";
 
 const route = useRoute();
-const ticketPanelId = ref<Panel["id"]>();
-const ticketPanel = ref<Panel>();
+const ticketPanelId = ref<TicketPanelData["id"]>();
+const ticketPanel = ref<TicketPanelData>();
 const loading = ref(true);
 const errorMessage = ref("");
 const textChannels = ref(await loadTextChannels());
@@ -71,7 +71,7 @@ onMounted(async () => {
   loading.value = true;
   ticketPanelId.value = parseRouteParameter(route.params.id);
 
-  const { data } = await useApi<PaginatedResponse<Panel[]>>("/ticket/panel", {
+  const { data } = await useApi<PaginatedResponse<TicketPanelData[]>>("/ticket/panel", {
     method: "get",
     params: {
       "filter[id]": ticketPanelId.value,
