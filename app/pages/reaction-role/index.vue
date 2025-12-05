@@ -83,9 +83,6 @@ const pageChange = (page: number) => {
 };
 
 definePageMeta({
-  navbar: {
-    buttons: resolveComponent("ReactionRoleNavbarButtons"),
-  },
   permission: {
     permission: "reactionRole.read",
   },

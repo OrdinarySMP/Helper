@@ -36,4 +36,26 @@ export default defineNuxtConfig({
       },
     },
   },
+  vite: {
+    optimizeDeps: {
+      exclude: ["@ordinary/api-types"],
+    },
+  },
+  ui: {
+    theme: {
+      colors: [
+        "primary",
+        "secondary",
+        "brand",
+        "info",
+        "success",
+        "warning",
+        "error",
+      ],
+      defaultVariants: {
+        color: "brand",
+        size: "xl",
+      },
+    },
+  },
 });

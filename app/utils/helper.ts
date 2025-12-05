@@ -1,4 +1,4 @@
-import type { LocationQueryValue } from "vue-router";
+import type { LaravelValidationErrors, NuxtUiFormErrors } from "@/types/form";
 
 export const parseRouteParameter = (
   param: string | string[] | undefined,
@@ -12,15 +12,6 @@ export const parseRouteParameter = (
   return Number.isNaN(value) ? 0 : value;
 };
 
-export const parseRouteParameterString = (
-  param: string | string[] | LocationQueryValue[],
-): string => {
-  if (typeof param === "object") {
-    return `${param[0]}`;
-  }
-  return `${param}`;
-};
-
 export const hasPermissionTo = (permission: string): boolean => {
   const user = useCurrentUser().value;
   if (!user) {
@@ -29,6 +20,7 @@ export const hasPermissionTo = (permission: string): boolean => {
   return user.permissions.includes(permission) || user.is_owner;
 };
 
+// replace with enum from api
 export const discordButtonItems = [
   {
     label: "Primary",
@@ -51,3 +43,15 @@ export const discordButtonItems = [
     color: "#da373c",
   },
 ];
+
+export function laravelValidationErrorToNuxtUiForm(
+  response: LaravelValidationErrors,
+): NuxtUiFormErrors {
+  return Object.entries(response.errors).map(([name, messages]) => {
+    const baseName = name.split(".")[0];
+    return {
+      name: baseName ?? "",
+      message: messages.join(" "),
+    };
+  });
+}
