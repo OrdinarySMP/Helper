@@ -87,10 +87,6 @@ const pageChange = (page: number) => {
 };
 
 definePageMeta({
-  title: "Ticket Panel",
-  navbar: {
-    buttons: resolveComponent("TicketPanelNavbarButtons"),
-  },
   permission: {
     permission: "ticket.read",
   },

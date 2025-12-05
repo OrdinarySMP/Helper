@@ -1340,6 +1340,9 @@
     pkg-types "^1.2.1"
     semver "^7.6.3"
 
+"@ordinary/api-types@file:../api/resources/types":
+  version "0.0.1"
+
 "@oxc-minify/binding-android-arm64@0.96.0":
   version "0.96.0"
   resolved "https://registry.yarnpkg.com/@oxc-minify/binding-android-arm64/-/binding-android-arm64-0.96.0.tgz#c0f525ec7e34f39617fd379911f4e904f6dc67a0"
