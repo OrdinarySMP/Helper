@@ -3,7 +3,10 @@ import { ref } from "vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
-import { ApplicationResponseType, type ApplicationData } from "@ordinary/api-types";
+import {
+  ApplicationResponseType,
+  type ApplicationData,
+} from "@ordinary/api-types";
 
 const applicationId = ref<ApplicationData["id"]>();
 
@@ -67,31 +70,38 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="flex grow">
-    <div class="w-full">
-      <p class="mb-8 text-2xl">Create Application Response</p>
-      <form class="grid grid-cols-1 gap-4" @submit.prevent="save">
-        <FieldInput name="name" label="Name" />
+  <UDashboardPanel>
+    <template #header>
+      <UDashboardNavbar title="Create Application Response" />
+    </template>
 
-        <FieldTextArea name="response" label="Response" />
+    <template #body>
+      <div class="flex grow">
+        <div class="w-full">
+          <form class="grid grid-cols-1 gap-4" @submit.prevent="save">
+            <FieldInput name="name" label="Name" />
 
-        <FieldSelect :items="types" name="type" label="Type" />
+            <FieldTextArea name="response" label="Response" />
 
-        <div>
-          <Button
-            :disabled="isSubmitting"
-            :loading="isSubmitting"
-            class="mr-2 px-4"
-            size="md"
-            type="submit"
-          >
-            Save
-          </Button>
-          <span v-if="errorMessage" class="text-red-600">{{
-            errorMessage
-          }}</span>
+            <FieldSelect :items="types" name="type" label="Type" />
+
+            <div>
+              <Button
+                :disabled="isSubmitting"
+                :loading="isSubmitting"
+                class="mr-2 px-4"
+                size="md"
+                type="submit"
+              >
+                Save
+              </Button>
+              <span v-if="errorMessage" class="text-red-600">{{
+                errorMessage
+              }}</span>
+            </div>
+          </form>
         </div>
-      </form>
-    </div>
-  </div>
+      </div>
+    </template>
+  </UDashboardPanel>
 </template>

@@ -3,7 +3,10 @@ import { ref, onMounted, computed } from "vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
-import { ApplicationSubmissionState, type ApplicationSubmissionData } from "@ordinary/api-types";
+import {
+  ApplicationSubmissionState,
+  type ApplicationSubmissionData,
+} from "@ordinary/api-types";
 import type { PaginatedResponse } from "@/types/response";
 
 const user = useCurrentUser();
@@ -115,7 +118,7 @@ definePageMeta({
 });
 
 useHead({
-  title: "Edit Application",
+  title: "View Application",
 });
 
 onMounted(() => {
@@ -124,134 +127,143 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="flex grow">
-    <div v-if="loading" class="flex grow items-center justify-center">
-      <Spinner />
-    </div>
-    <div v-else class="w-full">
-      <p class="mb-8 text-2xl">
-        Application Submission from {{ userName }} for
-        {{ applicationSubmission?.application?.name }}
-      </p>
-      <div class="grid grid-cols-1 gap-4">
-        <div v-for="(answer, key) in applicationQuestionAnswers" :key="key">
-          {{ key + 1 }}. {{ answer.application_question?.question }}
-          <br />
-          <div class="border p-2 rounded">
-            {{ answer.answer }}
+  <UDashboardPanel>
+    <template #header>
+      <UDashboardNavbar title="View Application" />
+    </template>
+
+    <template #body>
+      <div class="flex grow">
+        <div v-if="loading" class="flex grow items-center justify-center">
+          <Spinner />
+        </div>
+        <div v-else class="w-full">
+          <p class="mb-8 text-2xl">
+            Application Submission from {{ userName }} for
+            {{ applicationSubmission?.application?.name }}
+          </p>
+          <div class="grid grid-cols-1 gap-4">
+            <div v-for="(answer, key) in applicationQuestionAnswers" :key="key">
+              {{ key + 1 }}. {{ answer.application_question?.question }}
+              <br />
+              <div class="border p-2 rounded">
+                {{ answer.answer }}
+              </div>
+            </div>
+
+            <div
+              v-if="
+                applicationSubmission?.state ===
+                  ApplicationSubmissionState.Pending &&
+                hasPermissionTo('applicationSubmission.update')
+              "
+              class="flex gap-2"
+            >
+              <Button
+                class="mr-2 px-4"
+                size="md"
+                type="submit"
+                color="success"
+                :disabled="submitting"
+                @click="updateSubmission(ApplicationSubmissionState.Accepted)"
+              >
+                Accept
+              </Button>
+              <Button
+                class="mr-2 px-4"
+                size="md"
+                type="submit"
+                color="error"
+                :disabled="submitting"
+                @click="updateSubmission(ApplicationSubmissionState.Denied)"
+              >
+                Deny
+              </Button>
+            </div>
+
+            <div
+              v-if="
+                applicationSubmission?.state ===
+                ApplicationSubmissionState.Pending
+              "
+              class="flex gap-2"
+            >
+              <Button
+                class="mr-2 px-4"
+                size="md"
+                type="submit"
+                color="success"
+                :disabled="submitting"
+                @click="
+                  () => {
+                    toUpdateState = ApplicationSubmissionState.Accepted;
+                    updateWithReasonDialog = true;
+                  }
+                "
+              >
+                Accept with reason
+              </Button>
+              <Button
+                class="mr-2 px-4"
+                size="md"
+                type="submit"
+                color="error"
+                :disabled="submitting"
+                @click="
+                  () => {
+                    toUpdateState = ApplicationSubmissionState.Denied;
+                    updateWithReasonDialog = true;
+                  }
+                "
+              >
+                Deny with reason
+              </Button>
+            </div>
           </div>
         </div>
-
-        <div
-          v-if="
-            applicationSubmission?.state ===
-              ApplicationSubmissionState.Pending &&
-            hasPermissionTo('applicationSubmission.update')
-          "
-          class="flex gap-2"
-        >
-          <Button
-            class="mr-2 px-4"
-            size="md"
-            type="submit"
-            color="success"
-            :disabled="submitting"
-            @click="updateSubmission(ApplicationSubmissionState.Accepted)"
-          >
-            Accept
-          </Button>
-          <Button
-            class="mr-2 px-4"
-            size="md"
-            type="submit"
-            color="error"
-            :disabled="submitting"
-            @click="updateSubmission(ApplicationSubmissionState.Denied)"
-          >
-            Deny
-          </Button>
-        </div>
-
-        <div
-          v-if="
-            applicationSubmission?.state === ApplicationSubmissionState.Pending
-          "
-          class="flex gap-2"
-        >
-          <Button
-            class="mr-2 px-4"
-            size="md"
-            type="submit"
-            color="success"
-            :disabled="submitting"
-            @click="
-              () => {
-                toUpdateState = ApplicationSubmissionState.Accepted;
-                updateWithReasonDialog = true;
-              }
-            "
-          >
-            Accept with reason
-          </Button>
-          <Button
-            class="mr-2 px-4"
-            size="md"
-            type="submit"
-            color="error"
-            :disabled="submitting"
-            @click="
-              () => {
-                toUpdateState = ApplicationSubmissionState.Denied;
-                updateWithReasonDialog = true;
-              }
-            "
-          >
-            Deny with reason
-          </Button>
-        </div>
-      </div>
-    </div>
-    <Dialog
-      v-if="updateWithReasonDialog && toUpdateState"
-      @close="
-        () => {
-          toUpdateState = undefined;
-          updateWithReasonDialog = false;
-        }
-      "
-    >
-      <template #title>
-        <p>Update application</p>
-      </template>
-      <template #body>
-        <p class="mb-2">
-          Do you want to update this application to
-          {{ ApplicationSubmissionState[toUpdateState] }}?
-        </p>
-        <FieldTextArea name="reason" label="Reason" />
-      </template>
-      <template #footer>
-        <Button
-          class="ml-4 px-4"
-          size="sm"
-          @click="updateSubmissionWithReason()"
-        >
-          Update
-        </Button>
-        <Button
-          class="px-4"
-          color="gray"
-          size="sm"
-          @click="
+        <Dialog
+          v-if="updateWithReasonDialog && toUpdateState"
+          @close="
             () => {
               toUpdateState = undefined;
               updateWithReasonDialog = false;
             }
           "
         >
-          Cancel
-        </Button>
-      </template>
-    </Dialog>
-  </div>
+          <template #title>
+            <p>Update application</p>
+          </template>
+          <template #body>
+            <p class="mb-2">
+              Do you want to update this application to
+              {{ ApplicationSubmissionState[toUpdateState] }}?
+            </p>
+            <FieldTextArea name="reason" label="Reason" />
+          </template>
+          <template #footer>
+            <Button
+              class="ml-4 px-4"
+              size="sm"
+              @click="updateSubmissionWithReason()"
+            >
+              Update
+            </Button>
+            <Button
+              class="px-4"
+              color="gray"
+              size="sm"
+              @click="
+                () => {
+                  toUpdateState = undefined;
+                  updateWithReasonDialog = false;
+                }
+              "
+            >
+              Cancel
+            </Button>
+          </template>
+        </Dialog>
+      </div>
+    </template>
+  </UDashboardPanel>
 </template>

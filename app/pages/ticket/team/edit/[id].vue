@@ -47,17 +47,24 @@ definePageMeta({
   },
 });
 
+useHead({
+  title: "Edit Ticket Team",
+});
+
 onMounted(async () => {
   loading.value = true;
   ticketTeamId.value = parseRouteParameter(route.params.id);
 
-  const { data } = await useApi<PaginatedResponse<TicketTeamData[]>>("/ticket/team", {
-    method: "get",
-    params: {
-      "filter[id]": ticketTeamId.value,
-      include: "ticketTeamRoles",
+  const { data } = await useApi<PaginatedResponse<TicketTeamData[]>>(
+    "/ticket/team",
+    {
+      method: "get",
+      params: {
+        "filter[id]": ticketTeamId.value,
+        include: "ticketTeamRoles",
+      },
     },
-  });
+  );
   if (!data.value || !data.value?.data[0]) {
     navigateTo("/ticket/team");
     return;
@@ -75,43 +82,46 @@ onMounted(async () => {
 
   loading.value = false;
 });
-
-useHead({
-  title: "Edit Ticket Team",
-});
 </script>
 
 <template>
-  <div class="flex grow">
-    <div v-if="loading" class="flex grow items-center justify-center">
-      <Spinner />
-    </div>
-    <div v-else class="w-full">
-      <p class="mb-8 text-2xl">Edit Ticket Team</p>
-      <form class="grid grid-cols-1 gap-4" @submit.prevent="save">
-        <FieldInput name="name" label="Name" />
+  <UDashboardPanel>
+    <template #header>
+      <UDashboardNavbar title="Edit Ticket Team" />
+    </template>
 
-        <FieldMultiSelect
-          :items="roles"
-          name="ticket_team_role_ids"
-          label="Role"
-        />
-
-        <div>
-          <Button
-            :disabled="isSubmitting"
-            :loading="isSubmitting"
-            class="mr-2 px-4"
-            size="md"
-            type="submit"
-          >
-            Save
-          </Button>
-          <span v-if="errorMessage" class="text-red-600">{{
-            errorMessage
-          }}</span>
+    <template #body>
+      <div class="flex grow">
+        <div v-if="loading" class="flex grow items-center justify-center">
+          <Spinner />
         </div>
-      </form>
-    </div>
-  </div>
+        <div v-else class="w-full">
+          <form class="grid grid-cols-1 gap-4" @submit.prevent="save">
+            <FieldInput name="name" label="Name" />
+
+            <FieldMultiSelect
+              :items="roles"
+              name="ticket_team_role_ids"
+              label="Role"
+            />
+
+            <div>
+              <Button
+                :disabled="isSubmitting"
+                :loading="isSubmitting"
+                class="mr-2 px-4"
+                size="md"
+                type="submit"
+              >
+                Save
+              </Button>
+              <span v-if="errorMessage" class="text-red-600">{{
+                errorMessage
+              }}</span>
+            </div>
+          </form>
+        </div>
+      </div>
+    </template>
+  </UDashboardPanel>
 </template>

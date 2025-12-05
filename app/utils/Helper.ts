@@ -1,14 +1,14 @@
 import type { LocationQueryValue } from "vue-router";
 
 export const parseRouteParameter = (
-  param: string | string[] | LocationQueryValue[],
+  param: string | string[] | undefined,
 ): number => {
   if (typeof param === "object") {
     const value = parseInt(param[0] ?? "");
     return Number.isNaN(value) ? 0 : value;
   }
 
-  const value = parseInt(param);
+  const value = parseInt(param ?? "");
   return Number.isNaN(value) ? 0 : value;
 };
 

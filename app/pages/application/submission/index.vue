@@ -5,10 +5,11 @@ import * as zod from "zod";
 import { useForm } from "vee-validate";
 import dayjs from "dayjs";
 import { EyeIcon } from "@heroicons/vue/24/solid";
-import { ApplicationSubmissionState, type ApplicationSubmissionData } from "@ordinary/api-types";
-import type {
-  ApplicationSubmissionFilter,
-} from "@/types/application/submission";
+import {
+  ApplicationSubmissionState,
+  type ApplicationSubmissionData,
+} from "@ordinary/api-types";
+import type { ApplicationSubmissionFilter } from "@/types/application/submission";
 import type { Pagination, Sorting } from "@/types/table";
 import type { PaginatedResponse } from "@/types/response";
 
@@ -192,144 +193,156 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="w-full">
-    <p class="mb-4 flex items-center gap-4 text-2xl">Application Submissions</p>
-    <Table
-      :loading="loading"
-      :headers="headers"
-      :data="applicationSubmissions"
-      :pagination="pagination"
-      :initial-sort="sorting"
-      @sorting-change="setSorting"
-      @page-change="pageChange"
-    >
-      <template #search-bar>
-        <FieldSelect
-          :items="applicationSubmissionState"
-          clearable
-          name="state"
-          label="State"
-          @change="changeFilter"
-        />
-        <FieldInput
-          name="discord_id"
-          label="Discord ID"
-          @change="changeFilter"
-        />
-      </template>
-      <template #body-state="{ data }">
-        {{ ApplicationSubmissionState[(data as ApplicationSubmissionData).state] }}
-      </template>
-      <template #body-member="{ data }">
-        {{
-          (data as ApplicationSubmissionData).member?.nick ??
-          (data as ApplicationSubmissionData).member?.user?.global_name ??
-          (data as ApplicationSubmissionData).member?.user?.username ??
-          (data as ApplicationSubmissionData).discord_id
-        }}
-      </template>
-      <template #body-created_at="{ data }">
-        {{
-          dayjs((data as ApplicationSubmissionData).created_at).format(
-            "DD.MM.YYYY HH:mm:ss",
-          )
-        }}
-      </template>
-      <template #body-updated_at="{ data }">
-        {{
-          dayjs((data as ApplicationSubmissionData).updated_at).format(
-            "DD.MM.YYYY HH:mm:ss",
-          )
-        }}
-      </template>
-      <template #body-submitted_at="{ data }">
-        {{
-          (data as ApplicationSubmissionData).submitted_at
-            ? dayjs((data as ApplicationSubmissionData).submitted_at).format(
+  <UDashboardPanel>
+    <template #header>
+      <UDashboardNavbar title="Application Submissions" />
+    </template>
+
+    <template #body>
+      <div class="w-full">
+        <Table
+          :loading="loading"
+          :headers="headers"
+          :data="applicationSubmissions"
+          :pagination="pagination"
+          :initial-sort="sorting"
+          @sorting-change="setSorting"
+          @page-change="pageChange"
+        >
+          <template #search-bar>
+            <FieldSelect
+              :items="applicationSubmissionState"
+              clearable
+              name="state"
+              label="State"
+              @change="changeFilter"
+            />
+            <FieldInput
+              name="discord_id"
+              label="Discord ID"
+              @change="changeFilter"
+            />
+          </template>
+          <template #body-state="{ data }">
+            {{
+              ApplicationSubmissionState[
+                (data as ApplicationSubmissionData).state
+              ]
+            }}
+          </template>
+          <template #body-member="{ data }">
+            {{
+              (data as ApplicationSubmissionData).member?.nick ??
+              (data as ApplicationSubmissionData).member?.user?.global_name ??
+              (data as ApplicationSubmissionData).member?.user?.username ??
+              (data as ApplicationSubmissionData).discord_id
+            }}
+          </template>
+          <template #body-created_at="{ data }">
+            {{
+              dayjs((data as ApplicationSubmissionData).created_at).format(
                 "DD.MM.YYYY HH:mm:ss",
               )
-            : "---"
-        }}
-      </template>
-      <template #body-actions="{ data }">
-        <div class="flex gap-4">
-          <NuxtLink
-            v-if="hasPermissionTo('applicationSubmission.read')"
-            :to="`/application/submission/view/${data.id}`"
-          >
-            <Button size="sm" class="px-2" color="gray">
-              <span class="flex items-center">
-                <EyeIcon class="size-4 mr-2" />
-                View
-              </span>
-            </Button>
-          </NuxtLink>
+            }}
+          </template>
+          <template #body-updated_at="{ data }">
+            {{
+              dayjs((data as ApplicationSubmissionData).updated_at).format(
+                "DD.MM.YYYY HH:mm:ss",
+              )
+            }}
+          </template>
+          <template #body-submitted_at="{ data }">
+            {{
+              (data as ApplicationSubmissionData).submitted_at
+                ? dayjs(
+                    (data as ApplicationSubmissionData).submitted_at,
+                  ).format("DD.MM.YYYY HH:mm:ss")
+                : "---"
+            }}
+          </template>
+          <template #body-actions="{ data }">
+            <div class="flex gap-4">
+              <NuxtLink
+                v-if="hasPermissionTo('applicationSubmission.read')"
+                :to="`/application/submission/view/${data.id}`"
+              >
+                <Button size="sm" class="px-2" color="gray">
+                  <span class="flex items-center">
+                    <EyeIcon class="size-4 mr-2" />
+                    View
+                  </span>
+                </Button>
+              </NuxtLink>
 
-          <Button
-            v-if="hasPermissionTo('applicationSubmission.delete')"
-            size="sm"
-            class="px-2"
-            color="error"
-            @click="
-              () => {
-                toDeleteApplicationSubmission = data;
-                deleteDialog = true;
-              }
-            "
-          >
-            <span class="flex items-center"> Delete </span>
-          </Button>
-        </div>
-      </template>
-    </Table>
-    <Dialog
-      v-if="deleteDialog"
-      @close="
-        () => {
-          toDeleteApplicationSubmission = undefined;
-          deleteDialog = false;
-        }
-      "
-    >
-      <template #title>
-        <p>Delete</p>
-      </template>
-      <template #body>
-        <p class="mb-2">
-          Do you want to delete the submission from:
-
-          <span class="font-bold">{{
-            toDeleteApplicationSubmission?.member?.nick ??
-            toDeleteApplicationSubmission?.member?.user?.global_name ??
-            toDeleteApplicationSubmission?.member?.user?.username ??
-            toDeleteApplicationSubmission?.discord_id
-          }}</span>
-          ?
-        </p>
-        <p
-          class="rounded border border-red-400 bg-red-200 px-4 py-2 text-red-600"
-        >
-          The submission will be deleted the user will NOT receive a response
-        </p>
-      </template>
-      <template #footer>
-        <Button class="ml-4 px-4" color="error" size="sm" @click="remove">
-          Delete
-        </Button>
-        <Button
-          class="px-4"
-          color="gray"
-          size="sm"
-          @click="
+              <Button
+                v-if="hasPermissionTo('applicationSubmission.delete')"
+                size="sm"
+                class="px-2"
+                color="error"
+                @click="
+                  () => {
+                    toDeleteApplicationSubmission = data;
+                    deleteDialog = true;
+                  }
+                "
+              >
+                <span class="flex items-center"> Delete </span>
+              </Button>
+            </div>
+          </template>
+        </Table>
+        <Dialog
+          v-if="deleteDialog"
+          @close="
             () => {
               toDeleteApplicationSubmission = undefined;
               deleteDialog = false;
             }
           "
         >
-          Cancel
-        </Button>
-      </template>
-    </Dialog>
-  </div>
+          <template #title>
+            <p>Delete</p>
+          </template>
+          <template #body>
+            <p class="mb-2">
+              Do you want to delete the submission from:
+
+              <span class="font-bold">{{
+                toDeleteApplicationSubmission?.member?.nick ??
+                toDeleteApplicationSubmission?.member?.user?.global_name ??
+                toDeleteApplicationSubmission?.member?.user?.username ??
+                toDeleteApplicationSubmission?.discord_id
+              }}</span>
+              ?
+            </p>
+            <p
+              class="rounded border border-red-400 bg-red-200 px-4 py-2 text-red-600"
+            >
+              The submission will be deleted the user will NOT receive a
+              response
+            </p>
+          </template>
+          <template #footer>
+            <Button class="ml-4 px-4" color="error" size="sm" @click="remove">
+              Delete
+            </Button>
+            <Button
+              class="px-4"
+              color="gray"
+              size="sm"
+              @click="
+                () => {
+                  toDeleteApplicationSubmission = undefined;
+                  deleteDialog = false;
+                }
+              "
+            >
+              Cancel
+            </Button>
+          </template>
+        </Dialog>
+      </div>
+    </template>
+  </UDashboardPanel>
 </template>

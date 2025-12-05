@@ -4,7 +4,11 @@ import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
 import type { PaginatedResponse } from "@/types/response";
-import { ApplicationResponseType, type ApplicationData, type ApplicationResponseData } from "@ordinary/api-types";
+import {
+  ApplicationResponseType,
+  type ApplicationData,
+  type ApplicationResponseData,
+} from "@ordinary/api-types";
 
 const applicationId = ref<ApplicationData["id"]>();
 
@@ -98,34 +102,41 @@ useHead({
 </script>
 
 <template>
-  <div class="flex grow">
-    <div v-if="loading" class="flex grow items-center justify-center">
-      <Spinner />
-    </div>
-    <div v-else class="w-full">
-      <p class="mb-8 text-2xl">Edit Application Response</p>
-      <form class="grid grid-cols-1 gap-4" @submit.prevent="save">
-        <FieldInput name="name" label="Name" />
+  <UDashboardPanel>
+    <template #header>
+      <UDashboardNavbar title="Edit Application Response" />
+    </template>
 
-        <FieldTextArea name="response" label="Response" />
-
-        <FieldSelect :items="types" name="type" label="Type" />
-
-        <div>
-          <Button
-            :disabled="isSubmitting"
-            :loading="isSubmitting"
-            class="mr-2 px-4"
-            size="md"
-            type="submit"
-          >
-            Save
-          </Button>
-          <span v-if="errorMessage" class="text-red-600">{{
-            errorMessage
-          }}</span>
+    <template #body>
+      <div class="flex grow">
+        <div v-if="loading" class="flex grow items-center justify-center">
+          <Spinner />
         </div>
-      </form>
-    </div>
-  </div>
+        <div v-else class="w-full">
+          <form class="grid grid-cols-1 gap-4" @submit.prevent="save">
+            <FieldInput name="name" label="Name" />
+
+            <FieldTextArea name="response" label="Response" />
+
+            <FieldSelect :items="types" name="type" label="Type" />
+
+            <div>
+              <Button
+                :disabled="isSubmitting"
+                :loading="isSubmitting"
+                class="mr-2 px-4"
+                size="md"
+                type="submit"
+              >
+                Save
+              </Button>
+              <span v-if="errorMessage" class="text-red-600">{{
+                errorMessage
+              }}</span>
+            </div>
+          </form>
+        </div>
+      </div>
+    </template>
+  </UDashboardPanel>
 </template>

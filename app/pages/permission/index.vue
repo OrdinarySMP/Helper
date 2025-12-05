@@ -104,6 +104,16 @@ const save = async () => {
   }
 };
 
+definePageMeta({
+  permission: {
+    permission: "owner",
+  },
+});
+
+useHead({
+  title: "Permissions",
+});
+
 onMounted(async () => {
   loading.value = true;
   await Promise.all([loadPermission(), loadPermissionTemplate()]);
@@ -112,53 +122,68 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="flex grow">
-    <div v-if="loading" class="flex grow items-center justify-center">
-      <Spinner />
-    </div>
-    <div v-else class="w-full">
-      <div v-for="(_permissionMap, key) in values.permissionMap" :key="key">
-        <Accordion
-          :title="roleIdToName(values.permissionMap?.[key].role ?? '')"
-        >
-          <div class="flex items-center pb-2 gap-4">
-            <FieldSelect
-              class="flex-grow"
-              :items="roles"
-              :name="`permissionMap.${key}.role`"
-            />
-            <Button class="px-2" size="md" color="error" @click="remove(key)">
-              Remove
+  <UDashboardPanel>
+    <template #header>
+      <UDashboardNavbar title="Permissions" />
+    </template>
+
+    <template #body>
+      <div class="flex grow">
+        <div v-if="loading" class="flex grow items-center justify-center">
+          <Spinner />
+        </div>
+        <div v-else class="w-full">
+          <div v-for="(_permissionMap, key) in values.permissionMap" :key="key">
+            <Accordion
+              :title="roleIdToName(values.permissionMap?.[key].role ?? '')"
+            >
+              <div class="flex items-center pb-2 gap-4">
+                <FieldSelect
+                  class="flex-grow"
+                  :items="roles"
+                  :name="`permissionMap.${key}.role`"
+                />
+                <Button
+                  class="px-2"
+                  size="md"
+                  color="error"
+                  @click="remove(key)"
+                >
+                  Remove
+                </Button>
+              </div>
+              <div
+                v-for="(operations, model) in permissionTemplate"
+                :key="model"
+                class="pb-4"
+              >
+                <b>{{ toTitleCase(`${model}`) }}</b>
+                <div class="grid grid-cols-5">
+                  <div
+                    v-for="(operation, operationKey) in operations"
+                    :key="operationKey"
+                  >
+                    <FieldCheckbox
+                      :name="`permissionMap.${key}.permissions.${model}.${operation}`"
+                      :label="operation"
+                      size="sm"
+                    />
+                  </div>
+                </div>
+              </div>
+            </Accordion>
+          </div>
+          <span v-if="errorMessage" class="text-red-600">{{
+            errorMessage
+          }}</span>
+          <div class="flex mt-4 gap-4">
+            <Button class="px-2" size="md" @click="save"> Save </Button>
+            <Button class="px-2" size="md" @click="addPermissionMap">
+              Add Permission +
             </Button>
           </div>
-          <div
-            v-for="(operations, model) in permissionTemplate"
-            :key="model"
-            class="pb-4"
-          >
-            <b>{{ toTitleCase(`${model}`) }}</b>
-            <div class="grid grid-cols-5">
-              <div
-                v-for="(operation, operationKey) in operations"
-                :key="operationKey"
-              >
-                <FieldCheckbox
-                  :name="`permissionMap.${key}.permissions.${model}.${operation}`"
-                  :label="operation"
-                  size="sm"
-                />
-              </div>
-            </div>
-          </div>
-        </Accordion>
+        </div>
       </div>
-      <span v-if="errorMessage" class="text-red-600">{{ errorMessage }}</span>
-      <div class="flex mt-4 gap-4">
-        <Button class="px-2" size="md" @click="save"> Save </Button>
-        <Button class="px-2" size="md" @click="addPermissionMap">
-          Add Permission +
-        </Button>
-      </div>
-    </div>
-  </div>
+    </template>
+  </UDashboardPanel>
 </template>

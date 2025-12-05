@@ -3,7 +3,11 @@ import { ref, onMounted } from "vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
-import type { TicketPanelData, TicketTeamData, TicketButtonData } from "@ordinary/api-types"
+import type {
+  TicketPanelData,
+  TicketTeamData,
+  TicketButtonData,
+} from "@ordinary/api-types";
 import type { PaginatedResponse, FullResponse } from "@/types/response";
 import { FaceSmileIcon } from "@heroicons/vue/24/outline";
 import EmojiPicker from "vue3-emoji-picker";
@@ -54,12 +58,15 @@ const save = handleSubmit(async (values) => {
 });
 
 const loadTeam = async () => {
-  const { data } = await useApi<FullResponse<TicketTeamData[]>>("/ticket/team", {
-    method: "get",
-    query: {
-      full: true,
+  const { data } = await useApi<FullResponse<TicketTeamData[]>>(
+    "/ticket/team",
+    {
+      method: "get",
+      query: {
+        full: true,
+      },
     },
-  });
+  );
   teams.value =
     data.value?.data?.map((team) => ({
       label: team.name,
@@ -68,12 +75,15 @@ const loadTeam = async () => {
 };
 
 const loadPanel = async () => {
-  const { data } = await useApi<FullResponse<TicketPanelData[]>>("/ticket/panel", {
-    method: "get",
-    query: {
-      full: true,
+  const { data } = await useApi<FullResponse<TicketPanelData[]>>(
+    "/ticket/panel",
+    {
+      method: "get",
+      query: {
+        full: true,
+      },
     },
-  });
+  );
   panels.value =
     data.value?.data?.map((panel) => ({
       label: panel.title,
@@ -93,17 +103,24 @@ definePageMeta({
   },
 });
 
+useHead({
+  title: "Edit Ticket Button",
+});
+
 onMounted(async () => {
   loading.value = true;
   ticketButtonId.value = parseRouteParameter(route.params.id);
 
-  const { data } = await useApi<PaginatedResponse<TicketButtonData[]>>("/ticket/button", {
-    method: "get",
-    params: {
-      include: "ticketButtonPingRoles",
-      "filter[id]": ticketButtonId.value,
+  const { data } = await useApi<PaginatedResponse<TicketButtonData[]>>(
+    "/ticket/button",
+    {
+      method: "get",
+      params: {
+        include: "ticketButtonPingRoles",
+        "filter[id]": ticketButtonId.value,
+      },
     },
-  });
+  );
   if (!data.value || !data.value?.data[0]) {
     navigateTo("/ticket/button");
     return;
@@ -131,66 +148,69 @@ onMounted(async () => {
 
   loading.value = false;
 });
-
-useHead({
-  title: "Edit Ticket Button",
-});
 </script>
 
 <template>
-  <div class="flex grow">
-    <div v-if="loading" class="flex grow items-center justify-center">
-      <Spinner />
-    </div>
-    <div v-else class="w-full">
-      <p class="mb-8 text-2xl">Edit Ticket Button</p>
-      <form class="grid grid-cols-1 gap-4" @submit.prevent="save">
-        <FieldSelect :items="teams" name="ticket_team_id" label="Team" />
-        <FieldSelect :items="panels" name="ticket_panel_id" label="Panel" />
-        <FieldMultiSelect
-          :items="roles"
-          name="ticket_button_ping_role_ids"
-          label="Ping Roles"
-        />
-        <FieldInput name="text" label="Text" />
-        <FieldSelect
-          :items="discordButtonItems"
-          name="color"
-          label="Button Color"
-        />
-        <FieldTextArea name="initial_message" label="Initial message" />
-        <FieldInput name="emoji" label="Emoji">
-          <template #icon>
-            <div class="relative">
-              <span @click="showEmojiPicker = !showEmojiPicker">
-                <FaceSmileIcon class="size-6" />
-              </span>
-              <EmojiPicker
-                v-if="showEmojiPicker"
-                class="absolute z-10 right-0"
-                :native="true"
-                @select="onSelectEmoji"
-              />
-            </div>
-          </template>
-        </FieldInput>
-        <FieldInput name="naming_scheme" label="Naming scheme" />
-        <FieldCheckbox name="disabled" label="Disabled?" />
-        <div>
-          <Button
-            :disabled="isSubmitting"
-            :loading="isSubmitting"
-            class="mr-2 px-4"
-            size="md"
-            type="submit"
-          >
-            Save
-          </Button>
-          <span v-if="errorMessage" class="text-red-600">{{
-            errorMessage
-          }}</span>
+  <UDashboardPanel>
+    <template #header>
+      <UDashboardNavbar title="Edit Ticket Button" />
+    </template>
+
+    <template #body>
+      <div class="flex grow">
+        <div v-if="loading" class="flex grow items-center justify-center">
+          <Spinner />
         </div>
-      </form>
-    </div>
-  </div>
+        <div v-else class="w-full">
+          <form class="grid grid-cols-1 gap-4" @submit.prevent="save">
+            <FieldSelect :items="teams" name="ticket_team_id" label="Team" />
+            <FieldSelect :items="panels" name="ticket_panel_id" label="Panel" />
+            <FieldMultiSelect
+              :items="roles"
+              name="ticket_button_ping_role_ids"
+              label="Ping Roles"
+            />
+            <FieldInput name="text" label="Text" />
+            <FieldSelect
+              :items="discordButtonItems"
+              name="color"
+              label="Button Color"
+            />
+            <FieldTextArea name="initial_message" label="Initial message" />
+            <FieldInput name="emoji" label="Emoji">
+              <template #icon>
+                <div class="relative">
+                  <span @click="showEmojiPicker = !showEmojiPicker">
+                    <FaceSmileIcon class="size-6" />
+                  </span>
+                  <EmojiPicker
+                    v-if="showEmojiPicker"
+                    class="absolute z-10 right-0"
+                    :native="true"
+                    @select="onSelectEmoji"
+                  />
+                </div>
+              </template>
+            </FieldInput>
+            <FieldInput name="naming_scheme" label="Naming scheme" />
+            <FieldCheckbox name="disabled" label="Disabled?" />
+            <div>
+              <Button
+                :disabled="isSubmitting"
+                :loading="isSubmitting"
+                class="mr-2 px-4"
+                size="md"
+                type="submit"
+              >
+                Save
+              </Button>
+              <span v-if="errorMessage" class="text-red-600">{{
+                errorMessage
+              }}</span>
+            </div>
+          </form>
+        </div>
+      </div>
+    </template>
+  </UDashboardPanel>
 </template>

@@ -47,31 +47,38 @@ useHead({
 </script>
 
 <template>
-  <div class="flex grow">
-    <div class="w-full">
-      <p class="mb-8 text-2xl">Create Rule</p>
-      <form class="grid grid-cols-1 gap-4" @submit.prevent="save">
-        <FieldInput name="number" label="Number" type="number" />
+  <UDashboardPanel>
+    <template #header>
+      <UDashboardNavbar title="Create Rule" />
+    </template>
 
-        <FieldInput name="name" label="Name" />
+    <template #body>
+      <div class="flex grow">
+        <div class="w-full">
+          <form class="grid grid-cols-1 gap-4" @submit.prevent="save">
+            <FieldInput name="number" label="Number" type="number" />
 
-        <FieldTextArea name="rule" label="Rule" />
+            <FieldInput name="name" label="Name" />
 
-        <div>
-          <Button
-            :disabled="isSubmitting"
-            :loading="isSubmitting"
-            class="mr-2 px-4"
-            size="md"
-            type="submit"
-          >
-            Save
-          </Button>
-          <span v-if="errorMessage" class="text-red-600">{{
-            errorMessage
-          }}</span>
+            <FieldTextArea name="rule" label="Rule" />
+
+            <div>
+              <Button
+                :disabled="isSubmitting"
+                :loading="isSubmitting"
+                class="mr-2 px-4"
+                size="md"
+                type="submit"
+              >
+                Save
+              </Button>
+              <span v-if="errorMessage" class="text-red-600">{{
+                errorMessage
+              }}</span>
+            </div>
+          </form>
         </div>
-      </form>
-    </div>
-  </div>
+      </div>
+    </template>
+  </UDashboardPanel>
 </template>
