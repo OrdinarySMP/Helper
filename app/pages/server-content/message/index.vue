@@ -67,45 +67,56 @@ definePageMeta({
 });
 
 useHead({
-  title: "Mod/Datapack Messages",
+  title: "Mods + Datapacks Messages",
 });
 </script>
 
 <template>
-  <div class="flex grow">
-    <div v-if="loading" class="flex grow items-center justify-center">
-      <Spinner />
-    </div>
-    <div v-else class="w-full">
-      <p class="mb-8 text-2xl">Mods and Datapacks Messages</p>
-      <form class="grid grid-cols-1 gap-4" @submit.prevent="save">
-        <FieldTextArea name="heading" label="Heading" :disabled="!canCreate" />
-        <FieldTextArea
-          name="not_recommended"
-          label="Not recommended"
-          :disabled="!canCreate"
-        />
-        <FieldTextArea
-          name="recommended"
-          label="Recommended"
-          :disabled="!canCreate"
-        />
+  <UDashboardPanel>
+    <template #header>
+      <UDashboardNavbar title="Mods + Datapacks Messages" />
+    </template>
 
-        <div>
-          <Button
-            :disabled="isSubmitting || !canCreate"
-            :loading="isSubmitting"
-            class="mr-2 px-4"
-            size="md"
-            type="submit"
-          >
-            Save
-          </Button>
-          <span v-if="errorMessage" class="text-red-600">{{
-            errorMessage
-          }}</span>
+    <template #body>
+      <div class="flex grow">
+        <div v-if="loading" class="flex grow items-center justify-center">
+          <Spinner />
         </div>
-      </form>
-    </div>
-  </div>
+        <div v-else class="w-full">
+          <form class="grid grid-cols-1 gap-4" @submit.prevent="save">
+            <FieldTextArea
+              name="heading"
+              label="Heading"
+              :disabled="!canCreate"
+            />
+            <FieldTextArea
+              name="not_recommended"
+              label="Not recommended"
+              :disabled="!canCreate"
+            />
+            <FieldTextArea
+              name="recommended"
+              label="Recommended"
+              :disabled="!canCreate"
+            />
+
+            <div>
+              <Button
+                :disabled="isSubmitting || !canCreate"
+                :loading="isSubmitting"
+                class="mr-2 px-4"
+                size="md"
+                type="submit"
+              >
+                Save
+              </Button>
+              <span v-if="errorMessage" class="text-red-600">{{
+                errorMessage
+              }}</span>
+            </div>
+          </form>
+        </div>
+      </div>
+    </template>
+  </UDashboardPanel>
 </template>

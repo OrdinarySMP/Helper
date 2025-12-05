@@ -7,7 +7,11 @@ import type { ButtonFilter } from "@/types/ticket/button";
 import { PencilIcon, PlusIcon } from "@heroicons/vue/24/solid";
 import type { Pagination } from "@/types/table";
 import type { PaginatedResponse, FullResponse } from "@/types/response";
-import type { TicketPanelData, TicketTeamData, TicketButtonData } from "@ordinary/api-types";
+import type {
+  TicketPanelData,
+  TicketTeamData,
+  TicketButtonData,
+} from "@ordinary/api-types";
 
 const loading = ref(true);
 const ticketButtons = ref<TicketButtonData[]>([]);
@@ -67,14 +71,17 @@ const changeFilter = handleSubmit((values) => {
 
 const loadTicketButton = async (page = 1) => {
   loading.value = true;
-  const { data } = await useApi<PaginatedResponse<TicketButtonData[]>>("/ticket/button", {
-    method: "get",
-    query: {
-      page_size: 10,
-      page,
-      ...filters.value,
+  const { data } = await useApi<PaginatedResponse<TicketButtonData[]>>(
+    "/ticket/button",
+    {
+      method: "get",
+      query: {
+        page_size: 10,
+        page,
+        ...filters.value,
+      },
     },
-  });
+  );
 
   if (data.value) {
     ticketButtons.value = data.value.data ?? [];
@@ -93,12 +100,15 @@ const loadTicketButton = async (page = 1) => {
 };
 
 const loadTeam = async () => {
-  const { data } = await useApi<FullResponse<TicketTeamData[]>>("/ticket/team", {
-    method: "get",
-    query: {
-      full: true,
+  const { data } = await useApi<FullResponse<TicketTeamData[]>>(
+    "/ticket/team",
+    {
+      method: "get",
+      query: {
+        full: true,
+      },
     },
-  });
+  );
   teams.value =
     data.value?.data?.map((team) => ({
       label: team.name,
@@ -107,12 +117,15 @@ const loadTeam = async () => {
 };
 
 const loadPanel = async () => {
-  const { data } = await useApi<FullResponse<TicketPanelData[]>>("/ticket/panel", {
-    method: "get",
-    query: {
-      full: true,
+  const { data } = await useApi<FullResponse<TicketPanelData[]>>(
+    "/ticket/panel",
+    {
+      method: "get",
+      query: {
+        full: true,
+      },
     },
-  });
+  );
   panels.value =
     data.value?.data?.map((panel) => ({
       label: panel.title,
@@ -171,117 +184,125 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="w-full">
-    <p class="mb-4 flex items-center gap-4 text-2xl">
-      Button
-      <NuxtLink
-        v-if="hasPermissionTo('ticketButton.create')"
-        to="/ticket/button/create"
-      >
-        <Button size="sm" class="px-2" color="primary">
-          <span class="flex items-center">
-            <PlusIcon class="size-4 mr-2" />
-            Create
-          </span>
-        </Button>
-      </NuxtLink>
-    </p>
-    <Table
-      :loading="loading"
-      :headers="headers"
-      :data="ticketButtons"
-      :pagination="pagination"
-      @page-change="pageChange"
-    >
-      <template #search-bar>
-        <FieldSelect
-          :items="panels"
-          clearable
-          name="ticket_panel_id"
-          label="Panel"
-          @change="changeFilter"
-        />
-        <FieldSelect
-          :items="teams"
-          clearable
-          name="ticket_team_id"
-          label="Team"
-          @change="changeFilter"
-        />
-      </template>
-      <template #body-actions="{ data }">
-        <div class="flex gap-4">
+  <UDashboardPanel>
+    <template #header>
+      <UDashboardNavbar title="Ticket Button">
+        <template #right>
           <NuxtLink
-            v-if="hasPermissionTo('ticketButton.update')"
-            :to="`/ticket/button/edit/${data.id}`"
+            v-if="hasPermissionTo('ticketButton.create')"
+            to="/ticket/button/create"
           >
-            <Button size="sm" class="px-2" color="gray">
+            <Button size="sm" class="px-2" color="primary">
               <span class="flex items-center">
-                <PencilIcon class="size-4 mr-2" />
-                Edit
+                <PlusIcon class="size-4 mr-2" />
+                Create
               </span>
             </Button>
           </NuxtLink>
+        </template>
+      </UDashboardNavbar>
+    </template>
 
-          <Button
-            v-if="hasPermissionTo('ticketButton.delete')"
-            size="sm"
-            class="px-2"
-            color="error"
-            @click="
-              () => {
-                toDeleteTicketButton = data;
-                deleteDialog = true;
-              }
-            "
-          >
-            <span class="flex items-center"> Delete </span>
-          </Button>
-        </div>
-      </template>
-    </Table>
-    <Dialog
-      v-if="deleteDialog"
-      @close="
-        () => {
-          toDeleteTicketButton = undefined;
-          deleteDialog = false;
-        }
-      "
-    >
-      <template #title>
-        <p>Delete</p>
-      </template>
-      <template #body>
-        <p class="mb-2">
-          Delete the button:
-          <span class="font-bold">{{ toDeleteTicketButton?.text }}</span>
-          ?
-        </p>
-        <p
-          class="rounded border border-red-400 bg-red-200 px-4 py-2 text-red-600"
+    <template #body>
+      <div class="w-full">
+        <Table
+          :loading="loading"
+          :headers="headers"
+          :data="ticketButtons"
+          :pagination="pagination"
+          @page-change="pageChange"
         >
-          This button will be deleted
-        </p>
-      </template>
-      <template #footer>
-        <Button class="ml-4 px-4" color="error" size="sm" @click="remove">
-          Delete
-        </Button>
-        <Button
-          class="px-4"
-          color="gray"
-          size="sm"
-          @click="
+          <template #search-bar>
+            <FieldSelect
+              :items="panels"
+              clearable
+              name="ticket_panel_id"
+              label="Panel"
+              @change="changeFilter"
+            />
+            <FieldSelect
+              :items="teams"
+              clearable
+              name="ticket_team_id"
+              label="Team"
+              @change="changeFilter"
+            />
+          </template>
+          <template #body-actions="{ data }">
+            <div class="flex gap-4">
+              <NuxtLink
+                v-if="hasPermissionTo('ticketButton.update')"
+                :to="`/ticket/button/edit/${data.id}`"
+              >
+                <Button size="sm" class="px-2" color="gray">
+                  <span class="flex items-center">
+                    <PencilIcon class="size-4 mr-2" />
+                    Edit
+                  </span>
+                </Button>
+              </NuxtLink>
+
+              <Button
+                v-if="hasPermissionTo('ticketButton.delete')"
+                size="sm"
+                class="px-2"
+                color="error"
+                @click="
+                  () => {
+                    toDeleteTicketButton = data;
+                    deleteDialog = true;
+                  }
+                "
+              >
+                <span class="flex items-center"> Delete </span>
+              </Button>
+            </div>
+          </template>
+        </Table>
+        <Dialog
+          v-if="deleteDialog"
+          @close="
             () => {
               toDeleteTicketButton = undefined;
               deleteDialog = false;
             }
           "
         >
-          Cancel
-        </Button>
-      </template>
-    </Dialog>
-  </div>
+          <template #title>
+            <p>Delete</p>
+          </template>
+          <template #body>
+            <p class="mb-2">
+              Delete the button:
+              <span class="font-bold">{{ toDeleteTicketButton?.text }}</span>
+              ?
+            </p>
+            <p
+              class="rounded border border-red-400 bg-red-200 px-4 py-2 text-red-600"
+            >
+              This button will be deleted
+            </p>
+          </template>
+          <template #footer>
+            <Button class="ml-4 px-4" color="error" size="sm" @click="remove">
+              Delete
+            </Button>
+            <Button
+              class="px-4"
+              color="gray"
+              size="sm"
+              @click="
+                () => {
+                  toDeleteTicketButton = undefined;
+                  deleteDialog = false;
+                }
+              "
+            >
+              Cancel
+            </Button>
+          </template>
+        </Dialog>
+      </div>
+    </template>
+  </UDashboardPanel>
 </template>

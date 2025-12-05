@@ -56,35 +56,42 @@ useHead({
 </script>
 
 <template>
-  <div class="flex grow">
-    <div class="w-full">
-      <p class="mb-8 text-2xl">Create Mod/Datapack</p>
-      <form class="grid grid-cols-1 gap-4" @submit.prevent="save">
-        <FieldInput name="name" label="Name" />
+  <UDashboardPanel>
+    <template #header>
+      <UDashboardNavbar title="Create Mod/Datapack" />
+    </template>
 
-        <FieldInput name="url" label="URL" />
+    <template #body>
+      <div class="flex grow">
+        <div class="w-full">
+          <form class="grid grid-cols-1 gap-4" @submit.prevent="save">
+            <FieldInput name="name" label="Name" />
 
-        <FieldTextArea name="description" label="Description" />
+            <FieldInput name="url" label="URL" />
 
-        <FieldSwitch name="is_recommended" label="Is recommended?" />
+            <FieldTextArea name="description" label="Description" />
 
-        <FieldSwitch name="is_active" label="Active?" />
+            <FieldSwitch name="is_recommended" label="Is recommended?" />
 
-        <div>
-          <Button
-            :disabled="isSubmitting"
-            :loading="isSubmitting"
-            class="mr-2 px-4"
-            size="md"
-            type="submit"
-          >
-            Save
-          </Button>
-          <span v-if="errorMessage" class="text-red-600">{{
-            errorMessage
-          }}</span>
+            <FieldSwitch name="is_active" label="Active?" />
+
+            <div>
+              <Button
+                :disabled="isSubmitting"
+                :loading="isSubmitting"
+                class="mr-2 px-4"
+                size="md"
+                type="submit"
+              >
+                Save
+              </Button>
+              <span v-if="errorMessage" class="text-red-600">{{
+                errorMessage
+              }}</span>
+            </div>
+          </form>
         </div>
-      </form>
-    </div>
-  </div>
+      </div>
+    </template>
+  </UDashboardPanel>
 </template>

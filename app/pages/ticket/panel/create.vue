@@ -37,6 +37,7 @@ const save = handleSubmit(async (values) => {
 });
 
 definePageMeta({
+  title: "Create Ticket Panel",
   permission: {
     permission: "ticketPanel.create",
     fallback: "/ticket/panel",
@@ -49,30 +50,41 @@ useHead({
 </script>
 
 <template>
-  <div class="flex grow">
-    <div class="w-full">
-      <p class="mb-8 text-2xl">Create Panel</p>
-      <form class="grid grid-cols-1 gap-4" @submit.prevent="save">
-        <FieldInput name="title" label="Title" />
-        <FieldTextArea name="message" label="Message" />
-        <FieldInput name="embed_color" type="color" label="Color" />
-        <FieldSelect :items="textChannels" name="channel_id" label="Channel" />
+  <UDashboardPanel>
+    <template #header>
+      <UDashboardNavbar title="Create Ticket Panel" />
+    </template>
 
-        <div>
-          <Button
-            :disabled="isSubmitting"
-            :loading="isSubmitting"
-            class="mr-2 px-4"
-            size="md"
-            type="submit"
-          >
-            Save
-          </Button>
-          <span v-if="errorMessage" class="text-red-600">{{
-            errorMessage
-          }}</span>
+    <template #body>
+      <div class="flex grow">
+        <div class="w-full">
+          <form class="grid grid-cols-1 gap-4" @submit.prevent="save">
+            <FieldInput name="title" label="Title" />
+            <FieldTextArea name="message" label="Message" />
+            <FieldInput name="embed_color" type="color" label="Color" />
+            <FieldSelect
+              :items="textChannels"
+              name="channel_id"
+              label="Channel"
+            />
+
+            <div>
+              <Button
+                :disabled="isSubmitting"
+                :loading="isSubmitting"
+                class="mr-2 px-4"
+                size="md"
+                type="submit"
+              >
+                Save
+              </Button>
+              <span v-if="errorMessage" class="text-red-600">{{
+                errorMessage
+              }}</span>
+            </div>
+          </form>
         </div>
-      </form>
-    </div>
-  </div>
+      </div>
+    </template>
+  </UDashboardPanel>
 </template>

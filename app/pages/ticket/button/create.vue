@@ -3,7 +3,7 @@ import { ref } from "vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
-import type { TicketPanelData, TicketTeamData } from "@ordinary/api-types"
+import type { TicketPanelData, TicketTeamData } from "@ordinary/api-types";
 import type { FullResponse } from "@/types/response";
 import { FaceSmileIcon } from "@heroicons/vue/24/outline";
 import EmojiPicker from "vue3-emoji-picker";
@@ -55,12 +55,15 @@ const save = handleSubmit(async (values) => {
 });
 
 const loadTeam = async () => {
-  const { data } = await useApi<FullResponse<TicketTeamData[]>>("/ticket/team", {
-    method: "get",
-    query: {
-      full: true,
+  const { data } = await useApi<FullResponse<TicketTeamData[]>>(
+    "/ticket/team",
+    {
+      method: "get",
+      query: {
+        full: true,
+      },
     },
-  });
+  );
   teams.value =
     data.value?.data?.map((team) => ({
       label: team.name,
@@ -69,12 +72,15 @@ const loadTeam = async () => {
 };
 
 const loadPanel = async () => {
-  const { data } = await useApi<FullResponse<TicketPanelData[]>>("/ticket/panel", {
-    method: "get",
-    query: {
-      full: true,
+  const { data } = await useApi<FullResponse<TicketPanelData[]>>(
+    "/ticket/panel",
+    {
+      method: "get",
+      query: {
+        full: true,
+      },
     },
-  });
+  );
   panels.value =
     data.value?.data?.map((panel) => ({
       label: panel.title,
@@ -94,70 +100,76 @@ definePageMeta({
   },
 });
 
+useHead({
+  title: "Create Ticket Button",
+});
+
 onMounted(async () => {
   loading.value = true;
   await loadTeam();
   await loadPanel();
   loading.value = false;
 });
-
-useHead({
-  title: "Create Ticket Button",
-});
 </script>
 
 <template>
-  <div class="flex grow">
-    <div class="w-full">
-      <p class="mb-8 text-2xl">Create Button</p>
+  <UDashboardPanel>
+    <template #header>
+      <UDashboardNavbar title="Create Ticket Button" />
+    </template>
 
-      <form class="grid grid-cols-1 gap-4" @submit.prevent="save">
-        <FieldSelect :items="teams" name="ticket_team_id" label="Team" />
-        <FieldSelect :items="panels" name="ticket_panel_id" label="Panel" />
-        <FieldMultiSelect
-          :items="roles"
-          name="ticket_button_ping_role_ids"
-          label="Ping Roles"
-        />
-        <FieldInput name="text" label="Text" />
-        <FieldSelect
-          :items="discordButtonItems"
-          name="color"
-          label="Button Color"
-        />
-        <FieldTextArea name="initial_message" label="Initial message" />
-        <FieldInput name="emoji" label="Emoji">
-          <template #icon>
-            <div class="relative">
-              <span @click="showEmojiPicker = !showEmojiPicker">
-                <FaceSmileIcon class="size-6" />
-              </span>
-              <EmojiPicker
-                v-if="showEmojiPicker"
-                class="absolute z-10 right-0"
-                :native="true"
-                @select="onSelectEmoji"
-              />
+    <template #body>
+      <div class="flex grow">
+        <div class="w-full">
+          <form class="grid grid-cols-1 gap-4" @submit.prevent="save">
+            <FieldSelect :items="teams" name="ticket_team_id" label="Team" />
+            <FieldSelect :items="panels" name="ticket_panel_id" label="Panel" />
+            <FieldMultiSelect
+              :items="roles"
+              name="ticket_button_ping_role_ids"
+              label="Ping Roles"
+            />
+            <FieldInput name="text" label="Text" />
+            <FieldSelect
+              :items="discordButtonItems"
+              name="color"
+              label="Button Color"
+            />
+            <FieldTextArea name="initial_message" label="Initial message" />
+            <FieldInput name="emoji" label="Emoji">
+              <template #icon>
+                <div class="relative">
+                  <span @click="showEmojiPicker = !showEmojiPicker">
+                    <FaceSmileIcon class="size-6" />
+                  </span>
+                  <EmojiPicker
+                    v-if="showEmojiPicker"
+                    class="absolute z-10 right-0"
+                    :native="true"
+                    @select="onSelectEmoji"
+                  />
+                </div>
+              </template>
+            </FieldInput>
+            <FieldInput name="naming_scheme" label="Naming scheme" />
+            <FieldCheckbox name="disabled" label="Disabled?" />
+            <div>
+              <Button
+                :disabled="isSubmitting"
+                :loading="isSubmitting"
+                class="mr-2 px-4"
+                size="md"
+                type="submit"
+              >
+                Save
+              </Button>
+              <span v-if="errorMessage" class="text-red-600">{{
+                errorMessage
+              }}</span>
             </div>
-          </template>
-        </FieldInput>
-        <FieldInput name="naming_scheme" label="Naming scheme" />
-        <FieldCheckbox name="disabled" label="Disabled?" />
-        <div>
-          <Button
-            :disabled="isSubmitting"
-            :loading="isSubmitting"
-            class="mr-2 px-4"
-            size="md"
-            type="submit"
-          >
-            Save
-          </Button>
-          <span v-if="errorMessage" class="text-red-600">{{
-            errorMessage
-          }}</span>
+          </form>
         </div>
-      </form>
-    </div>
-  </div>
+      </div>
+    </template>
+  </UDashboardPanel>
 </template>

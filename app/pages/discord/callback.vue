@@ -24,7 +24,7 @@ definePageMeta({
   layout: "guest",
   sanctum: {
     guestOnly: true,
-  }
+  },
 });
 </script>
 

@@ -194,7 +194,7 @@ definePageMeta({
 });
 
 useHead({
-  title: "Mods and Datapacks",
+  title: "Mods + Datapacks",
 });
 
 onMounted(() => {
@@ -203,154 +203,160 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="w-full">
-    <div class="flex justify-between items-center mb-4">
-      <div class="flex items-center gap-4">
-        <p class="text-2xl">Mods and Datapacks</p>
-        <NuxtLink
-          v-if="hasPermissionTo('serverContent.create')"
-          to="/server-content/create"
-        >
-          <Button size="sm" class="px-2" color="primary">
-            <span class="flex items-center">
-              <PlusIcon class="size-4 mr-2" />
-              Create
-            </span>
-          </Button>
-        </NuxtLink>
-      </div>
-      <div class="flex gap-4">
-        <div>
+  <UDashboardPanel>
+    <template #header>
+      <UDashboardNavbar title="Mods + Datapacks">
+        <template #right>
+          <NuxtLink
+            v-if="hasPermissionTo('serverContent.create')"
+            to="/server-content/create"
+          >
+            <Button size="sm" class="px-2" color="primary">
+              <span class="flex items-center">
+                <PlusIcon class="size-4 mr-2" />
+                Create
+              </span>
+            </Button>
+          </NuxtLink>
+
           <TextChannelSelector
             v-if="hasPermissionTo('serverContent.resend')"
             title="Resend"
             @select="resend"
           />
-        </div>
 
-        <NuxtLink
-          v-if="hasPermissionTo('serverContentMessage.read')"
-          to="/server-content/message"
-        >
-          <Button size="sm" class="px-2" color="primary">
-            <span class="flex items-center"> Messages </span>
-          </Button>
-        </NuxtLink>
-      </div>
-    </div>
-    <Table
-      :loading="loading"
-      :headers="headers"
-      :data="serverContents"
-      :pagination="pagination"
-      @page-change="pageChange"
-    >
-      <template #search-bar>
-        <FieldInput name="name" label="Name" @change="changeFilter" />
-
-        <FieldSelect
-          :items="recommendedItems"
-          clearable
-          name="is_recommended"
-          label="Recommended"
-          @change="changeFilter"
-        />
-
-        <FieldSelect
-          :items="activeItems"
-          clearable
-          name="is_active"
-          label="Active"
-          @change="changeFilter"
-        />
-      </template>
-      <template #body-name="{ data }">
-        {{ truncatedString(data.name as string) }}
-      </template>
-      <template #body-description="{ data }">
-        {{ truncatedString(data.description as string) }}
-      </template>
-      <template #body-is_recommended="{ data }">
-        <CheckIcon v-if="data.is_recommended" class="size-6 text-green-500" />
-        <XMarkIcon v-else class="size-6 text-red-500" />
-      </template>
-      <template #body-is_active="{ data }">
-        <CheckIcon v-if="data.is_active" class="size-6 text-green-500" />
-        <XMarkIcon v-else class="size-6 text-red-500" />
-      </template>
-      <template #body-actions="{ data }">
-        <div class="flex gap-4">
           <NuxtLink
-            v-if="hasPermissionTo('serverContent.update')"
-            :to="`/server-content/edit/${data.id}`"
+            v-if="hasPermissionTo('serverContentMessage.read')"
+            to="/server-content/message"
           >
-            <Button size="sm" class="px-2" color="gray">
-              <span class="flex items-center">
-                <PencilIcon class="size-4 mr-2" />
-                Edit
-              </span>
+            <Button size="sm" class="px-2" color="primary">
+              <span class="flex items-center"> Messages </span>
             </Button>
           </NuxtLink>
+        </template>
+      </UDashboardNavbar>
+    </template>
 
-          <Button
-            v-if="hasPermissionTo('serverContent.delete')"
-            size="sm"
-            class="px-2"
-            color="error"
-            @click="
-              () => {
-                toDeleteServerContent = data;
-                deleteDialog = true;
-              }
-            "
-          >
-            <span class="flex items-center"> Delete </span>
-          </Button>
-        </div>
-      </template>
-    </Table>
-    <Dialog
-      v-if="deleteDialog"
-      @close="
-        () => {
-          toDeleteServerContent = undefined;
-          deleteDialog = false;
-        }
-      "
-    >
-      <template #title>
-        <p>Delete</p>
-      </template>
-      <template #body>
-        <p class="mb-2">
-          Delete the Mod/Datapack:
-          <span class="font-bold">{{ toDeleteServerContent?.name }}</span>
-          ?
-        </p>
-        <p
-          class="rounded border border-red-400 bg-red-200 px-4 py-2 text-red-600"
+    <template #body>
+      <div class="w-full">
+        <Table
+          :loading="loading"
+          :headers="headers"
+          :data="serverContents"
+          :pagination="pagination"
+          @page-change="pageChange"
         >
-          This Mod/Datapack will be deleted
-        </p>
-      </template>
-      <template #footer>
-        <Button class="ml-4 px-4" color="error" size="sm" @click="remove">
-          Delete
-        </Button>
-        <Button
-          class="px-4"
-          color="gray"
-          size="sm"
-          @click="
+          <template #search-bar>
+            <FieldInput name="name" label="Name" @change="changeFilter" />
+
+            <FieldSelect
+              :items="recommendedItems"
+              clearable
+              name="is_recommended"
+              label="Recommended"
+              @change="changeFilter"
+            />
+
+            <FieldSelect
+              :items="activeItems"
+              clearable
+              name="is_active"
+              label="Active"
+              @change="changeFilter"
+            />
+          </template>
+          <template #body-name="{ data }">
+            {{ truncatedString(data.name as string) }}
+          </template>
+          <template #body-description="{ data }">
+            {{ truncatedString(data.description as string) }}
+          </template>
+          <template #body-is_recommended="{ data }">
+            <CheckIcon
+              v-if="data.is_recommended"
+              class="size-6 text-green-500"
+            />
+            <XMarkIcon v-else class="size-6 text-red-500" />
+          </template>
+          <template #body-is_active="{ data }">
+            <CheckIcon v-if="data.is_active" class="size-6 text-green-500" />
+            <XMarkIcon v-else class="size-6 text-red-500" />
+          </template>
+          <template #body-actions="{ data }">
+            <div class="flex gap-4">
+              <NuxtLink
+                v-if="hasPermissionTo('serverContent.update')"
+                :to="`/server-content/edit/${data.id}`"
+              >
+                <Button size="sm" class="px-2" color="gray">
+                  <span class="flex items-center">
+                    <PencilIcon class="size-4 mr-2" />
+                    Edit
+                  </span>
+                </Button>
+              </NuxtLink>
+
+              <Button
+                v-if="hasPermissionTo('serverContent.delete')"
+                size="sm"
+                class="px-2"
+                color="error"
+                @click="
+                  () => {
+                    toDeleteServerContent = data;
+                    deleteDialog = true;
+                  }
+                "
+              >
+                <span class="flex items-center"> Delete </span>
+              </Button>
+            </div>
+          </template>
+        </Table>
+        <Dialog
+          v-if="deleteDialog"
+          @close="
             () => {
               toDeleteServerContent = undefined;
               deleteDialog = false;
             }
           "
         >
-          Cancel
-        </Button>
-      </template>
-    </Dialog>
-  </div>
+          <template #title>
+            <p>Delete</p>
+          </template>
+          <template #body>
+            <p class="mb-2">
+              Delete the Mod/Datapack:
+              <span class="font-bold">{{ toDeleteServerContent?.name }}</span>
+              ?
+            </p>
+            <p
+              class="rounded border border-red-400 bg-red-200 px-4 py-2 text-red-600"
+            >
+              This Mod/Datapack will be deleted
+            </p>
+          </template>
+          <template #footer>
+            <Button class="ml-4 px-4" color="error" size="sm" @click="remove">
+              Delete
+            </Button>
+            <Button
+              class="px-4"
+              color="gray"
+              size="sm"
+              @click="
+                () => {
+                  toDeleteServerContent = undefined;
+                  deleteDialog = false;
+                }
+              "
+            >
+              Cancel
+            </Button>
+          </template>
+        </Dialog>
+      </div>
+    </template>
+  </UDashboardPanel>
 </template>

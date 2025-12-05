@@ -3,7 +3,8 @@ export default defineNuxtConfig({
   compatibilityDate: "2024-11-01",
   devtools: { enabled: true },
   ssr: false,
-  modules: ["@nuxtjs/tailwindcss", "@nuxt/eslint", "nuxt-auth-sanctum"],
+  modules: ["@nuxt/ui", "@nuxt/eslint", "nuxt-auth-sanctum"],
+  css: ["~/assets/css/main.css"],
   runtimeConfig: {
     public: {
       apiBase: "/api/v1",

@@ -67,16 +67,23 @@ definePageMeta({
   },
 });
 
+useHead({
+  title: "Edit Ticket Panel",
+});
+
 onMounted(async () => {
   loading.value = true;
   ticketPanelId.value = parseRouteParameter(route.params.id);
 
-  const { data } = await useApi<PaginatedResponse<TicketPanelData[]>>("/ticket/panel", {
-    method: "get",
-    params: {
-      "filter[id]": ticketPanelId.value,
+  const { data } = await useApi<PaginatedResponse<TicketPanelData[]>>(
+    "/ticket/panel",
+    {
+      method: "get",
+      params: {
+        "filter[id]": ticketPanelId.value,
+      },
     },
-  });
+  );
   if (!data.value || !data.value?.data[0]) {
     navigateTo("/ticket/panel");
     return;
@@ -91,49 +98,53 @@ onMounted(async () => {
 
   loading.value = false;
 });
-
-useHead({
-  title: "Edit Ticket Panel",
-});
 </script>
 
 <template>
-  <div class="flex grow">
-    <div v-if="loading" class="flex grow items-center justify-center">
-      <Spinner />
-    </div>
-    <div v-else class="w-full">
-      <div class="flex justify-between items-center mb-8">
-        <div class="flex items-center gap-4">
-          <p class="text-2xl">Edit Ticket Panel</p>
-        </div>
-        <div class="flex items-center gap-4">
-          <Button size="sm" class="px-2" color="primary" @click="sendPanel">
+  <UDashboardPanel>
+    <template #header>
+      <UDashboardNavbar title="Edit Ticket Panel">
+        <template #right>
+          <Button size="md" class="px-2" color="primary" @click="sendPanel">
             <span class="flex items-center"> Send Panel </span>
           </Button>
+        </template>
+      </UDashboardNavbar>
+    </template>
+
+    <template #body>
+      <div class="flex grow">
+        <div v-if="loading" class="flex grow items-center justify-center">
+          <Spinner />
+        </div>
+        <div v-else class="w-full">
+          <form class="grid grid-cols-1 gap-4" @submit.prevent="save">
+            <FieldInput name="title" label="Title" />
+            <FieldTextArea name="message" label="Message" />
+            <FieldInput name="embed_color" type="color" label="Color" />
+            <FieldSelect
+              :items="textChannels"
+              name="channel_id"
+              label="Channel"
+            />
+
+            <div>
+              <Button
+                :disabled="isSubmitting"
+                :loading="isSubmitting"
+                class="mr-2 px-4"
+                size="md"
+                type="submit"
+              >
+                Save
+              </Button>
+              <span v-if="errorMessage" class="text-red-600">{{
+                errorMessage
+              }}</span>
+            </div>
+          </form>
         </div>
       </div>
-      <form class="grid grid-cols-1 gap-4" @submit.prevent="save">
-        <FieldInput name="title" label="Title" />
-        <FieldTextArea name="message" label="Message" />
-        <FieldInput name="embed_color" type="color" label="Color" />
-        <FieldSelect :items="textChannels" name="channel_id" label="Channel" />
-
-        <div>
-          <Button
-            :disabled="isSubmitting"
-            :loading="isSubmitting"
-            class="mr-2 px-4"
-            size="md"
-            type="submit"
-          >
-            Save
-          </Button>
-          <span v-if="errorMessage" class="text-red-600">{{
-            errorMessage
-          }}</span>
-        </div>
-      </form>
-    </div>
-  </div>
+    </template>
+  </UDashboardPanel>
 </template>

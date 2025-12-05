@@ -44,15 +44,15 @@ const save = handleSubmit(async (values) => {
   }
 });
 
-useHead({
-  title: "Create Application Question",
-});
-
 definePageMeta({
   permission: {
     permission: "applicationQuestion.create",
     fallback: `/application/${applicationId.value}/question`,
   },
+});
+
+useHead({
+  title: "Create Application Question",
 });
 
 onMounted(() => {
@@ -61,31 +61,38 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="flex grow">
-    <div class="w-full">
-      <p class="mb-8 text-2xl">Create Application Question</p>
-      <form class="grid grid-cols-1 gap-4" @submit.prevent="save">
-        <FieldInput name="order" label="Order" type="number" />
+  <UDashboardPanel>
+    <template #header>
+      <UDashboardNavbar title="Create Application Question" />
+    </template>
 
-        <FieldTextArea name="question" label="Question" />
+    <template #body>
+      <div class="flex grow">
+        <div class="w-full">
+          <form class="grid grid-cols-1 gap-4" @submit.prevent="save">
+            <FieldInput name="order" label="Order" type="number" />
 
-        <FieldSwitch name="is_active" label="Active?" />
+            <FieldTextArea name="question" label="Question" />
 
-        <div>
-          <Button
-            :disabled="isSubmitting"
-            :loading="isSubmitting"
-            class="mr-2 px-4"
-            size="md"
-            type="submit"
-          >
-            Save
-          </Button>
-          <span v-if="errorMessage" class="text-red-600">{{
-            errorMessage
-          }}</span>
+            <FieldSwitch name="is_active" label="Active?" />
+
+            <div>
+              <Button
+                :disabled="isSubmitting"
+                :loading="isSubmitting"
+                class="mr-2 px-4"
+                size="md"
+                type="submit"
+              >
+                Save
+              </Button>
+              <span v-if="errorMessage" class="text-red-600">{{
+                errorMessage
+              }}</span>
+            </div>
+          </form>
         </div>
-      </form>
-    </div>
-  </div>
+      </div>
+    </template>
+  </UDashboardPanel>
 </template>
