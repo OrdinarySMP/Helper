@@ -1,38 +1,18 @@
 <script lang="ts" setup>
 import { ref } from "vue";
-import { toTypedSchema } from "@vee-validate/zod";
-import * as zod from "zod";
-import { useForm } from "vee-validate";
 
-const errorMessage = ref("");
+const rule = ref({});
+const router = useRouter();
+const toast = useSimpleToast();
 
-const formSchema = toTypedSchema(
-  zod.object({
-    number: zod.number().min(1),
-    name: zod.string().min(1),
-    rule: zod.string().min(1),
-  }),
-);
+const persited = () => {
+  toast.success("Rule created.");
+  router.back();
+};
 
-const { handleSubmit, setErrors, isSubmitting } = useForm({
-  validationSchema: formSchema,
-});
-
-const save = handleSubmit(async (values) => {
-  errorMessage.value = "";
-
-  const { error } = await useApi("/rule", {
-    method: "post",
-    body: values,
-  });
-
-  if (error.value) {
-    errorMessage.value = error.value.data.message;
-    setErrors(error.value.data.errors ?? []);
-  } else {
-    navigateTo("/rule");
-  }
-});
+const persistError = () => {
+  toast.error("An error occoured while creating the Rule.");
+};
 
 definePageMeta({
   permission: {
@@ -53,32 +33,11 @@ useHead({
     </template>
 
     <template #body>
-      <div class="flex grow">
-        <div class="w-full">
-          <form class="grid grid-cols-1 gap-4" @submit.prevent="save">
-            <FieldInput name="number" label="Number" type="number" />
-
-            <FieldInput name="name" label="Name" />
-
-            <FieldTextArea name="rule" label="Rule" />
-
-            <div>
-              <Button
-                :disabled="isSubmitting"
-                :loading="isSubmitting"
-                class="mr-2 px-4"
-                size="md"
-                type="submit"
-              >
-                Save
-              </Button>
-              <span v-if="errorMessage" class="text-red-600">{{
-                errorMessage
-              }}</span>
-            </div>
-          </form>
-        </div>
-      </div>
+      <RuleForm
+        v-model="rule"
+        @persited="persited"
+        @persist-error="persistError"
+      />
     </template>
   </UDashboardPanel>
 </template>

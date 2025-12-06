@@ -1,0 +1,60 @@
+<script lang="ts" setup>
+import type { ServerContentData } from "@ordinary/api-types";
+import * as zod from "zod";
+import type { Form } from "#ui/types";
+
+const model = defineModel<Partial<ServerContentData>>({ required: true });
+
+const emit = defineEmits<{
+  (e: "persited" | "loading" | "done"): void;
+  (e: "persist-error", err: unknown): void;
+}>();
+
+const client = useApiClient();
+
+const schema = zod.object({
+  name: zod.string().min(1).max(128),
+  url: zod.string().url().max(256),
+  description: zod.string().min(1).max(512),
+  is_recommended: zod.boolean(),
+  is_active: zod.boolean(),
+});
+type Schema = zod.output<typeof schema>;
+const form = ref<Form<Schema>>();
+
+const { submitting, onSubmit } = useApiForm(form, async (event) => {
+  try {
+    emit("loading");
+    const route = model.value?.id
+      ? `/server-content/${model.value.id}`
+      : "/server-content";
+    const method = model.value?.id ? "PATCH" : "POST";
+    await client(route, {
+      method,
+      body: event.data,
+    });
+    emit("persited");
+  } catch (err) {
+    emit("persist-error", err);
+    throw err;
+  } finally {
+    emit("done");
+  }
+});
+</script>
+
+<template>
+  <UForm
+    ref="form"
+    class="space-y-4"
+    :schema="schema"
+    :state="model"
+    @submit="onSubmit"
+  >
+    <ServerContentFields v-model="model" />
+
+    <UButton type="submit" variant="subtle" :loading="submitting">
+      Save
+    </UButton>
+  </UForm>
+</template>
