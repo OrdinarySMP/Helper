@@ -1,76 +1,46 @@
 <script lang="ts" setup>
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
+import type { TableColumn } from "@nuxt/ui";
 import type { RuleData } from "@ordinary/api-types";
-import { PencilIcon, PlusIcon } from "@heroicons/vue/24/solid";
-import type { Pagination } from "@/types/table";
 import type { PaginatedResponse } from "@/types/response";
 
-const loading = ref(true);
-const rules = ref<RuleData[]>([]);
-const toDeleteRule = ref();
-const deleteDialog = ref(false);
-const pagination = ref<Pagination | null>();
-
-const headers = ref([
+const page = ref(1);
+const { data, status, refresh } = await useApi<PaginatedResponse<RuleData[]>>(
+  "/rule",
   {
-    title: "ID",
-    key: "id",
-  },
-  {
-    title: "Number",
-    key: "number",
-  },
-  {
-    title: "Name",
-    key: "name",
-  },
-  {
-    title: "",
-    key: "actions",
-  },
-]);
-
-const loadRule = async (page = 1) => {
-  loading.value = true;
-  const { data } = await useApi<PaginatedResponse<RuleData[]>>("/rule", {
     method: "get",
     query: {
-      page_size: 10,
+      page_size: 15,
       page,
     },
-  });
+    watch: [page],
+  },
+);
+const totalItems = computed(() => data.value?.meta.total ?? 0);
+const perPage = computed(() => data.value?.meta.per_page ?? 0);
 
-  if (data.value) {
-    rules.value = data.value.data ?? [];
-
-    pagination.value = {
-      total: data.value.meta.total,
-      currentPage: data.value.meta.current_page,
-      perPage: data.value.meta.per_page,
-      from: data.value.meta.from,
-      to: data.value.meta.to,
-      totalPages: data.value.meta.last_page,
-    };
-  }
-
-  loading.value = false;
-};
-
-const remove = async () => {
-  if (!toDeleteRule.value) {
-    return;
-  }
-  await useApi<Record<string, string>[]>(`/rule/${toDeleteRule.value.id}`, {
-    method: "delete",
-  });
-  deleteDialog.value = false;
-  toDeleteRule.value = undefined;
-  await loadRule();
-};
-
-const pageChange = (page: number) => {
-  loadRule(page);
-};
+const columns: TableColumn<RuleData>[] = [
+  {
+    accessorKey: "id",
+    header: "ID",
+  },
+  {
+    accessorKey: "number",
+    header: "Number",
+  },
+  {
+    accessorKey: "name",
+    header: "Name",
+  },
+  {
+    id: "actions",
+    cell: ({ row }) =>
+      h(resolveComponent("RuleActionCell"), {
+        data: row.original,
+        onDeleted: refresh,
+      }),
+  },
+];
 
 definePageMeta({
   permission: {
@@ -81,10 +51,6 @@ definePageMeta({
 useHead({
   title: "Rules",
 });
-
-onMounted(() => {
-  loadRule();
-});
 </script>
 
 <template>
@@ -92,101 +58,40 @@ onMounted(() => {
     <template #header>
       <UDashboardNavbar title="Rules">
         <template #right>
-          <NuxtLink v-if="hasPermissionTo('rule.create')" to="/rule/create">
-            <Button size="sm" class="px-2" color="primary">
-              <span class="flex items-center">
-                <PlusIcon class="size-4 mr-2" />
-                Create
-              </span>
-            </Button>
-          </NuxtLink>
+          <UButton
+            v-if="hasPermissionTo('rule.create')"
+            label="Create"
+            icon="material-symbols:add-rounded"
+            size="sm"
+            class="px-2"
+            variant="subtle"
+            color="secondary"
+            to="/rule/create"
+          />
         </template>
       </UDashboardNavbar>
     </template>
 
     <template #body>
-      <div class="w-full">
-        <Table
-          :loading="loading"
-          :headers="headers"
-          :data="rules"
-          :pagination="pagination"
-          @page-change="pageChange"
-        >
-          <template #body-actions="{ data }">
-            <div class="flex gap-4">
-              <NuxtLink
-                v-if="hasPermissionTo('rule.update')"
-                :to="`/rule/edit/${data.id}`"
-              >
-                <Button size="sm" class="px-2" color="gray">
-                  <span class="flex items-center">
-                    <PencilIcon class="size-4 mr-2" />
-                    Edit
-                  </span>
-                </Button>
-              </NuxtLink>
+      <UTable
+        :data="data?.data"
+        :columns="columns"
+        :loading="status === 'pending'"
+        class="flex-1"
+      />
 
-              <Button
-                v-if="hasPermissionTo('rule.delete')"
-                size="sm"
-                class="px-2"
-                color="error"
-                @click="
-                  () => {
-                    toDeleteRule = data;
-                    deleteDialog = true;
-                  }
-                "
-              >
-                <span class="flex items-center"> Delete </span>
-              </Button>
-            </div>
-          </template>
-        </Table>
-        <Dialog
-          v-if="deleteDialog"
-          @close="
-            () => {
-              toDeleteRule = undefined;
-              deleteDialog = false;
-            }
-          "
-        >
-          <template #title>
-            <p>Delete</p>
-          </template>
-          <template #body>
-            <p class="mb-2">
-              Delete the Rule:
-              <span class="font-bold">{{ toDeleteRule?.name }}</span>
-              ?
-            </p>
-            <p
-              class="rounded border border-red-400 bg-red-200 px-4 py-2 text-red-600"
-            >
-              This Rule will be deleted
-            </p>
-          </template>
-          <template #footer>
-            <Button class="ml-4 px-4" color="error" size="sm" @click="remove">
-              Delete
-            </Button>
-            <Button
-              class="px-4"
-              color="gray"
-              size="sm"
-              @click="
-                () => {
-                  toDeleteRule = undefined;
-                  deleteDialog = false;
-                }
-              "
-            >
-              Cancel
-            </Button>
-          </template>
-        </Dialog>
+      <div
+        class="flex items-center justify-end gap-3 border-t border-default pt-4 mt-auto"
+      >
+        <div class="flex items-center gap-1.5">
+          <UPagination
+            active-color="brand"
+            :page="page"
+            :total="totalItems"
+            :items-per-page="perPage"
+            @update:page="(p: number) => (page = p)"
+          />
+        </div>
       </div>
     </template>
   </UDashboardPanel>

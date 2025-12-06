@@ -54,16 +54,16 @@ useHead({
     <template #header>
       <UDashboardNavbar title="FAQs">
         <template #right>
-          <NuxtLink v-if="hasPermissionTo('faq.create')" to="/faq/create">
-            <UButton
-              label="Create"
-              icon="material-symbols:add-rounded"
-              size="sm"
-              class="px-2"
-              variant="subtle"
-              color="secondary"
-            />
-          </NuxtLink>
+          <UButton
+            v-if="hasPermissionTo('faq.create')"
+            label="Create"
+            icon="material-symbols:add-rounded"
+            size="sm"
+            class="px-2"
+            variant="subtle"
+            color="secondary"
+            to="/faq/create"
+          />
         </template>
       </UDashboardNavbar>
     </template>

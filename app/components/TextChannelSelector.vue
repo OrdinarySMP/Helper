@@ -1,33 +1,24 @@
 <script lang="ts" setup>
 import { ref } from "vue";
-import { toTypedSchema } from "@vee-validate/zod";
-import * as zod from "zod";
-import { useForm } from "vee-validate";
+import type { ButtonProps } from "@nuxt/ui";
 
-defineProps<{
-  title: string;
-}>();
-
-const showSelector = ref(false);
-const textChannels = ref(await loadTextChannels());
-
-const formSchema = toTypedSchema(
-  zod.object({
-    text_channel: zod.string().min(1),
-  }),
+withDefaults(
+  defineProps<{
+    title: string;
+    size?: ButtonProps["size"];
+  }>(),
+  {
+    size: "sm",
+  },
 );
 
-const { handleSubmit } = useForm({
-  validationSchema: formSchema,
-});
+const open = ref(false);
+const channel = ref<string>("");
+const textChannels = ref(await loadTextChannels());
 
-const select = handleSubmit(async (values) => {
-  emit("select", values.text_channel ?? "");
-  showSelector.value = false;
-});
-
-const openSelector = async () => {
-  showSelector.value = true;
+const send = () => {
+  emit("select", channel.value);
+  open.value = false;
 };
 
 const emit = defineEmits<{
@@ -36,27 +27,42 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <Button size="sm" class="px-2" color="primary" @click="openSelector">
-    {{ title }}
-  </Button>
+  <UModal
+    v-model:open="open"
+    :title="title"
+    description="Please select a channel."
+  >
+    <UButton
+      :size="size"
+      color="secondary"
+      type="button"
+      variant="subtle"
+      :label="title"
+    />
 
-  <Dialog v-if="showSelector" @close="showSelector = false">
-    <template #title>
-      <p>Select Channel</p>
-    </template>
     <template #body>
-      <p class="mb-2">Please select a channel:</p>
-      <FieldSelect
-        :items="textChannels"
-        name="text_channel"
-        label="Text channel"
-      />
+      <div class="space-y-4">
+        <UFormField label="Text Channel" name="channel" required>
+          <USelectMenu
+            v-model="channel"
+            :items="textChannels"
+            class="w-full"
+            value-key="value"
+            label-key="label"
+          />
+        </UFormField>
+
+        <div class="flex justify-end gap-2">
+          <UButton
+            label="Cancel"
+            color="neutral"
+            variant="subtle"
+            size="md"
+            @click="open = false"
+          />
+          <UButton label="Select" size="md" @click="send" />
+        </div>
+      </div>
     </template>
-    <template #footer>
-      <Button class="ml-4 px-4" size="sm" @click="select"> Select </Button>
-      <Button class="px-4" color="gray" size="sm" @click="showSelector = false">
-        Cancel
-      </Button>
-    </template>
-  </Dialog>
+  </UModal>
 </template>

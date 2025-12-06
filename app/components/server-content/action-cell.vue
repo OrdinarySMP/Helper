@@ -1,27 +1,27 @@
 <script lang="ts" setup>
-import type { FaqData } from "@ordinary/api-types";
+import type { ServerContentData } from "@ordinary/api-types";
 
 const client = useApiClient();
 const openDeleteModal = ref(false);
 const toast = useSimpleToast();
 
 const props = defineProps<{
-  data: FaqData;
+  data: ServerContentData;
 }>();
 
 const emit = defineEmits<{
   (e: "deleted"): void;
 }>();
 
-const deleteFaq = async () => {
+const deleteServerContent = async () => {
   try {
-    await client(`/faq/${props.data.id}`, {
+    await client(`/server-content/${props.data.id}`, {
       method: "delete",
     });
-    toast.success("The FAQ was deleted.");
+    toast.success("The Mod/Datapack was deleted.");
     emit("deleted");
   } catch {
-    toast.error("An error occurred while deleting the FAQ.");
+    toast.error("An error occurred while deleting the Mod/Datapack.");
   } finally {
     openDeleteModal.value = false;
   }
@@ -31,21 +31,21 @@ const deleteFaq = async () => {
 <template>
   <div class="space-x-2">
     <UButton
-      v-if="hasPermissionTo('faq.update')"
+      v-if="hasPermissionTo('serverContent.update')"
       label="Edit"
       size="md"
       icon="material-symbols:edit-outline"
       type="button"
       variant="subtle"
-      :to="`/faq/edit/${data.id}`"
+      :to="`/server-content/edit/${data.id}`"
     />
     <UModal
       v-model:open="openDeleteModal"
-      :title="`Delete the FAQ: ${data?.question}?`"
+      :title="`Delete the Mod/Datapack: ${data.name}?`"
       :description="`Are you sure, this action cannot be undone.`"
     >
       <UButton
-        v-if="hasPermissionTo('faq.delete')"
+        v-if="hasPermissionTo('serverContent.delete')"
         size="md"
         label="Delete"
         color="error"
@@ -63,7 +63,12 @@ const deleteFaq = async () => {
             size="md"
             @click="openDeleteModal = false"
           />
-          <UButton label="Delete" color="error" size="md" @click="deleteFaq" />
+          <UButton
+            label="Delete"
+            color="error"
+            size="md"
+            @click="deleteServerContent"
+          />
         </div>
       </template>
     </UModal>

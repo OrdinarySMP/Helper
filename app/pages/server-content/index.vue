@@ -1,189 +1,80 @@
 <script lang="ts" setup>
-import { ref, onMounted } from "vue";
-import { toTypedSchema } from "@vee-validate/zod";
-import * as zod from "zod";
-import { useForm } from "vee-validate";
+import { ref } from "vue";
+import type { TableColumn } from "@nuxt/ui";
 import type { ServerContentData } from "@ordinary/api-types";
-import type { ServerContentFilter } from "@/types/serverContent";
-import {
-  PencilIcon,
-  PlusIcon,
-  CheckIcon,
-  XMarkIcon,
-} from "@heroicons/vue/24/solid";
-import type { Pagination } from "@/types/table";
 import type { PaginatedResponse } from "@/types/response";
 
-const loading = ref(true);
-const serverContents = ref<ServerContentData[]>([]);
-const toDeleteServerContent = ref();
-const deleteDialog = ref(false);
-const pagination = ref<Pagination | null>();
-const filterValues = ref<ServerContentFilter>({
-  name: null,
-  is_recommended: null,
-  is_active: null,
+const toast = useSimpleToast();
+const client = useApiClient();
+const page = ref(1);
+const { data, status, refresh } = await useApi<
+  PaginatedResponse<ServerContentData[]>
+>("/server-content", {
+  method: "get",
+  query: {
+    page_size: 15,
+    page,
+  },
+  watch: [page],
 });
+const totalItems = computed(() => data.value?.meta.total ?? 0);
+const perPage = computed(() => data.value?.meta.per_page ?? 0);
 
-const headers = ref([
+const columns: TableColumn<ServerContentData>[] = [
   {
-    title: "ID",
-    key: "id",
-  },
-  {
-    title: "Name",
-    key: "name",
+    accessorKey: "id",
+    header: "ID",
   },
   {
-    title: "Description",
-    key: "description",
+    accessorKey: "name",
+    header: "Name",
+    cell: ({ row }) => truncatedString(row.original.name),
   },
   {
-    title: "Recommended?",
-    key: "is_recommended",
+    accessorKey: "description",
+    header: "Description",
+    cell: ({ row }) => truncatedString(row.original.description),
   },
   {
-    title: "Active?",
-    key: "is_active",
+    accessorKey: "is_recommended",
+    header: "Recommended",
+    cell: ({ row }) =>
+      h(resolveComponent("TableBooleanCell"), {
+        value: row.original.is_recommended,
+      }),
   },
   {
-    title: "",
-    key: "actions",
-  },
-]);
-
-const recommendedItems = ref([
-  {
-    label: "All",
-    value: null,
+    accessorKey: "is_active",
+    header: "Active",
+    cell: ({ row }) =>
+      h(resolveComponent("TableBooleanCell"), {
+        value: row.original.is_active,
+      }),
   },
   {
-    label: "Recommended",
-    value: true,
+    id: "actions",
+    cell: ({ row }) =>
+      h(resolveComponent("ServerContentActionCell"), {
+        data: row.original,
+        onDeleted: refresh,
+      }),
   },
-  {
-    label: "Not recommended",
-    value: false,
-  },
-]);
+];
 
-const activeItems = ref([
-  {
-    label: "All",
-    value: null,
-  },
-  {
-    label: "active",
-    value: true,
-  },
-  {
-    label: "inactive",
-    value: false,
-  },
-]);
-
-const formSchema = toTypedSchema(
-  zod.object({
-    name: zod.string().max(128).nullable(),
-    is_recommended: zod.boolean().nullable(),
-    is_active: zod.boolean().nullable(),
-  }),
-);
-
-const { handleSubmit } = useForm({
-  initialValues: {
-    name: "",
-    is_recommended: null,
-    is_active: null,
-  },
-  validationSchema: formSchema,
-});
-
-const changeFilter = handleSubmit((values) => {
-  filterValues.value = values;
-  loadServerContent();
-});
-
-const loadServerContent = async (page = 1) => {
-  loading.value = true;
-  const { data } = await useApi<PaginatedResponse<ServerContentData[]>>(
-    "/server-content",
-    {
-      method: "get",
-      query: {
-        page_size: 10,
-        page,
-        ...filters.value,
-      },
-    },
-  );
-
-  if (data.value) {
-    serverContents.value = data.value.data ?? [];
-
-    pagination.value = {
-      total: data.value.meta.total,
-      currentPage: data.value.meta.current_page,
-      perPage: data.value.meta.per_page,
-      from: data.value.meta.from,
-      to: data.value.meta.to,
-      totalPages: data.value.meta.last_page,
-    };
-  }
-
-  loading.value = false;
-};
-
-const remove = async () => {
-  if (!toDeleteServerContent.value) {
-    return;
-  }
-  await useApi(`/server-content/${toDeleteServerContent.value.id}`, {
-    method: "delete",
-  });
-  deleteDialog.value = false;
-  toDeleteServerContent.value = undefined;
-  await loadServerContent();
-};
-
-const pageChange = (page: number) => {
-  loadServerContent(page);
-};
-const truncatedString = (string: string) => {
-  return string.length > 100 ? string.substring(0, 100) + "..." : string;
-};
-
-const filters = computed(() => {
-  const newFilters: Record<string, string | number | boolean | null> = {};
-
-  if (filterValues.value.name) {
-    newFilters["filter[name]"] = filterValues.value.name;
-  }
-
-  if (filterValues.value.is_recommended !== null) {
-    newFilters["filter[is_recommended]"] = filterValues.value.is_recommended;
-  }
-
-  if (filterValues.value.is_active !== null) {
-    newFilters["filter[is_active]"] = filterValues.value.is_active;
-  }
-
-  return newFilters;
-});
+const truncatedString = (string: string) =>
+  string.length > 100 ? string.substring(0, 100) + "..." : string;
 
 const resend = async (channelId: string) => {
-  const { data } = await useApi("/server-content/resend", {
+  const data = await client("/server-content/resend", {
     method: "post",
     body: {
       channel_id: channelId,
     },
   });
-
-  if (data.value) {
-    useNotification().success(
-      "Send Mods and Datapacks",
-      "Send Mods and Datapacks successfully",
-    );
+  if (data) {
+    toast.success("Send Mods and Datapacks successfully.");
+  } else {
+    toast.success("An error occurred while sending Mods and Datapacks.");
   }
 };
 
@@ -196,10 +87,6 @@ definePageMeta({
 useHead({
   title: "Mods + Datapacks",
 });
-
-onMounted(() => {
-  loadServerContent();
-});
 </script>
 
 <template>
@@ -207,155 +94,46 @@ onMounted(() => {
     <template #header>
       <UDashboardNavbar title="Mods + Datapacks">
         <template #right>
-          <NuxtLink
-            v-if="hasPermissionTo('serverContent.create')"
-            to="/server-content/create"
-          >
-            <Button size="sm" class="px-2" color="primary">
-              <span class="flex items-center">
-                <PlusIcon class="size-4 mr-2" />
-                Create
-              </span>
-            </Button>
-          </NuxtLink>
-
           <TextChannelSelector
             v-if="hasPermissionTo('serverContent.resend')"
             title="Resend"
             @select="resend"
           />
 
-          <NuxtLink
-            v-if="hasPermissionTo('serverContentMessage.read')"
-            to="/server-content/message"
-          >
-            <Button size="sm" class="px-2" color="primary">
-              <span class="flex items-center"> Messages </span>
-            </Button>
-          </NuxtLink>
+          <UButton
+            v-if="hasPermissionTo('serverContent.create')"
+            label="Create"
+            icon="material-symbols:add-rounded"
+            size="sm"
+            class="px-2"
+            variant="subtle"
+            color="secondary"
+            to="/server-content/create"
+          />
         </template>
       </UDashboardNavbar>
     </template>
 
     <template #body>
-      <div class="w-full">
-        <Table
-          :loading="loading"
-          :headers="headers"
-          :data="serverContents"
-          :pagination="pagination"
-          @page-change="pageChange"
-        >
-          <template #search-bar>
-            <FieldInput name="name" label="Name" @change="changeFilter" />
+      <UTable
+        :data="data?.data"
+        :columns="columns"
+        :loading="status === 'pending'"
+        class="flex-1"
+      />
 
-            <FieldSelect
-              :items="recommendedItems"
-              clearable
-              name="is_recommended"
-              label="Recommended"
-              @change="changeFilter"
-            />
-
-            <FieldSelect
-              :items="activeItems"
-              clearable
-              name="is_active"
-              label="Active"
-              @change="changeFilter"
-            />
-          </template>
-          <template #body-name="{ data }">
-            {{ truncatedString(data.name as string) }}
-          </template>
-          <template #body-description="{ data }">
-            {{ truncatedString(data.description as string) }}
-          </template>
-          <template #body-is_recommended="{ data }">
-            <CheckIcon
-              v-if="data.is_recommended"
-              class="size-6 text-green-500"
-            />
-            <XMarkIcon v-else class="size-6 text-red-500" />
-          </template>
-          <template #body-is_active="{ data }">
-            <CheckIcon v-if="data.is_active" class="size-6 text-green-500" />
-            <XMarkIcon v-else class="size-6 text-red-500" />
-          </template>
-          <template #body-actions="{ data }">
-            <div class="flex gap-4">
-              <NuxtLink
-                v-if="hasPermissionTo('serverContent.update')"
-                :to="`/server-content/edit/${data.id}`"
-              >
-                <Button size="sm" class="px-2" color="gray">
-                  <span class="flex items-center">
-                    <PencilIcon class="size-4 mr-2" />
-                    Edit
-                  </span>
-                </Button>
-              </NuxtLink>
-
-              <Button
-                v-if="hasPermissionTo('serverContent.delete')"
-                size="sm"
-                class="px-2"
-                color="error"
-                @click="
-                  () => {
-                    toDeleteServerContent = data;
-                    deleteDialog = true;
-                  }
-                "
-              >
-                <span class="flex items-center"> Delete </span>
-              </Button>
-            </div>
-          </template>
-        </Table>
-        <Dialog
-          v-if="deleteDialog"
-          @close="
-            () => {
-              toDeleteServerContent = undefined;
-              deleteDialog = false;
-            }
-          "
-        >
-          <template #title>
-            <p>Delete</p>
-          </template>
-          <template #body>
-            <p class="mb-2">
-              Delete the Mod/Datapack:
-              <span class="font-bold">{{ toDeleteServerContent?.name }}</span>
-              ?
-            </p>
-            <p
-              class="rounded border border-red-400 bg-red-200 px-4 py-2 text-red-600"
-            >
-              This Mod/Datapack will be deleted
-            </p>
-          </template>
-          <template #footer>
-            <Button class="ml-4 px-4" color="error" size="sm" @click="remove">
-              Delete
-            </Button>
-            <Button
-              class="px-4"
-              color="gray"
-              size="sm"
-              @click="
-                () => {
-                  toDeleteServerContent = undefined;
-                  deleteDialog = false;
-                }
-              "
-            >
-              Cancel
-            </Button>
-          </template>
-        </Dialog>
+      <div
+        class="flex items-center justify-end gap-3 border-t border-default pt-4 mt-auto"
+      >
+        <div class="flex items-center gap-1.5">
+          <UPagination
+            active-color="brand"
+            :page="page"
+            :total="totalItems"
+            :items-per-page="perPage"
+            @update:page="(p: number) => (page = p)"
+          />
+        </div>
       </div>
     </template>
   </UDashboardPanel>
