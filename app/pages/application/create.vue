@@ -182,7 +182,7 @@ useHead({
               </div>
             </div>
             <div class="col-span-2">
-              <hr />
+              <hr >
               <p class="my-4 text-xl">Application Button</p>
               <FieldSelect
                 :items="textChannels"

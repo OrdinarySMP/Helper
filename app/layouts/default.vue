@@ -129,8 +129,8 @@ useHead({
       }"
     >
       <template #header="{ collapsed }">
-        <Logo v-if="!collapsed" class="shrink-0 mt-2" />
-        <Logo v-else size="sm" class="size-8 shrink-0" />
+        <AppLogo v-if="!collapsed" class="shrink-0 mt-2" />
+        <AppLogo v-else size="sm" class="size-8 shrink-0" />
       </template>
 
       <template #default="{ collapsed }">

@@ -55,3 +55,10 @@ export function laravelValidationErrorToNuxtUiForm(
     };
   });
 }
+
+export const filterToQuery = (filter: Record<string, unknown>) =>
+  Object.fromEntries(
+    Object.entries(filter)
+      .filter(([_, v]) => v !== null && v !== undefined && v !== "")
+      .map(([k, v]) => [`filter[${k}]`, v]),
+  );

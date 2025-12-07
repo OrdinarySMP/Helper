@@ -1,58 +1,78 @@
 <script lang="ts" setup>
-import { ref, onMounted } from "vue";
-import { toTypedSchema } from "@vee-validate/zod";
-import * as zod from "zod";
-import { useForm } from "vee-validate";
-import type { TicketFilter } from "@/types/ticket";
-import {
-  TicketState,
-  type TicketData,
-  type DiscordUserData,
-} from "@ordinary/api-types";
-import { DocumentTextIcon } from "@heroicons/vue/24/solid";
-import type { Pagination } from "@/types/table";
+import { ref } from "vue";
+import type { TableColumn } from "@nuxt/ui";
+import { TicketState, type TicketData } from "@ordinary/api-types";
 import type { PaginatedResponse } from "@/types/response";
 import dayjs from "dayjs";
 
-const user = useCurrentUser();
-const loading = ref(true);
-const tickets = ref<TicketData[]>([]);
-const pagination = ref<Pagination | null>();
-const filterValues = ref<TicketFilter>({
-  state: TicketState.Open,
+const client = useApiClient();
+const page = ref(1);
+const loading = ref(false);
+const data = ref<PaginatedResponse<TicketData[]>>();
+const filter = ref({
+  state: null,
   id: null,
 });
 
-const headers = ref([
+const loadTickets = async () => {
+  const response = await client<PaginatedResponse<TicketData[]>>("/ticket", {
+    method: "get",
+    query: {
+      page_size: 15,
+      page: page.value,
+      include: "ticketButton",
+      sort: "-created_at",
+      ...filterToQuery(filter.value),
+    },
+  });
+  data.value = response;
+};
+await loadTickets();
+
+const totalItems = computed(() => data.value?.meta.total ?? 0);
+const perPage = computed(() => data.value?.meta.per_page ?? 0);
+
+const columns: TableColumn<TicketData>[] = [
   {
-    title: "ID",
-    key: "id",
+    accessorKey: "id",
+    header: "ID",
   },
   {
-    title: "Button",
-    key: "ticket_button.text",
+    accessorKey: "ticket_button.text",
+    header: "Button",
   },
   {
-    title: "Channel",
-    key: "channel_name",
+    accessorKey: "channel_name",
+    header: "Channel",
   },
   {
-    title: "Created by",
-    key: "created_by",
+    accessorKey: "created_by",
+    header: "Created by",
+    cell: ({ row }) =>
+      row.original.created_by_discord_user?.global_name ??
+      row.original.created_by_discord_user_id,
   },
   {
-    title: "Created at",
-    key: "created_at",
+    accessorKey: "created_at",
+    header: "Created at",
+    cell: ({ row }) =>
+      dayjs(row.original.created_at).format("DD.MM.YYYY HH:mm:ss"),
   },
   {
-    title: "Updated at",
-    key: "updated_at",
+    accessorKey: "updated_at",
+    header: "Updated at",
+    cell: ({ row }) =>
+      dayjs(row.original.updated_at).format("DD.MM.YYYY HH:mm:ss"),
   },
   {
-    title: "",
-    key: "actions",
+    id: "actions",
+    cell: ({ row }) =>
+      h(resolveComponent("TicketActionCell"), {
+        data: row.original,
+        onClosed: loadTickets,
+      }),
   },
-]);
+];
 
 const ticketState = ref([
   {
@@ -69,87 +89,21 @@ const ticketState = ref([
   },
 ]);
 
-const formSchema = toTypedSchema(
-  zod.object({
-    state: zod.number().nullable(),
-    id: zod.number().nullable(),
-  }),
+watch(
+  filter,
+  () => {
+    if (page.value === 1) {
+      loadTickets();
+    } else {
+      page.value = 1;
+    }
+  },
+  {
+    deep: true,
+  },
 );
 
-const { handleSubmit } = useForm({
-  initialValues: filterValues.value,
-  validationSchema: formSchema,
-});
-
-const changeFilter = handleSubmit((values) => {
-  filterValues.value = values;
-  loadTicket();
-});
-
-const loadTicket = async (page = 1) => {
-  loading.value = true;
-  const { data } = await useApi<PaginatedResponse<TicketData[]>>("/ticket", {
-    method: "get",
-    query: {
-      page_size: 10,
-      page,
-      include: "ticketButton",
-      sort: "-created_at",
-      ...filters.value,
-    },
-  });
-
-  if (data.value) {
-    tickets.value = data.value.data ?? [];
-
-    pagination.value = {
-      total: data.value.meta.total,
-      currentPage: data.value.meta.current_page,
-      perPage: data.value.meta.per_page,
-      from: data.value.meta.from,
-      to: data.value.meta.to,
-      totalPages: data.value.meta.last_page,
-    };
-  }
-
-  loading.value = false;
-};
-
-const pageChange = (page: number) => {
-  loadTicket(page);
-};
-
-const filters = computed(() => {
-  const newFilters: Record<string, string | number | boolean | null> = {};
-
-  if (filterValues.value.id) {
-    newFilters["filter[id]"] = filterValues.value.id;
-  }
-
-  if (filterValues.value.state !== null) {
-    newFilters["filter[state]"] = filterValues.value.state;
-  }
-
-  return newFilters;
-});
-
-const closeTicket = async (ticketId: number) => {
-  const { error } = await useApi(`/ticket/${ticketId}/close`, {
-    method: "post",
-    body: {
-      closed_by_discord_user_id: user.value?.discord_id,
-    },
-  });
-  if (error.value) {
-    useNotification().error(
-      "Could not close ticket!",
-      error.value.data.message,
-    );
-  } else {
-    useNotification().error("Ticket close", "Ticket successfully closed");
-    reloadNuxtApp();
-  }
-};
+watch(page, loadTickets);
 
 definePageMeta({
   permission: {
@@ -160,10 +114,6 @@ definePageMeta({
 useHead({
   title: "Tickets",
 });
-
-onMounted(() => {
-  loadTicket();
-});
 </script>
 
 <template>
@@ -173,74 +123,43 @@ onMounted(() => {
     </template>
 
     <template #body>
-      <div class="w-full">
-        <Table
-          :loading="loading"
-          :headers="headers"
-          :data="tickets"
-          :pagination="pagination"
-          @page-change="pageChange"
-        >
-          <template #search-bar>
-            <FieldSelect
-              :items="ticketState"
-              clearable
-              name="state"
-              label="State"
-              @change="changeFilter"
-            />
-            <FieldInput
-              name="id"
-              label="ID"
-              type="number"
-              @change="changeFilter"
-            />
-          </template>
-          <template #body-created_by="{ data }">
-            {{
-              (data.created_by_discord_user as DiscordUserData | null)
-                ?.global_name ?? data.created_by_discord_user_id
-            }}
-          </template>
-          <template #body-created_at="{ data }">
-            {{
-              dayjs((data as TicketData).created_at).format(
-                "DD.MM.YYYY HH:mm:ss",
-              )
-            }}
-          </template>
-          <template #body-updated_at="{ data }">
-            {{
-              dayjs((data as TicketData).updated_at).format(
-                "DD.MM.YYYY HH:mm:ss",
-              )
-            }}
-          </template>
-          <template #body-actions="{ data }">
-            <div class="flex gap-4">
-              <NuxtLink
-                v-if="hasPermissionTo('ticketTranscript.read')"
-                :to="`/ticket/transcript/${data.id}`"
-              >
-                <Button size="sm" class="px-2" color="gray">
-                  <span class="flex items-center">
-                    <DocumentTextIcon class="size-4 mr-2" />
-                    Transcript
-                  </span>
-                </Button>
-              </NuxtLink>
-              <Button
-                v-if="data.state === TicketState.Open"
-                size="sm"
-                class="px-2"
-                color="error"
-                @click="closeTicket(data.id as number)"
-              >
-                Close
-              </Button>
-            </div>
-          </template>
-        </Table>
+      <div class="space-x-4">
+        <USelectMenu
+          v-model="filter.state"
+          :items="ticketState"
+          class="w-xs"
+          label-key="label"
+          value-key="value"
+        />
+        <UInput
+          v-model="filter.id"
+          type="number"
+          min="0"
+          class="w-sm"
+          icon="i-lucide-search"
+          placeholder="ID"
+        />
+      </div>
+
+      <UTable
+        :data="data?.data"
+        :columns="columns"
+        :loading="loading"
+        class="flex-1"
+      />
+
+      <div
+        class="flex items-center justify-end gap-3 border-t border-default pt-4 mt-auto"
+      >
+        <div class="flex items-center gap-1.5">
+          <UPagination
+            active-color="brand"
+            :page="page"
+            :total="totalItems"
+            :items-per-page="perPage"
+            @update:page="(p: number) => (page = p)"
+          />
+        </div>
       </div>
     </template>
   </UDashboardPanel>
