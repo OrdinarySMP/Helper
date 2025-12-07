@@ -1,34 +1,20 @@
 <script lang="ts" setup>
-import { ref, onMounted } from "vue";
 import { TicketState, type TicketData } from "@ordinary/api-types";
 import dayjs from "dayjs";
 import type { PaginatedResponse } from "@/types/response";
 
 const route = useRoute();
-const loading = ref(true);
 const ticket = ref<TicketData>();
-const ticketId = ref<TicketData["id"]>();
 
-const loadTicket = async (page = 1) => {
-  loading.value = true;
-  const { data } = await useApi<PaginatedResponse<TicketData[]>>("/ticket", {
-    method: "get",
-    query: {
-      "filter[id]": ticketId.value,
-      page_size: 10,
-      page,
-      include: "ticketTranscripts,ticketButton",
-    },
-  });
+const { data } = await useApi<PaginatedResponse<TicketData[]>>("/ticket", {
+  method: "get",
+  query: {
+    "filter[id]": route.params.ticket_id,
+    include: "ticketTranscripts,ticketButton",
+  },
+});
 
-  if (!data.value || !data.value?.data[0]) {
-    navigateTo("/ticket");
-    return;
-  }
-  ticket.value = data.value.data[0];
-
-  loading.value = false;
-};
+ticket.value = data.value?.data[0];
 
 definePageMeta({
   permission: {
@@ -39,92 +25,97 @@ definePageMeta({
 useHead({
   title: "Ticket Transcript",
 });
-
-onMounted(() => {
-  ticketId.value = parseRouteParameter(route.params.ticket_id);
-  loadTicket();
-});
 </script>
 
 <template>
-  <div class="flex grow">
-    <div v-if="loading" class="flex grow items-center justify-center">
-      <Spinner />
-    </div>
-    <div v-else class="w-full">
-      <p class="mb-8 text-2xl">Ticket {{ ticket?.id }}</p>
-      <div class="grid grid-cols-3 mb-4">
-        <p>State: {{ ticket ? TicketState[ticket.state] : "---" }}</p>
-        <p>Button: {{ ticket?.ticket_button?.text }}</p>
-        <p>
-          Closed by:
-          {{
-            ticket?.closed_by_discord_user?.global_name ??
-            ticket?.closed_by_discord_user_id
-          }}
-        </p>
-        <p>
-          Created by:
-          {{
-            ticket?.created_by_discord_user?.global_name ??
-            ticket?.created_by_discord_user_id
-          }}
-        </p>
-        <p>Channel Name: {{ ticket?.channel_name }}</p>
-        <p>Closed reason: {{ ticket?.closed_reason }}</p>
-      </div>
+  <UDashboardPanel>
+    <template #header>
+      <UDashboardNavbar :title="`Ticket ${ticket?.id} Transcript`" />
+    </template>
 
-      <p class="mb-8 text-xl">Transcript</p>
-      <div
-        v-for="(transcript, key) in ticket?.ticket_transcripts"
-        :key="key"
-        class="mb-4"
-      >
-        <div class="flex">
-          <img
-            :src="`https://cdn.discordapp.com/avatars/${transcript.discord_user_id}/${transcript.user?.avatar}.png`"
-            class="rounded-full size-10 mr-2"
-            alt=""
-          />
-          <div>
-            <span class="mr-2">
+    <template #body>
+      <div class="flex grow">
+        <div class="w-full">
+          <div class="grid grid-cols-3 mb-4">
+            <p>State: {{ ticket ? TicketState[ticket.state] : "---" }}</p>
+            <p>Button: {{ ticket?.ticket_button?.text }}</p>
+            <p>
+              Closed by:
               {{
-                transcript.user?.global_name ??
-                transcript.user?.username ??
-                transcript.discord_user_id
+                ticket?.closed_by_discord_user?.global_name ??
+                ticket?.closed_by_discord_user_id
               }}
-            </span>
-            <span class="text-sm text-gray-800 mr-2">
-              {{ dayjs(transcript.updated_at).format("DD.MM.YYYY HH:mm:ss") }}
-            </span>
-            <span v-if="transcript.deleted_at" class="text-sm text-red-600">
-              {{ dayjs(transcript.deleted_at).format("DD.MM.YYYY HH:mm:ss") }}
-            </span>
-            <br />
-            <p :class="{ 'line-through': transcript.deleted_at }">
-              {{ transcript?.message }}
             </p>
-            <p v-if="transcript?.attachments !== '[]'">
-              <TicketTranscriptAttachement
-                v-for="(attachment, attachmentKey) in JSON.parse(
-                  transcript?.attachments ?? '[]',
-                )"
-                :key="attachmentKey"
-                :attachment="attachment"
-              />
+            <p>
+              Created by:
+              {{
+                ticket?.created_by_discord_user?.global_name ??
+                ticket?.created_by_discord_user_id
+              }}
             </p>
-            <p v-if="transcript?.embeds !== '[]'">
-              <TicketTranscriptEmbed
-                v-for="(embed, embedKey) in JSON.parse(
-                  transcript?.embeds ?? '[]',
-                )"
-                :key="embedKey"
-                :embed="embed"
-              />
-            </p>
+            <p>Channel Name: {{ ticket?.channel_name }}</p>
+            <p>Closed reason: {{ ticket?.closed_reason }}</p>
           </div>
+
+          <UChatMessage
+            v-for="(transcript, key) in ticket?.ticket_transcripts"
+            :id="`${transcript.id}`"
+            :key="key"
+            :avatar="{
+              src: `https://cdn.discordapp.com/avatars/${transcript.discord_user_id}/${transcript.user?.avatar}.png`,
+            }"
+            :parts="[
+              {
+                id: transcript.id,
+                type: 'text',
+              },
+            ]"
+            variant="subtle"
+            role="user"
+            class="mb-4"
+          >
+            <template #content>
+              <span class="mr-2">
+                {{
+                  transcript.user?.global_name ??
+                  transcript.user?.username ??
+                  transcript.discord_user_id
+                }}
+              </span>
+              <span
+                class="text-sm text-gray-800 dark:text-gray-600 mr-2"
+                :class="{ 'line-through': transcript.deleted_at }"
+              >
+                {{ dayjs(transcript.updated_at).format("DD.MM.YYYY HH:mm:ss") }}
+              </span>
+              <span v-if="transcript.deleted_at" class="text-sm text-red-600">
+                {{ dayjs(transcript.deleted_at).format("DD.MM.YYYY HH:mm:ss") }}
+              </span>
+              <p :class="{ 'line-through': transcript.deleted_at }">
+                {{ transcript.message }}
+              </p>
+              <p v-if="transcript?.attachments !== '[]'">
+                <TicketTranscriptAttachement
+                  v-for="(attachment, attachmentKey) in JSON.parse(
+                    transcript?.attachments ?? '[]',
+                  )"
+                  :key="attachmentKey"
+                  :attachment="attachment"
+                />
+              </p>
+              <p v-if="transcript.embeds !== '[]'">
+                <TicketTranscriptEmbed
+                  v-for="(embed, embedKey) in JSON.parse(
+                    transcript.embeds ?? '[]',
+                  )"
+                  :key="embedKey"
+                  :embed="embed"
+                />
+              </p>
+            </template>
+          </UChatMessage>
         </div>
       </div>
-    </div>
-  </div>
+    </template>
+  </UDashboardPanel>
 </template>

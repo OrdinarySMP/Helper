@@ -15,6 +15,6 @@ const image = {
 <template>
   <NuxtLink :to="route">
     <span class="sr-only">Ordinary SMP</span>
-    <img :src="image[size]" alt="Ordinary SMP" />
+    <img :src="image[size]" alt="Ordinary SMP" >
   </NuxtLink>
 </template>

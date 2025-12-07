@@ -145,7 +145,7 @@ onMounted(() => {
           <div class="grid grid-cols-1 gap-4">
             <div v-for="(answer, key) in applicationQuestionAnswers" :key="key">
               {{ key + 1 }}. {{ answer.application_question?.question }}
-              <br />
+              <br >
               <div class="border p-2 rounded">
                 {{ answer.answer }}
               </div>
