@@ -3,7 +3,7 @@ import { ref, onMounted } from "vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as zod from "zod";
 import { useForm } from "vee-validate";
-import type { ServerContentMessageData } from "@ordinary/api-types";
+import type { ServerContentMessageData } from "@OrdinarySMP/api-types";
 
 const loading = ref(true);
 const errorMessage = ref("");

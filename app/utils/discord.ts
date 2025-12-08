@@ -1,5 +1,5 @@
 import type { TextChannel, Role, Category } from "@/types/discord";
-import { DiscordButton } from "@ordinary/api-types";
+import { DiscordButton } from "@OrdinarySMP/api-types";
 import type { SelectMenuItem } from "@nuxt/ui";
 
 const client = useApiClient();

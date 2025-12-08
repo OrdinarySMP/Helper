@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@OrdinarySMP/api-types@0.0.0":
+  version "0.0.0"
+  resolved "https://npm.pkg.github.com/download/@OrdinarySMP/api-types/0.0.0/0b1b0ed3c4b92bb66670ab6a4cf84fcdd47eaa51#0b1b0ed3c4b92bb66670ab6a4cf84fcdd47eaa51"
+  integrity sha512-sVGhbLdq9lSmqnGtF2ygDgETEPN1wgJnEaYbxkUagIVk3efv6p48jIQ/T7Z9hS3cW1Q/EuZnRwxioqJ6JQSisQ==
+
 "@alloc/quick-lru@^5.2.0":
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/@alloc/quick-lru/-/quick-lru-5.2.0.tgz#7bf68b20c0a350f936915fcae06f58e32007ce30"
@@ -1339,9 +1344,6 @@
     pathe "^1.1.2"
     pkg-types "^1.2.1"
     semver "^7.6.3"
-
-"@ordinary/api-types@file:../api/resources/types":
-  version "0.0.1"
 
 "@oxc-minify/binding-android-arm64@0.96.0":
   version "0.96.0"

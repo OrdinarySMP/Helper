@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { ServerContentData } from "@ordinary/api-types";
+import type { ServerContentData } from "@OrdinarySMP/api-types";
 const model = defineModel<Partial<ServerContentData>>({ required: true });
 </script>
 

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { ApplicationData } from "@ordinary/api-types";
+import type { ApplicationData } from "@OrdinarySMP/api-types";
 import * as zod from "zod";
 import type { Form } from "#ui/types";
 import type { TabsItem } from "@nuxt/ui";

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { TicketPanelData } from "@ordinary/api-types";
+import type { TicketPanelData } from "@OrdinarySMP/api-types";
 
 const client = useApiClient();
 const openDeleteModal = ref(false);

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { TicketButtonData } from "@ordinary/api-types";
+import type { TicketButtonData } from "@OrdinarySMP/api-types";
 
 const client = useApiClient();
 const openDeleteModal = ref(false);

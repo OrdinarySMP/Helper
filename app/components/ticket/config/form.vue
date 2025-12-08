@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import * as zod from "zod";
-import type { TicketConfigData } from "@ordinary/api-types";
+import type { TicketConfigData } from "@OrdinarySMP/api-types";
 import type { Form } from "#ui/types";
 
 const emit = defineEmits<{

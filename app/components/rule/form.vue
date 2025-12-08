@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { RuleData } from "@ordinary/api-types";
+import type { RuleData } from "@OrdinarySMP/api-types";
 import * as zod from "zod";
 import type { Form } from "#ui/types";
 

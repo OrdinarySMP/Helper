@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 import type { TableColumn } from "@nuxt/ui";
-import type { ServerContentData } from "@ordinary/api-types";
+import type { ServerContentData } from "@OrdinarySMP/api-types";
 import type { PaginatedResponse } from "@/types/response";
 
 const toast = useSimpleToast();

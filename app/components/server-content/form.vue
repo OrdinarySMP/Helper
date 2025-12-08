@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { ServerContentData } from "@ordinary/api-types";
+import type { ServerContentData } from "@OrdinarySMP/api-types";
 import * as zod from "zod";
 import type { Form } from "#ui/types";
 

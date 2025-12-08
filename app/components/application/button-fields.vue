@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { ApplicationData } from "@ordinary/api-types";
+import type { ApplicationData } from "@OrdinarySMP/api-types";
 const model = defineModel<Partial<ApplicationData>>({ required: true });
 const textChannels = ref(await loadTextChannels());
 const chip = computed(() => ({
