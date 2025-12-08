@@ -1,22 +1,12 @@
 <script lang="ts" setup>
-import { onMounted } from "vue";
-
 const { logout } = useSanctumAuth();
+await logout();
 
 useHead({
   title: "Logout",
 });
-
-onMounted(() => {
-  logout();
-});
 </script>
 
 <template>
-  <div class="flex h-full">
-    Logging you out!
-    <div class="flex grow items-center justify-center">
-      <Spinner />
-    </div>
-  </div>
+  <div class="flex h-full">Logging you out!</div>
 </template>

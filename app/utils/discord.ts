@@ -2,25 +2,20 @@ import type { TextChannel, Role, Category } from "@/types/discord";
 import { DiscordButton } from "@ordinary/api-types";
 import type { SelectMenuItem } from "@nuxt/ui";
 
+const client = useApiClient();
+const toast = useSimpleToast();
+
 export const loadTextChannels = async (): Promise<
   { label: string; value: string }[]
 > => {
-  const { data, error } = await useApi<TextChannel[]>(
-    "/discord/text-channels",
-    {
-      method: "get",
-    },
-  );
+  const response = await client<TextChannel[]>("/discord/text-channels");
 
-  if (error.value) {
-    useNotification().error(
-      "Could not load text channels!",
-      error.value.data.message,
-    );
+  if (!response) {
+    toast.error("Could not load discord text channels!");
   }
 
   return (
-    data.value
+    response
       ?.map((channel): { label: string; value: string } => ({
         label: channel.name,
         value: channel.id,
@@ -33,12 +28,14 @@ export const loadTextChannels = async (): Promise<
 export const loadRoles = async (): Promise<
   { label: string; value: string }[]
 > => {
-  const { data } = await useApi<Role[]>("/discord/roles", {
-    method: "get",
-  });
+  const response = await client<Role[]>("/discord/roles");
+
+  if (!response) {
+    toast.error("Could not load discord roles!");
+  }
 
   return (
-    data.value?.map((role) => ({
+    response?.map((role) => ({
       label: role.name,
       value: role.id,
     })) ?? ([] as { label: string; value: string }[])
@@ -46,19 +43,14 @@ export const loadRoles = async (): Promise<
 };
 
 export const loadCategories = async () => {
-  const { data, error } = await useApi<Category[]>("/discord/categories", {
-    method: "get",
-  });
+  const response = await client<Category[]>("/discord/categories");
 
-  if (error.value) {
-    useNotification().error(
-      "Could not load text channels!",
-      error.value.data.message,
-    );
+  if (!response) {
+    toast.error("Could not load discord categories!");
   }
 
   return (
-    data.value
+    response
       ?.map((channel): { label: string; value: string } => ({
         label: channel.name,
         value: channel.id,
