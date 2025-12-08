@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { TicketPanelData } from "@ordinary/api-types";
+import type { TicketPanelData } from "@OrdinarySMP/api-types";
 const model = defineModel<Partial<TicketPanelData>>({ required: true });
 const textChannels = ref(await loadTextChannels());
 const chip = computed(() => ({ backgroundColor: model.value.embed_color }));

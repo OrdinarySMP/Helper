@@ -4,7 +4,7 @@ import type { TableColumn } from "@nuxt/ui";
 import {
   ApplicationResponseType,
   type ApplicationResponseData,
-} from "@ordinary/api-types";
+} from "@OrdinarySMP/api-types";
 import type { PaginatedResponse } from "@/types/response";
 
 const route = useRoute();

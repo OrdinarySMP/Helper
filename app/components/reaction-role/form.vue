@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { ReactionRoleData } from "@ordinary/api-types";
+import type { ReactionRoleData } from "@OrdinarySMP/api-types";
 import * as zod from "zod";
 import type { Form } from "#ui/types";
 

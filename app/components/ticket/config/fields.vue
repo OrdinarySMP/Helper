@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { TicketConfigData } from "@ordinary/api-types";
+import type { TicketConfigData } from "@OrdinarySMP/api-types";
 const model = defineModel<Partial<TicketConfigData>>({ required: true });
 
 const categories = ref(await loadCategories());

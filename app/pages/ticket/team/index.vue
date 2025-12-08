@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 import type { TableColumn } from "@nuxt/ui";
-import type { TicketTeamData } from "@ordinary/api-types";
+import type { TicketTeamData } from "@OrdinarySMP/api-types";
 import type { PaginatedResponse } from "@/types/response";
 
 const page = ref(1);

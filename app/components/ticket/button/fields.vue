@@ -3,7 +3,7 @@ import type {
   TicketTeamData,
   TicketButtonData,
   TicketPanelData,
-} from "@ordinary/api-types";
+} from "@OrdinarySMP/api-types";
 import type { FullResponse } from "@/types/response";
 import EmojiPicker from "vue3-emoji-picker";
 import "vue3-emoji-picker/css";

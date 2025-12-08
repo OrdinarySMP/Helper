@@ -38,7 +38,7 @@ export default defineNuxtConfig({
   },
   vite: {
     optimizeDeps: {
-      exclude: ["@ordinary/api-types"],
+      exclude: ["@OrdinarySMP/api-types"],
     },
   },
   ui: {

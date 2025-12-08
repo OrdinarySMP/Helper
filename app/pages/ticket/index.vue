@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 import type { TableColumn } from "@nuxt/ui";
-import { TicketState, type TicketData } from "@ordinary/api-types";
+import { TicketState, type TicketData } from "@OrdinarySMP/api-types";
 import type { PaginatedResponse } from "@/types/response";
 import dayjs from "dayjs";
 

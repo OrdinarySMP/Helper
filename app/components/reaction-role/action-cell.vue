@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { ReactionRoleData } from "@ordinary/api-types";
+import type { ReactionRoleData } from "@OrdinarySMP/api-types";
 
 const client = useApiClient();
 const openDeleteModal = ref(false);

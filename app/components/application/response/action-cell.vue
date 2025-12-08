@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { ApplicationResponseData } from "@ordinary/api-types";
+import type { ApplicationResponseData } from "@OrdinarySMP/api-types";
 
 const client = useApiClient();
 const openDeleteModal = ref(false);

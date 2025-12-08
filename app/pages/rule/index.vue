@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 import type { TableColumn } from "@nuxt/ui";
-import type { RuleData } from "@ordinary/api-types";
+import type { RuleData } from "@OrdinarySMP/api-types";
 import type { PaginatedResponse } from "@/types/response";
 
 const page = ref(1);

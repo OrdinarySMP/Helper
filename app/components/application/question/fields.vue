@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { ApplicationQuestionData } from "@ordinary/api-types";
+import type { ApplicationQuestionData } from "@OrdinarySMP/api-types";
 const model = defineModel<Partial<ApplicationQuestionData>>({ required: true });
 </script>
 

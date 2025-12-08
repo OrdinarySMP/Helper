@@ -4,7 +4,7 @@ import type { TableColumn } from "@nuxt/ui";
 import {
   ApplicationSubmissionState,
   type ApplicationSubmissionData,
-} from "@ordinary/api-types";
+} from "@OrdinarySMP/api-types";
 import type { PaginatedResponse } from "@/types/response";
 import dayjs from "dayjs";
 

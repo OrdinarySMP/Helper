@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { FaqData } from "@ordinary/api-types";
+import type { FaqData } from "@OrdinarySMP/api-types";
 
 const client = useApiClient();
 const openDeleteModal = ref(false);

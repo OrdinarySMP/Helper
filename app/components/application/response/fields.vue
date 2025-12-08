@@ -2,7 +2,7 @@
 import {
   ApplicationResponseType,
   type ApplicationResponseData,
-} from "@ordinary/api-types";
+} from "@OrdinarySMP/api-types";
 const model = defineModel<Partial<ApplicationResponseData>>({ required: true });
 
 const types = computed(() =>

@@ -3,7 +3,7 @@ import { ref, computed } from "vue";
 import {
   ApplicationSubmissionState,
   type ApplicationSubmissionData,
-} from "@ordinary/api-types";
+} from "@OrdinarySMP/api-types";
 import type { PaginatedResponse } from "@/types/response";
 
 const user = useCurrentUser();

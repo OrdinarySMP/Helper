@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { TicketTeamData } from "@ordinary/api-types";
+import type { TicketTeamData } from "@OrdinarySMP/api-types";
 const model = defineModel<Partial<TicketTeamData>>({ required: true });
 const roles = ref(await loadRoles());
 </script>

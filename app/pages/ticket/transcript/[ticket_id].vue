@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { TicketState, type TicketData } from "@ordinary/api-types";
+import { TicketState, type TicketData } from "@OrdinarySMP/api-types";
 import dayjs from "dayjs";
 import type { PaginatedResponse } from "@/types/response";
 
