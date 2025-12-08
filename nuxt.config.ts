@@ -7,13 +7,14 @@ export default defineNuxtConfig({
   css: ["~/assets/css/main.css"],
   runtimeConfig: {
     public: {
-      apiBase: "/api/v1",
       discordClientId: "",
       discordCallbackUrl: "http://localhost:3000/discord/callback",
+      sanctum: {
+        baseUrl: 'http://localhost:8000',
+      },
     },
   },
   sanctum: {
-    baseUrl: "http://localhost:8000", // Laravel API
     endpoints: {
       login: "/api/v1/login",
       logout: "/api/v1/logout",
@@ -26,14 +27,6 @@ export default defineNuxtConfig({
     redirect: {
       onAuthOnly: "/login",
       onGuestOnly: "/",
-    },
-  },
-  nitro: {
-    devProxy: {
-      "/api": {
-        target: "http://localhost:8000/api",
-        changeOrigin: true,
-      },
     },
   },
   vite: {
