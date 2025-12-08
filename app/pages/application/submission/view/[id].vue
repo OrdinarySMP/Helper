@@ -1,8 +1,5 @@
 <script lang="ts" setup>
-import { ref, onMounted, computed } from "vue";
-import { toTypedSchema } from "@vee-validate/zod";
-import * as zod from "zod";
-import { useForm } from "vee-validate";
+import { ref, computed } from "vue";
 import {
   ApplicationSubmissionState,
   type ApplicationSubmissionData,
@@ -11,85 +8,53 @@ import type { PaginatedResponse } from "@/types/response";
 
 const user = useCurrentUser();
 const route = useRoute();
-const applicationSubmissionId = ref<ApplicationSubmissionData["id"]>();
+const client = useApiClient();
 const applicationSubmission = ref<ApplicationSubmissionData>();
-const toUpdateState = ref<ApplicationSubmissionState>();
-const updateWithReasonDialog = ref(false);
-const loading = ref(true);
+const reason = ref();
+const updateToState = ref<ApplicationSubmissionState>();
 const submitting = ref(false);
-const { success: successNotification } = useNotification();
+const toast = useSimpleToast();
 
-const formSchema = toTypedSchema(
-  zod.object({
-    reason: zod.string().min(1),
-  }),
-);
-
-const { handleSubmit } = useForm({
-  validationSchema: formSchema,
-});
-
-const updateSubmissionWithReason = handleSubmit(async (values) => {
-  if (!toUpdateState.value) {
-    return;
-  }
-  updateSubmission(toUpdateState.value, values.reason);
-  toUpdateState.value = undefined;
-  updateWithReasonDialog.value = false;
-});
-
-const updateSubmission = async (
-  state: ApplicationSubmissionState,
-  reason?: string,
-) => {
-  submitting.value = true;
-  const { error } = await useApi(
-    `/application-submission/${applicationSubmissionId.value}`,
-    {
-      method: "patch",
-      body: {
-        state,
-        custom_response: reason,
-        handled_by: user.value?.discord_id,
-      },
+const { data } = await useApi<PaginatedResponse<ApplicationSubmissionData[]>>(
+  "/application-submission",
+  {
+    method: "get",
+    params: {
+      "filter[id]": route.params.id,
+      "include[]": [
+        "applicationQuestionAnswers.applicationQuestion",
+        "application",
+      ],
     },
-  );
-  if (error.value) {
-    successNotification(
-      error.value.data.message,
-      error.value.data.errors.join(", "),
-    );
+  },
+);
+applicationSubmission.value = data.value?.data[0];
+
+const updateSubmission = async (state: ApplicationSubmissionState) => {
+  submitting.value = true;
+  const response = await client(`/application-submission/${route.params.id}`, {
+    method: "patch",
+    body: {
+      state,
+      custom_response: reason.value,
+      handled_by: user.value?.discord_id,
+    },
+  });
+  if (response?.data) {
+    if (applicationSubmission.value) {
+      applicationSubmission.value.state = state;
+    }
+    toast.success("Submission updated.");
   } else {
-    loadApplicationSubmission();
+    toast.error("An error occoured while updating the Submission.");
   }
+  updateToState.value = undefined;
   submitting.value = false;
 };
 
-const loadApplicationSubmission = async () => {
-  loading.value = true;
-  applicationSubmissionId.value = parseRouteParameter(route.params.id);
-
-  const { data } = await useApi<PaginatedResponse<ApplicationSubmissionData[]>>(
-    "/application-submission",
-    {
-      method: "get",
-      params: {
-        "filter[id]": applicationSubmissionId.value,
-        "include[]": [
-          "applicationQuestionAnswers.applicationQuestion",
-          "application",
-        ],
-      },
-    },
-  );
-  if (!data.value || !data.value?.data[0]) {
-    navigateTo("/application/submission");
-    return;
-  }
-
-  applicationSubmission.value = data.value.data[0];
-
-  loading.value = false;
+const closeModal = () => {
+  updateToState.value = undefined;
+  reason.value = undefined;
 };
 
 const applicationQuestionAnswers = computed(() => {
@@ -120,150 +85,105 @@ definePageMeta({
 useHead({
   title: "View Application",
 });
-
-onMounted(() => {
-  loadApplicationSubmission();
-});
 </script>
 
 <template>
   <UDashboardPanel>
     <template #header>
-      <UDashboardNavbar title="View Application" />
+      <UDashboardNavbar
+        :title="`Application Submission from ${userName} for ${applicationSubmission?.application?.name}`"
+      />
     </template>
 
     <template #body>
-      <div class="flex grow">
-        <div v-if="loading" class="flex grow items-center justify-center">
-          <Spinner />
-        </div>
-        <div v-else class="w-full">
-          <p class="mb-8 text-2xl">
-            Application Submission from {{ userName }} for
-            {{ applicationSubmission?.application?.name }}
-          </p>
-          <div class="grid grid-cols-1 gap-4">
-            <div v-for="(answer, key) in applicationQuestionAnswers" :key="key">
-              {{ key + 1 }}. {{ answer.application_question?.question }}
-              <br >
-              <div class="border p-2 rounded">
-                {{ answer.answer }}
-              </div>
-            </div>
-
-            <div
-              v-if="
-                applicationSubmission?.state ===
-                  ApplicationSubmissionState.Pending &&
-                hasPermissionTo('applicationSubmission.update')
-              "
-              class="flex gap-2"
-            >
-              <Button
-                class="mr-2 px-4"
-                size="md"
-                type="submit"
-                color="success"
-                :disabled="submitting"
-                @click="updateSubmission(ApplicationSubmissionState.Accepted)"
-              >
-                Accept
-              </Button>
-              <Button
-                class="mr-2 px-4"
-                size="md"
-                type="submit"
-                color="error"
-                :disabled="submitting"
-                @click="updateSubmission(ApplicationSubmissionState.Denied)"
-              >
-                Deny
-              </Button>
-            </div>
-
-            <div
-              v-if="
-                applicationSubmission?.state ===
-                ApplicationSubmissionState.Pending
-              "
-              class="flex gap-2"
-            >
-              <Button
-                class="mr-2 px-4"
-                size="md"
-                type="submit"
-                color="success"
-                :disabled="submitting"
-                @click="
-                  () => {
-                    toUpdateState = ApplicationSubmissionState.Accepted;
-                    updateWithReasonDialog = true;
-                  }
-                "
-              >
-                Accept with reason
-              </Button>
-              <Button
-                class="mr-2 px-4"
-                size="md"
-                type="submit"
-                color="error"
-                :disabled="submitting"
-                @click="
-                  () => {
-                    toUpdateState = ApplicationSubmissionState.Denied;
-                    updateWithReasonDialog = true;
-                  }
-                "
-              >
-                Deny with reason
-              </Button>
-            </div>
+      <div class="grid grid-cols-1 gap-4">
+        <div v-for="(answer, key) in applicationQuestionAnswers" :key="key">
+          <p>{{ key + 1 }}. {{ answer.application_question?.question }}</p>
+          <div class="border p-2 rounded">
+            {{ answer.answer }}
           </div>
         </div>
-        <Dialog
-          v-if="updateWithReasonDialog && toUpdateState"
-          @close="
-            () => {
-              toUpdateState = undefined;
-              updateWithReasonDialog = false;
-            }
+
+        <div
+          v-if="
+            applicationSubmission?.state ===
+              ApplicationSubmissionState.Pending &&
+            hasPermissionTo('applicationSubmission.update')
           "
+          class="flex gap-2"
         >
-          <template #title>
-            <p>Update application</p>
-          </template>
-          <template #body>
-            <p class="mb-2">
-              Do you want to update this application to
-              {{ ApplicationSubmissionState[toUpdateState] }}?
-            </p>
-            <FieldTextArea name="reason" label="Reason" />
-          </template>
-          <template #footer>
-            <Button
-              class="ml-4 px-4"
-              size="sm"
-              @click="updateSubmissionWithReason()"
-            >
-              Update
-            </Button>
-            <Button
-              class="px-4"
-              color="gray"
-              size="sm"
-              @click="
-                () => {
-                  toUpdateState = undefined;
-                  updateWithReasonDialog = false;
-                }
-              "
-            >
-              Cancel
-            </Button>
-          </template>
-        </Dialog>
+          <UButton
+            label="Accept"
+            type="button"
+            color="success"
+            variant="subtle"
+            :disabled="submitting"
+            @click="updateSubmission(ApplicationSubmissionState.Accepted)"
+          />
+          <UButton
+            label="Deny"
+            type="button"
+            color="error"
+            variant="subtle"
+            :disabled="submitting"
+            @click="updateSubmission(ApplicationSubmissionState.Denied)"
+          />
+        </div>
+
+        <div
+          v-if="
+            applicationSubmission?.state === ApplicationSubmissionState.Pending
+          "
+          class="flex gap-2"
+        >
+          <UButton
+            label="Accept with reason"
+            color="success"
+            type="button"
+            variant="subtle"
+            :disabled="submitting"
+            @click="updateToState = ApplicationSubmissionState.Accepted"
+          />
+          <UButton
+            label="Deny with reason"
+            color="error"
+            type="button"
+            variant="subtle"
+            :disabled="submitting"
+            @click="updateToState = ApplicationSubmissionState.Denied"
+          />
+        </div>
       </div>
+
+      <UModal
+        v-if="updateToState"
+        :open="updateToState !== undefined"
+        title="Update Submission"
+        :description="`Do you want to update this application to ${ApplicationSubmissionState[updateToState]}?`"
+        @update:open="closeModal"
+      >
+        <template #body>
+          <UFormField label="Reason" name="reason" required>
+            <UTextarea v-model="reason" class="w-full" />
+          </UFormField>
+
+          <div class="flex justify-end gap-2 mt-4">
+            <UButton
+              label="Cancel"
+              color="neutral"
+              variant="subtle"
+              size="md"
+              @click="updateToState = undefined"
+            />
+            <UButton
+              label="Update"
+              variant="subtle"
+              size="md"
+              @click="updateSubmission(updateToState)"
+            />
+          </div>
+        </template>
+      </UModal>
     </template>
   </UDashboardPanel>
 </template>

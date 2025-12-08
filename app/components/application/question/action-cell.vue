@@ -1,41 +1,29 @@
 <script lang="ts" setup>
-import type { TicketPanelData } from "@ordinary/api-types";
+import type { ApplicationQuestionData } from "@ordinary/api-types";
 
 const client = useApiClient();
 const openDeleteModal = ref(false);
 const toast = useSimpleToast();
 
 const props = defineProps<{
-  data: TicketPanelData;
+  data: ApplicationQuestionData;
 }>();
 
 const emit = defineEmits<{
   (e: "deleted"): void;
 }>();
 
-const deleteTicketPanel = async () => {
+const deleteQuestion = async () => {
   try {
-    await client(`/ticket/panel/${props.data.id}`, {
+    await client(`/application-question/${props.data.id}`, {
       method: "delete",
     });
-    toast.success("The Panel was deleted.");
+    toast.success("The Question was deleted.");
     emit("deleted");
   } catch {
-    toast.error("An error occurred while deleting the Panel.");
+    toast.error("An error occurred while deleting the Question.");
   } finally {
     openDeleteModal.value = false;
-  }
-};
-
-const sendPanel = async () => {
-  const response = await client(`/ticket/panel/${props.data.id}/send`, {
-    method: "post",
-  });
-
-  if (response) {
-    toast.success("The Panel has been send successfully.");
-  } else {
-    toast.success("An error occurred while sending the Panel.");
   }
 };
 </script>
@@ -43,31 +31,21 @@ const sendPanel = async () => {
 <template>
   <div class="space-x-2">
     <UButton
-      v-if="hasPermissionTo('ticketPanel.update')"
+      v-if="hasPermissionTo('applicationQuestion.update')"
       label="Edit"
       size="md"
       icon="material-symbols:edit-outline"
       type="button"
       variant="subtle"
-      :to="`/ticket/panel/edit/${data.id}`"
-    />
-    <UButton
-      v-if="hasPermissionTo('ticketPanel.update')"
-      label="Send"
-      size="md"
-      icon="material-symbols:edit-outline"
-      type="button"
-      color="secondary"
-      variant="subtle"
-      @click="sendPanel"
+      :to="`/application/${data.application_id}/question/edit/${data.id}`"
     />
     <UModal
       v-model:open="openDeleteModal"
-      :title="`Delete the Panel: ${data.title}?`"
+      :title="`Delete the Question: ${data?.question}?`"
       :description="`Are you sure, this action cannot be undone.`"
     >
       <UButton
-        v-if="hasPermissionTo('ticketPanel.delete')"
+        v-if="hasPermissionTo('applicationQuestion.delete')"
         size="md"
         label="Delete"
         color="error"
@@ -89,7 +67,7 @@ const sendPanel = async () => {
             label="Delete"
             color="error"
             size="md"
-            @click="deleteTicketPanel"
+            @click="deleteQuestion"
           />
         </div>
       </template>

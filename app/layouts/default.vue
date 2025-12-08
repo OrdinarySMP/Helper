@@ -107,7 +107,13 @@ const filteredItems = items
       hasPermissionTo(navigation.permission) || navigation.children?.length,
   );
 
-const footerItems: NavigationMenuItem[] = [];
+const footerItems: NavigationMenuItem[] = [
+  {
+    label: "Logout",
+    icon: "material-symbols-light:logout",
+    to: "/logout",
+  },
+];
 
 useHead({
   titleTemplate: (title) => {
@@ -158,7 +164,7 @@ useHead({
           variant="ghost"
           class="w-full"
           :block="collapsed"
-          to="/logout"
+          to="/profile"
         />
       </template>
     </UDashboardSidebar>

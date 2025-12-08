@@ -1,153 +1,95 @@
 <script lang="ts" setup>
-import { ref, onMounted } from "vue";
-import { toTypedSchema } from "@vee-validate/zod";
-import * as zod from "zod";
-import { useForm } from "vee-validate";
-import dayjs from "dayjs";
-import { EyeIcon } from "@heroicons/vue/24/solid";
+import { ref } from "vue";
+import type { TableColumn } from "@nuxt/ui";
 import {
   ApplicationSubmissionState,
   type ApplicationSubmissionData,
 } from "@ordinary/api-types";
-import type { ApplicationSubmissionFilter } from "@/types/application/submission";
-import type { Pagination, Sorting } from "@/types/table";
 import type { PaginatedResponse } from "@/types/response";
+import dayjs from "dayjs";
 
-const loading = ref(true);
-const applicationSubmissions = ref<ApplicationSubmissionData[]>([]);
-const pagination = ref<Pagination | null>();
-const toDeleteApplicationSubmission = ref();
-const deleteDialog = ref(false);
-const sorting = ref<Sorting>({
-  column: "submitted_at",
-  order: "asc",
-});
-const filterValues = ref<ApplicationSubmissionFilter>({
-  state: ApplicationSubmissionState.Pending,
+const client = useApiClient();
+const page = ref(1);
+const loading = ref(false);
+const data = ref<PaginatedResponse<ApplicationSubmissionData[]>>();
+const filter = ref({
+  state: null,
   discord_id: null,
 });
 
-const headers = ref([
-  {
-    title: "ID",
-    key: "id",
-    sortable: true,
-  },
-  {
-    title: "Application",
-    key: "application.name",
-    sortable: false,
-  },
-  {
-    title: "State",
-    key: "state",
-    sortable: true,
-  },
-  {
-    title: "Member",
-    key: "member",
-    sortable: false,
-  },
-  {
-    title: "Created at",
-    key: "created_at",
-    sortable: true,
-  },
-  {
-    title: "Updated at",
-    key: "updated_at",
-    sortable: true,
-  },
-  {
-    title: "Submitted at",
-    key: "submitted_at",
-    sortable: true,
-  },
-  {
-    title: "",
-    key: "actions",
-    sortable: false,
-  },
-]);
-
-const formSchema = toTypedSchema(
-  zod.object({
-    state: zod.number().nullable(),
-    discord_id: zod.string().nullable(),
-  }),
-);
-
-const { handleSubmit } = useForm({
-  initialValues: filterValues.value,
-  validationSchema: formSchema,
-});
-
-const changeFilter = handleSubmit((values) => {
-  filterValues.value = values;
-  loadApplication();
-});
-
-const loadApplication = async (page = 1) => {
-  loading.value = true;
-
-  let sort = undefined;
-  if (sorting.value && sorting.value.column) {
-    sort = `${sorting.value.order === "asc" ? "-" : ""}${sorting.value.column}`;
-  }
-
-  const { data } = await useApi<PaginatedResponse<ApplicationSubmissionData[]>>(
+const loadSubmissions = async () => {
+  const response = await client<PaginatedResponse<ApplicationSubmissionData[]>>(
     "/application-submission",
     {
       method: "get",
       query: {
-        page_size: 10,
-        page,
-        ...filters.value,
-        sort,
+        page_size: 15,
+        page: page.value,
         include: "application",
+        sort: "-submitted_at",
+        ...filterToQuery(filter.value),
       },
     },
   );
-
-  if (data.value) {
-    applicationSubmissions.value = data.value.data ?? [];
-
-    pagination.value = {
-      total: data.value.meta.total,
-      currentPage: data.value.meta.current_page,
-      perPage: data.value.meta.per_page,
-      from: data.value.meta.from,
-      to: data.value.meta.to,
-      totalPages: data.value.meta.last_page,
-    };
-  }
-
-  loading.value = false;
+  data.value = response;
 };
+await loadSubmissions();
 
-const pageChange = (page: number) => {
-  loadApplication(page);
-};
+const totalItems = computed(() => data.value?.meta.total ?? 0);
+const perPage = computed(() => data.value?.meta.per_page ?? 0);
 
-const setSorting = (newSorting: Sorting) => {
-  sorting.value = newSorting;
-  loadApplication();
-};
-
-const remove = async () => {
-  if (!toDeleteApplicationSubmission.value) {
-    return;
-  }
-  await useApi<Record<string, string>[]>(
-    `/application-submission/${toDeleteApplicationSubmission.value.id}`,
-    {
-      method: "delete",
-    },
-  );
-  deleteDialog.value = false;
-  toDeleteApplicationSubmission.value = undefined;
-  await loadApplication();
-};
+const columns: TableColumn<ApplicationSubmissionData>[] = [
+  {
+    accessorKey: "id",
+    header: "ID",
+  },
+  {
+    accessorKey: "application.name",
+    header: "Application",
+  },
+  {
+    accessorKey: "state",
+    header: "State",
+    cell: ({ row }) => ApplicationSubmissionState[row.original.state],
+  },
+  {
+    accessorKey: "member",
+    header: "Member",
+    cell: ({ row }) =>
+      row.original.member?.nick ??
+      row.original.member?.user?.global_name ??
+      row.original.member?.user?.username ??
+      row.original.discord_id,
+  },
+  {
+    accessorKey: "created_at",
+    header: "Created at",
+    cell: ({ row }) =>
+      dayjs(row.original.created_at).format("DD.MM.YYYY HH:mm:ss"),
+  },
+  {
+    accessorKey: "updated_at",
+    header: "Updated at",
+    cell: ({ row }) =>
+      dayjs(row.original.updated_at).format("DD.MM.YYYY HH:mm:ss"),
+  },
+  {
+    accessorKey: "submitted_at",
+    header: "Submitted at",
+    cell: ({ row }) =>
+      row.original.submitted_at
+        ? dayjs(row.original.submitted_at).format("DD.MM.YYYY HH:mm:ss")
+        : "Not submitted",
+  },
+  {
+    id: "actions",
+    cell: ({ row }) =>
+      h(resolveComponent("ApplicationSubmissionActionCell"), {
+        data: row.original,
+        onDeleted: loadSubmissions,
+      }),
+  },
+];
 
 const applicationSubmissionState = computed(() => {
   const states = Object.entries(ApplicationSubmissionState)
@@ -163,19 +105,21 @@ const applicationSubmissionState = computed(() => {
   return states;
 });
 
-const filters = computed(() => {
-  const newFilters: Record<string, string | number | boolean | null> = {};
+watch(
+  filter,
+  () => {
+    if (page.value === 1) {
+      loadSubmissions();
+    } else {
+      page.value = 1;
+    }
+  },
+  {
+    deep: true,
+  },
+);
 
-  if (filterValues.value.discord_id) {
-    newFilters["filter[discord_id]"] = filterValues.value.discord_id;
-  }
-
-  if (filterValues.value.state !== null) {
-    newFilters["filter[state]"] = filterValues.value.state;
-  }
-
-  return newFilters;
-});
+watch(page, loadSubmissions);
 
 definePageMeta({
   permission: {
@@ -186,10 +130,6 @@ definePageMeta({
 useHead({
   title: "Application Submissions",
 });
-
-onMounted(() => {
-  loadApplication();
-});
 </script>
 
 <template>
@@ -199,149 +139,41 @@ onMounted(() => {
     </template>
 
     <template #body>
-      <div class="w-full">
-        <Table
-          :loading="loading"
-          :headers="headers"
-          :data="applicationSubmissions"
-          :pagination="pagination"
-          :initial-sort="sorting"
-          @sorting-change="setSorting"
-          @page-change="pageChange"
-        >
-          <template #search-bar>
-            <FieldSelect
-              :items="applicationSubmissionState"
-              clearable
-              name="state"
-              label="State"
-              @change="changeFilter"
-            />
-            <FieldInput
-              name="discord_id"
-              label="Discord ID"
-              @change="changeFilter"
-            />
-          </template>
-          <template #body-state="{ data }">
-            {{
-              ApplicationSubmissionState[
-                (data as ApplicationSubmissionData).state
-              ]
-            }}
-          </template>
-          <template #body-member="{ data }">
-            {{
-              (data as ApplicationSubmissionData).member?.nick ??
-              (data as ApplicationSubmissionData).member?.user?.global_name ??
-              (data as ApplicationSubmissionData).member?.user?.username ??
-              (data as ApplicationSubmissionData).discord_id
-            }}
-          </template>
-          <template #body-created_at="{ data }">
-            {{
-              dayjs((data as ApplicationSubmissionData).created_at).format(
-                "DD.MM.YYYY HH:mm:ss",
-              )
-            }}
-          </template>
-          <template #body-updated_at="{ data }">
-            {{
-              dayjs((data as ApplicationSubmissionData).updated_at).format(
-                "DD.MM.YYYY HH:mm:ss",
-              )
-            }}
-          </template>
-          <template #body-submitted_at="{ data }">
-            {{
-              (data as ApplicationSubmissionData).submitted_at
-                ? dayjs(
-                    (data as ApplicationSubmissionData).submitted_at,
-                  ).format("DD.MM.YYYY HH:mm:ss")
-                : "---"
-            }}
-          </template>
-          <template #body-actions="{ data }">
-            <div class="flex gap-4">
-              <NuxtLink
-                v-if="hasPermissionTo('applicationSubmission.read')"
-                :to="`/application/submission/view/${data.id}`"
-              >
-                <Button size="sm" class="px-2" color="gray">
-                  <span class="flex items-center">
-                    <EyeIcon class="size-4 mr-2" />
-                    View
-                  </span>
-                </Button>
-              </NuxtLink>
+      <div class="space-x-4">
+        <USelectMenu
+          v-model="filter.state"
+          :items="applicationSubmissionState"
+          class="w-xs"
+          label-key="label"
+          value-key="value"
+        />
+        <UInput
+          v-model="filter.discord_id"
+          class="w-sm"
+          icon="i-lucide-search"
+          placeholder="Discord ID"
+        />
+      </div>
 
-              <Button
-                v-if="hasPermissionTo('applicationSubmission.delete')"
-                size="sm"
-                class="px-2"
-                color="error"
-                @click="
-                  () => {
-                    toDeleteApplicationSubmission = data;
-                    deleteDialog = true;
-                  }
-                "
-              >
-                <span class="flex items-center"> Delete </span>
-              </Button>
-            </div>
-          </template>
-        </Table>
-        <Dialog
-          v-if="deleteDialog"
-          @close="
-            () => {
-              toDeleteApplicationSubmission = undefined;
-              deleteDialog = false;
-            }
-          "
-        >
-          <template #title>
-            <p>Delete</p>
-          </template>
-          <template #body>
-            <p class="mb-2">
-              Do you want to delete the submission from:
+      <UTable
+        :data="data?.data"
+        :columns="columns"
+        :loading="loading"
+        class="flex-1"
+      />
 
-              <span class="font-bold">{{
-                toDeleteApplicationSubmission?.member?.nick ??
-                toDeleteApplicationSubmission?.member?.user?.global_name ??
-                toDeleteApplicationSubmission?.member?.user?.username ??
-                toDeleteApplicationSubmission?.discord_id
-              }}</span>
-              ?
-            </p>
-            <p
-              class="rounded border border-red-400 bg-red-200 px-4 py-2 text-red-600"
-            >
-              The submission will be deleted the user will NOT receive a
-              response
-            </p>
-          </template>
-          <template #footer>
-            <Button class="ml-4 px-4" color="error" size="sm" @click="remove">
-              Delete
-            </Button>
-            <Button
-              class="px-4"
-              color="gray"
-              size="sm"
-              @click="
-                () => {
-                  toDeleteApplicationSubmission = undefined;
-                  deleteDialog = false;
-                }
-              "
-            >
-              Cancel
-            </Button>
-          </template>
-        </Dialog>
+      <div
+        class="flex items-center justify-end gap-3 border-t border-default pt-4 mt-auto"
+      >
+        <div class="flex items-center gap-1.5">
+          <UPagination
+            active-color="brand"
+            :page="page"
+            :total="totalItems"
+            :items-per-page="perPage"
+            @update:page="(p: number) => (page = p)"
+          />
+        </div>
       </div>
     </template>
   </UDashboardPanel>

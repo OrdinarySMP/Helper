@@ -1,93 +1,55 @@
 <script lang="ts" setup>
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
+import type { TableColumn } from "@nuxt/ui";
 import {
   ApplicationResponseType,
-  type ApplicationData,
   type ApplicationResponseData,
 } from "@ordinary/api-types";
-import { PencilIcon, PlusIcon } from "@heroicons/vue/24/solid";
-import type { Pagination } from "@/types/table";
 import type { PaginatedResponse } from "@/types/response";
 
-const loading = ref(true);
 const route = useRoute();
-const applicationResponses = ref<ApplicationResponseData[]>([]);
-const applicationId = ref<ApplicationData["id"]>();
-const toDeleteApplicationResponse = ref();
-const deleteDialog = ref(false);
-const pagination = ref<Pagination | null>();
+const page = ref(1);
+const { data, status, refresh } = await useApi<
+  PaginatedResponse<ApplicationResponseData[]>
+>("/application-response", {
+  method: "get",
+  query: {
+    page_size: 15,
+    page,
+    "filter[application_id]": route.params.id,
+  },
+  watch: [page],
+});
+const totalItems = computed(() => data.value?.meta.total ?? 0);
+const perPage = computed(() => data.value?.meta.per_page ?? 0);
 
-const headers = ref([
+const columns: TableColumn<ApplicationResponseData>[] = [
   {
-    title: "ID",
-    key: "id",
+    accessorKey: "id",
+    header: "ID",
   },
   {
-    title: "Name",
-    key: "name",
+    accessorKey: "name",
+    header: "Name",
   },
   {
-    title: "Response",
-    key: "response",
+    accessorKey: "response",
+    header: "Response",
   },
   {
-    title: "Type",
-    key: "type",
+    accessorKey: "type",
+    header: "Type",
+    cell: ({ row }) => ApplicationResponseType[row.original.type],
   },
   {
-    title: "",
-    key: "actions",
+    id: "actions",
+    cell: ({ row }) =>
+      h(resolveComponent("ApplicationResponseActionCell"), {
+        data: row.original,
+        onDeleted: refresh,
+      }),
   },
-]);
-
-const loadApplicationResponse = async (page = 1) => {
-  loading.value = true;
-  const { data } = await useApi<PaginatedResponse<ApplicationResponseData[]>>(
-    "/application-response",
-    {
-      method: "get",
-      query: {
-        "filter[application_id]": applicationId.value,
-        page_size: 10,
-        page,
-      },
-    },
-  );
-
-  if (data.value) {
-    applicationResponses.value = data.value.data ?? [];
-
-    pagination.value = {
-      total: data.value.meta.total,
-      currentPage: data.value.meta.current_page,
-      perPage: data.value.meta.per_page,
-      from: data.value.meta.from,
-      to: data.value.meta.to,
-      totalPages: data.value.meta.last_page,
-    };
-  }
-
-  loading.value = false;
-};
-
-const remove = async () => {
-  if (!toDeleteApplicationResponse.value) {
-    return;
-  }
-  await useApi<Record<string, string>[]>(
-    `/application-response/${toDeleteApplicationResponse.value.id}`,
-    {
-      method: "delete",
-    },
-  );
-  deleteDialog.value = false;
-  toDeleteApplicationResponse.value = undefined;
-  await loadApplicationResponse();
-};
-
-const pageChange = (page: number) => {
-  loadApplicationResponse(page);
-};
+];
 
 definePageMeta({
   permission: {
@@ -98,11 +60,6 @@ definePageMeta({
 useHead({
   title: "Application Responses",
 });
-
-onMounted(() => {
-  applicationId.value = parseRouteParameter(route.params.applicationId);
-  loadApplicationResponse();
-});
 </script>
 
 <template>
@@ -110,111 +67,40 @@ onMounted(() => {
     <template #header>
       <UDashboardNavbar title="Application Responses">
         <template #right>
-          <NuxtLink
+          <UButton
             v-if="hasPermissionTo('applicationResponse.create')"
-            :to="`/application/${applicationId}/response/create`"
-          >
-            <Button size="sm" class="px-2" color="primary">
-              <span class="flex items-center">
-                <PlusIcon class="size-4 mr-2" />
-                Create
-              </span>
-            </Button>
-          </NuxtLink>
+            label="Create"
+            icon="material-symbols:add-rounded"
+            size="sm"
+            class="px-2"
+            variant="subtle"
+            color="secondary"
+            :to="`/application/${route.params.applicationId}/response/create`"
+          />
         </template>
       </UDashboardNavbar>
     </template>
 
     <template #body>
-      <div class="w-full">
-        <Table
-          :loading="loading"
-          :headers="headers"
-          :data="applicationResponses"
-          :pagination="pagination"
-          @page-change="pageChange"
-        >
-          <template #body-type="{ data }">
-            {{
-              ApplicationResponseType[(data as ApplicationResponseData).type]
-            }}
-          </template>
-          <template #body-actions="{ data }">
-            <div class="flex gap-4">
-              <NuxtLink
-                v-if="hasPermissionTo('applicationResponse.update')"
-                :to="`/application/${applicationId}/response/edit/${data.id}`"
-              >
-                <Button size="sm" class="px-2" color="gray">
-                  <span class="flex items-center">
-                    <PencilIcon class="size-4 mr-2" />
-                    Edit
-                  </span>
-                </Button>
-              </NuxtLink>
+      <UTable
+        :data="data?.data"
+        :columns="columns"
+        :loading="status === 'pending'"
+        class="flex-1"
+      />
 
-              <Button
-                v-if="hasPermissionTo('applicationResponse.delete')"
-                size="sm"
-                class="px-2"
-                color="error"
-                @click="
-                  () => {
-                    toDeleteApplicationResponse = data;
-                    deleteDialog = true;
-                  }
-                "
-              >
-                <span class="flex items-center"> Delete </span>
-              </Button>
-            </div>
-          </template>
-        </Table>
-        <Dialog
-          v-if="deleteDialog"
-          @close="
-            () => {
-              toDeleteApplicationResponse = undefined;
-              deleteDialog = false;
-            }
-          "
-        >
-          <template #title>
-            <p>Delete</p>
-          </template>
-          <template #body>
-            <p class="mb-2">
-              Delete the response:
-              <span class="font-bold">{{
-                toDeleteApplicationResponse?.name
-              }}</span>
-              ?
-            </p>
-            <p
-              class="rounded border border-red-400 bg-red-200 px-4 py-2 text-red-600"
-            >
-              This response will be deleted
-            </p>
-          </template>
-          <template #footer>
-            <Button class="ml-4 px-4" color="error" size="sm" @click="remove">
-              Delete
-            </Button>
-            <Button
-              class="px-4"
-              color="gray"
-              size="sm"
-              @click="
-                () => {
-                  toDeleteApplicationResponse = undefined;
-                  deleteDialog = false;
-                }
-              "
-            >
-              Cancel
-            </Button>
-          </template>
-        </Dialog>
+      <div
+        class="flex items-center justify-end gap-3 border-t border-default pt-4 mt-auto"
+      >
+        <div class="flex items-center gap-1.5">
+          <UPagination
+            active-color="brand"
+            :page="page"
+            :total="totalItems"
+            :items-per-page="perPage"
+            @update:page="(p: number) => (page = p)"
+          />
+        </div>
       </div>
     </template>
   </UDashboardPanel>
