@@ -45,7 +45,7 @@ const deleteSubmission = async () => {
       :description="`Are you sure, this action cannot be undone. The Submission will be deleted the user will NOT receive a response.`"
     >
       <UButton
-        v-if="hasPermissionTo('faq.delete')"
+        v-if="hasPermissionTo('applicationSubmission.delete')"
         size="md"
         label="Delete"
         color="error"

@@ -2,12 +2,12 @@ import type { TextChannel, Role, Category } from "@/types/discord";
 import { DiscordButton } from "@OrdinarySMP/api-types";
 import type { SelectMenuItem } from "@nuxt/ui";
 
-const client = useApiClient();
-const toast = useSimpleToast();
-
 export const loadTextChannels = async (): Promise<
   { label: string; value: string }[]
 > => {
+  const client = useApiClient();
+  const toast = useSimpleToast();
+
   const response = await client<TextChannel[]>("/discord/text-channels");
 
   if (!response) {
@@ -28,6 +28,9 @@ export const loadTextChannels = async (): Promise<
 export const loadRoles = async (): Promise<
   { label: string; value: string }[]
 > => {
+  const client = useApiClient();
+  const toast = useSimpleToast();
+
   const response = await client<Role[]>("/discord/roles");
 
   if (!response) {
@@ -43,6 +46,9 @@ export const loadRoles = async (): Promise<
 };
 
 export const loadCategories = async () => {
+  const client = useApiClient();
+  const toast = useSimpleToast();
+
   const response = await client<Category[]>("/discord/categories");
 
   if (!response) {

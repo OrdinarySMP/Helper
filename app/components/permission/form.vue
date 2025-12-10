@@ -76,7 +76,9 @@ const { submitting, onSubmit } = useApiForm(form, async (event) => {
     emit("loading");
     await client("/permissions", {
       method: "post",
-      body: event.data,
+      body: {
+        permissions: event.data,
+      },
     });
     emit("persited");
   } catch (err) {

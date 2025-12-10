@@ -101,11 +101,20 @@ useHead({
           />
 
           <UButton
+            v-if="hasPermissionTo('serverContentMessage.read')"
+            label="Messages"
+            icon="material-symbols:add-rounded"
+            size="sm"
+            variant="subtle"
+            color="secondary"
+            to="/server-content/message"
+          />
+
+          <UButton
             v-if="hasPermissionTo('serverContent.create')"
             label="Create"
             icon="material-symbols:add-rounded"
             size="sm"
-            class="px-2"
             variant="subtle"
             color="secondary"
             to="/server-content/create"

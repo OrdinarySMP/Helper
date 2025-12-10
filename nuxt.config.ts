@@ -10,7 +10,7 @@ export default defineNuxtConfig({
       discordClientId: "",
       discordCallbackUrl: "http://localhost:3000/discord/callback",
       sanctum: {
-        baseUrl: 'http://localhost:8000',
+        baseUrl: "http://localhost:8000",
       },
     },
   },
