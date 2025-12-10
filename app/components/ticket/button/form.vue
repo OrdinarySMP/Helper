@@ -21,7 +21,7 @@ const schema = zod.object({
   emoji: zod.string().min(1),
   naming_scheme: zod.string().min(1).max(128),
   disabled: zod.boolean(),
-  ticket_button_ping_role_ids: zod.string().array(),
+  ticket_button_ping_role_ids: zod.string().array().optional(),
 });
 type Schema = zod.output<typeof schema>;
 const form = ref<Form<Schema>>();

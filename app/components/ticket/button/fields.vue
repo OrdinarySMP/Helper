@@ -57,7 +57,7 @@ const panels = computed(() =>
       label-key="label"
     />
   </UFormField>
-  <UFormField label="Ping roles" name="ticket_button_ping_role_ids" required>
+  <UFormField label="Ping roles" name="ticket_button_ping_role_ids">
     <USelectMenu
       v-model="model.ticket_button_ping_role_ids"
       :items="roles"

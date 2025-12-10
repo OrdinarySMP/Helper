@@ -35,7 +35,7 @@ const sendPanel = async () => {
   if (response) {
     toast.success("The Panel has been send successfully.");
   } else {
-    toast.success("An error occurred while sending the Panel.");
+    toast.error("An error occurred while sending the Panel.");
   }
 };
 </script>
