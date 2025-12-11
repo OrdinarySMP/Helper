@@ -13,7 +13,7 @@ const { data, status, refresh } = await useApi<
   query: {
     page_size: 15,
     page,
-    "filter[application_id]": route.params.id,
+    "filter[application_id]": route.params.applicationId,
   },
   watch: [page],
 });
