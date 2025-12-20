@@ -31,8 +31,5 @@ definePageMeta({
 <template>
   <div class="flex h-full">
     Logging in
-    <div class="flex grow items-center justify-center">
-      <Spinner />
-    </div>
   </div>
 </template>

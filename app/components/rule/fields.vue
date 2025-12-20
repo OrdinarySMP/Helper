@@ -11,6 +11,6 @@ const model = defineModel<Partial<RuleData>>({ required: true });
     <UInput v-model="model.name" class="w-full" />
   </UFormField>
   <UFormField label="Rule" name="rule" required>
-    <UTextarea v-model="model.rule" class="w-full" />
+    <FieldsEditor v-model="model.rule" class="w-full" />
   </UFormField>
 </template>

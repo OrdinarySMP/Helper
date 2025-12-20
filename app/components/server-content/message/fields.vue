@@ -10,17 +10,17 @@ defineProps<{
 
 <template>
   <UFormField label="Heading" name="heading" required>
-    <UTextarea v-model="model.heading" class="w-full" :disabled="!canCreate" />
+    <FieldsEditor v-model="model.heading" class="w-full" :disabled="!canCreate" />
   </UFormField>
   <UFormField label="Not recommended" name="not_recommended" required>
-    <UTextarea
+    <FieldsEditor
       v-model="model.not_recommended"
       class="w-full"
       :disabled="!canCreate"
     />
   </UFormField>
   <UFormField label="Recommended" name="recommended" required>
-    <UTextarea
+    <FieldsEditor
       v-model="model.recommended"
       class="w-full"
       :disabled="!canCreate"

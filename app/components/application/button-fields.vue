@@ -37,7 +37,7 @@ const chip = computed(() => ({
     </UPopover>
   </UFormField>
   <UFormField label="Description" name="embed_description">
-    <UTextarea v-model="model.embed_description" class="w-full" />
+    <FieldsEditor v-model="model.embed_description" class="w-full" />
   </UFormField>
   <UFormField label="Button color" name="embed_button_color">
     <USelectMenu

@@ -8,6 +8,6 @@ const model = defineModel<Partial<FaqData>>({ required: true });
     <UInput v-model="model.question" class="w-full" />
   </UFormField>
   <UFormField label="Answer" name="answer" required>
-    <UTextarea v-model="model.answer" class="w-full" />
+    <FieldsEditor v-model="model.answer" class="w-full" />
   </UFormField>
 </template>

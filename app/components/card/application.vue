@@ -56,7 +56,7 @@ const { data } = await useApi<FullResponse<ApplicationSubmissionData[]>>(
           label="To the applications"
           size="md"
           variant="subtle"
-          to="/application-submission"
+          to="/application/submission"
         />
       </div>
     </template>

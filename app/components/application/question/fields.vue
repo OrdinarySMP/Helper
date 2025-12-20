@@ -8,7 +8,7 @@ const model = defineModel<Partial<ApplicationQuestionData>>({ required: true });
     <UInput v-model="model.order" type="number" min="0" class="w-full" />
   </UFormField>
   <UFormField label="Question" name="question" required>
-    <UTextarea v-model="model.question" class="w-full" />
+    <FieldsEditor v-model="model.question" class="w-full" />
   </UFormField>
   <UFormField label="Active" name="is_active">
     <USwitch v-model="model.is_active" />
