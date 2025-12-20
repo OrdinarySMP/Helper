@@ -10,7 +10,7 @@ const chip = computed(() => ({ backgroundColor: model.value.embed_color }));
     <UInput v-model="model.title" class="w-full" />
   </UFormField>
   <UFormField label="Message" name="message" required>
-    <UTextarea v-model="model.message" class="w-full" />
+    <FieldsEditor v-model="model.message" class="w-full" />
   </UFormField>
 
   <UFormField label="Color" name="color" required>

@@ -80,7 +80,7 @@ const panels = computed(() =>
     />
   </UFormField>
   <UFormField label="Initial message" name="initial_message" required>
-    <UTextarea v-model="model.initial_message" class="w-full" />
+    <FieldsEditor v-model="model.initial_message" class="w-full" />
   </UFormField>
   <UFormField label="Emoji" name="emoji" required>
     <UInput v-model="model.emoji" class="w-full">

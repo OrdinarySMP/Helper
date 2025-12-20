@@ -27,16 +27,16 @@ const textChannels = ref(await loadTextChannels());
     />
   </UFormField>
   <UFormField label="Accept message" name="accept_message" required>
-    <UTextarea v-model="model.accept_message" class="w-full" />
+    <FieldsEditor v-model="model.accept_message" class="w-full" />
   </UFormField>
   <UFormField label="Deny message" name="deny_message" required>
-    <UTextarea v-model="model.deny_message" class="w-full" />
+    <FieldsEditor v-model="model.deny_message" class="w-full" />
   </UFormField>
   <UFormField label="Confirmation message" name="confirmation_message" required>
-    <UTextarea v-model="model.confirmation_message" class="w-full" />
+    <FieldsEditor v-model="model.confirmation_message" class="w-full" />
   </UFormField>
   <UFormField label="Completion message" name="completion_message" required>
-    <UTextarea v-model="model.completion_message" class="w-full" />
+    <FieldsEditor v-model="model.completion_message" class="w-full" />
   </UFormField>
   <UFormField label="Active" name="is_active">
     <USwitch v-model="model.is_active" />

@@ -164,7 +164,7 @@ useHead({
       >
         <template #body>
           <UFormField label="Reason" name="reason" required>
-            <UTextarea v-model="reason" class="w-full" />
+            <FieldsEditor v-model="reason" class="w-full" />
           </UFormField>
 
           <div class="flex justify-end gap-2 mt-4">

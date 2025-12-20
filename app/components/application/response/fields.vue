@@ -20,7 +20,7 @@ const types = computed(() =>
     <UInput v-model="model.name" class="w-full" />
   </UFormField>
   <UFormField label="Response" name="response" required>
-    <UTextarea v-model="model.response" class="w-full" />
+    <FieldsEditor v-model="model.response" class="w-full" />
   </UFormField>
   <UFormField label="Type" name="type" required>
     <USelectMenu
