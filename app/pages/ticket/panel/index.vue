@@ -30,6 +30,7 @@ const columns: TableColumn<TicketPanelData>[] = [
   {
     accessorKey: "message",
     header: "Message",
+    cell: ({ row }) => truncatedString(row.original.message),
   },
   {
     accessorKey: "embed_color",

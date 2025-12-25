@@ -62,3 +62,6 @@ export const filterToQuery = (filter: Record<string, unknown>) =>
       .filter(([_, v]) => v !== null && v !== undefined && v !== "")
       .map(([k, v]) => [`filter[${k}]`, v]),
   );
+
+export const truncatedString = (string: string, length = 100) =>
+  string.length > length ? string.substring(0, length) + "..." : string;

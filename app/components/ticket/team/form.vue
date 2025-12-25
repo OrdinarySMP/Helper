@@ -14,7 +14,7 @@ const client = useApiClient();
 
 const schema = zod.object({
   name: zod.string().min(1).max(100),
-  ticket_team_role_ids: zod.string().array(),
+  ticket_team_role_ids: zod.string().array().optional(),
 });
 type Schema = zod.output<typeof schema>;
 const form = ref<Form<Schema>>();

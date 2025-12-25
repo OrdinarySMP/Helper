@@ -14,7 +14,7 @@ const client = useApiClient();
 
 const schema = zod.object({
   order: zod.number().min(1),
-  question: zod.string().min(1),
+  question: zod.string().min(1).max(255),
   is_active: zod.boolean(),
   application_id: zod.number().min(1),
 });

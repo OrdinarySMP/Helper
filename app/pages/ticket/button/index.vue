@@ -41,6 +41,14 @@ const columns: TableColumn<TicketButtonData>[] = [
     header: "Naming scheme",
   },
   {
+    accessorKey: "disabled",
+    header: "Active",
+    cell: ({ row }) =>
+      h(resolveComponent("TableBooleanCell"), {
+        value: !row.original.disabled,
+      }),
+  },
+  {
     id: "actions",
     cell: ({ row }) =>
       h(resolveComponent("TicketButtonActionCell"), {

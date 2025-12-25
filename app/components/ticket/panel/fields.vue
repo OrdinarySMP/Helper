@@ -22,7 +22,10 @@ const chip = computed(() => ({ backgroundColor: model.value.embed_color }));
       </UButton>
 
       <template #content>
-        <UColorPicker v-model="model.embed_color" class="p-2" />
+        <div class="p-2 space-y-3">
+          <UColorPicker v-model="model.embed_color" />
+          <UInput v-model="model.embed_color" />
+        </div>
       </template>
     </UPopover>
   </UFormField>

@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@OrdinarySMP/api-types@0.0.0":
-  version "0.0.0"
-  resolved "https://npm.pkg.github.com/download/@OrdinarySMP/api-types/0.0.0/0b1b0ed3c4b92bb66670ab6a4cf84fcdd47eaa51#0b1b0ed3c4b92bb66670ab6a4cf84fcdd47eaa51"
-  integrity sha512-sVGhbLdq9lSmqnGtF2ygDgETEPN1wgJnEaYbxkUagIVk3efv6p48jIQ/T7Z9hS3cW1Q/EuZnRwxioqJ6JQSisQ==
+"@OrdinarySMP/api-types@^1.10.1":
+  version "1.10.1"
+  resolved "https://npm.pkg.github.com/download/@OrdinarySMP/api-types/1.10.1/1b490b21e2d9ed687198650328c2b39180de7260#1b490b21e2d9ed687198650328c2b39180de7260"
+  integrity sha512-sxgNpAqMlE14o8WvR4IvSZBJb7e2tew6ZFNckLYqAWs+sTGFgCOiEpOeAqAEdo0+qDo1+0B8SfYfszVqnmAZcw==
 
 "@alloc/quick-lru@^5.2.0":
   version "5.2.0"
