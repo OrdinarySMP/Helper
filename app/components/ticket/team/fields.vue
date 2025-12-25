@@ -8,7 +8,7 @@ const roles = ref(await loadRoles());
   <UFormField label="Name" name="name" required>
     <UInput v-model="model.name" class="w-full" />
   </UFormField>
-  <UFormField label="Role" name="role_id" required>
+  <UFormField label="Role" name="ticket_team_role_ids">
     <USelectMenu
       v-model="model.ticket_team_role_ids"
       :items="roles"

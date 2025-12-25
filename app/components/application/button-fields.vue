@@ -29,10 +29,10 @@ const chip = computed(() => ({
       </UButton>
 
       <template #content>
-        <UColorPicker
-          v-model="model.embed_color as string | undefined"
-          class="p-2"
-        />
+        <div class="p-2 space-y-3">
+          <UColorPicker v-model="model.embed_color as string | undefined" />
+          <UInput v-model="model.embed_color" />
+        </div>
       </template>
     </UPopover>
   </UFormField>

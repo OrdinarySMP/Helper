@@ -20,7 +20,9 @@ const form = ref<Form<Schema>>();
 const data = await client<{ data: TicketConfigData }>("/ticket/config", {
   method: "get",
 });
-config.value = data.data;
+if (data.data) {
+  config.value = data.data;
+}
 
 const canCreate = computed(() => hasPermissionTo("ticketConfig.create"));
 

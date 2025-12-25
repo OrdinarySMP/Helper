@@ -15,7 +15,7 @@
     "prettier-ci": "prettier -c ."
   },
   "dependencies": {
-    "@OrdinarySMP/api-types": "0.0.0",
+    "@OrdinarySMP/api-types": "^1.10.1",
     "@headlessui/vue": "^1.7.22",
     "@heroicons/vue": "^2.1.4",
     "@nuxt/ui": "^4.2.1",

@@ -28,6 +28,7 @@ const columns: TableColumn<ApplicationQuestionData>[] = [
   {
     accessorKey: "question",
     header: "Questions",
+    cell: ({ row }) => truncatedString(row.original.question, 150),
   },
   {
     accessorKey: "order",

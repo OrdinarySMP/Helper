@@ -11,7 +11,7 @@ const model = defineModel<Partial<ServerContentData>>({ required: true });
     <UInput v-model="model.url" class="w-full" />
   </UFormField>
   <UFormField label="Description" name="description" required>
-    <FieldsEditor v-model="model.description" class="w-full" />
+    <UInput v-model="model.description" class="w-full" />
   </UFormField>
   <UFormField label="Recommended" name="is_recommended">
     <USwitch v-model="model.is_recommended" />

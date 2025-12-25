@@ -61,9 +61,6 @@ const columns: TableColumn<ServerContentData>[] = [
   },
 ];
 
-const truncatedString = (string: string) =>
-  string.length > 100 ? string.substring(0, 100) + "..." : string;
-
 const resend = async (channelId: string) => {
   const data = await client("/server-content/resend", {
     method: "post",

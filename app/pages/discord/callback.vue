@@ -3,6 +3,7 @@ import { onMounted } from "vue";
 
 const route = useRoute();
 const { refreshIdentity } = useSanctumAuth();
+const value = null;
 
 onMounted(async () => {
   const { error } = await useApi("/discord/callback", {
@@ -29,7 +30,11 @@ definePageMeta({
 </script>
 
 <template>
-  <div class="flex h-full">
-    Logging in
+  <div
+    class="mt-12 flex flex-col items-center justify-center gap-4 p-4 text-2xl"
+  >
+    <p>Signing you in with Discord.</p>
+    <p>This may take a few seconds...</p>
+    <UProgress v-model="value" size="sm" />
   </div>
 </template>

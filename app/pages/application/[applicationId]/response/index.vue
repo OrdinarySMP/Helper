@@ -35,6 +35,7 @@ const columns: TableColumn<ApplicationResponseData>[] = [
   {
     accessorKey: "response",
     header: "Response",
+    cell: ({ row }) => truncatedString(row.original.response, 150),
   },
   {
     accessorKey: "type",

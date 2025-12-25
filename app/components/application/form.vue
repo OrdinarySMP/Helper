@@ -21,7 +21,7 @@ const schema = zod.object({
   deny_message: zod.string().min(1),
   confirmation_message: zod.string().min(1),
   completion_message: zod.string().min(1),
-  activity_channel: zod.string().min(1).nullable(),
+  activity_channel: zod.string().min(1).nullable().optional(),
   restricted_role_ids: zod.string().array().optional(),
   accepted_role_ids: zod.string().array().optional(),
   denied_role_ids: zod.string().array().optional(),
