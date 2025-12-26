@@ -12,12 +12,19 @@ export const parseRouteParameter = (
   return Number.isNaN(value) ? 0 : value;
 };
 
-export const hasPermissionTo = (permission: string): boolean => {
+export const hasPermissionTo = (permission: string | string[]): boolean => {
   const user = useCurrentUser().value;
   if (!user) {
     return false;
   }
-  return user.permissions.includes(permission) || user.is_owner;
+
+  if (user.is_owner) {
+    return true;
+  }
+
+  const permissions = Array.isArray(permission) ? permission : [permission];
+
+  return permissions.some((p) => user.permissions.includes(p));
 };
 
 // replace with enum from api
