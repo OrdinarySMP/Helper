@@ -107,7 +107,7 @@ watch(page, loadTickets);
 
 definePageMeta({
   permission: {
-    permission: "ticket.read",
+    permission: ["ticket.read", "ticket.read-own"],
   },
 });
 

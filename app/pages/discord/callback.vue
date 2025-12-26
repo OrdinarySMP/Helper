@@ -3,7 +3,7 @@ import { onMounted } from "vue";
 
 const route = useRoute();
 const { refreshIdentity } = useSanctumAuth();
-const value = null;
+const value = ref(null);
 
 onMounted(async () => {
   const { error } = await useApi("/discord/callback", {

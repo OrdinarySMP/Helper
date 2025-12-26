@@ -25,12 +25,12 @@ const items: NavigationMenuItem[] = [
     label: "Tickets",
     icon: "famicons:ticket-outline",
     to: "/ticket",
-    permission: "ticket.read",
+    permission: ["ticket.read", "ticket.read-own"],
     children: [
       {
-        label: "Current tickets",
+        label: "All tickets",
         to: "/ticket",
-        permission: "ticket.read",
+        permission: ["ticket.read", "ticket.read-own"],
       },
       {
         label: "Config",
@@ -98,13 +98,14 @@ const filteredItems = items
       return navigation;
     }
     navigation.children = navigation.children.filter((child) =>
-      hasPermissionTo(child.permission),
+      child.permission ? hasPermissionTo(child.permission) : true,
     );
     return navigation;
   })
   .filter(
     (navigation) =>
-      hasPermissionTo(navigation.permission) || navigation.children?.length,
+      (navigation.permission ? hasPermissionTo(navigation.permission) : true) ||
+      navigation.children?.length,
   );
 
 const footerItems: NavigationMenuItem[] = [
