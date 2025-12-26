@@ -5,6 +5,7 @@ import type { PaginatedResponse } from "@/types/response";
 
 const route = useRoute();
 const ticket = ref<TicketData>();
+const user = useCurrentUser();
 
 const { data } = await useApi<PaginatedResponse<TicketData[]>>("/ticket", {
   method: "get",
@@ -18,7 +19,7 @@ ticket.value = data.value?.data[0];
 
 definePageMeta({
   permission: {
-    permission: "ticketTranscript.read",
+    permission: ["ticketTranscript.read", "ticketTranscript.read-own"],
   },
 });
 
