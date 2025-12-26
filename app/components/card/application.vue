@@ -17,7 +17,7 @@ const { data } = await useApi<FullResponse<ApplicationSubmissionData[]>>(
 </script>
 
 <template>
-  <UCard v-if="hasPermissionTo('applicationSubmission.read')" variant="subtle">
+  <UCard variant="subtle">
     <template #header>
       Pending Applications
       <UBadge variant="subtle">{{ data?.data?.length }}</UBadge>

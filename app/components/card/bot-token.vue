@@ -26,7 +26,7 @@ const copyBotToken = () => {
 </script>
 
 <template>
-  <UCard v-if="hasPermissionTo('owner')" variant="subtle">
+  <UCard variant="subtle">
     <template #header>
       <p>Bot token</p>
     </template>

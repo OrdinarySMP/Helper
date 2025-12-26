@@ -18,7 +18,7 @@ const chip = computed(() => ({
     />
   </UFormField>
   <UFormField label="Title" name="embed_title">
-    <UInput v-model="model.embed_title" class="w-full" />
+    <UInput v-model="model.embed_title as string | undefined" class="w-full" />
   </UFormField>
   <UFormField label="Color" name="color">
     <UPopover>
@@ -31,7 +31,7 @@ const chip = computed(() => ({
       <template #content>
         <div class="p-2 space-y-3">
           <UColorPicker v-model="model.embed_color as string | undefined" />
-          <UInput v-model="model.embed_color" />
+          <UInput v-model="model.embed_color as string | undefined" />
         </div>
       </template>
     </UPopover>
@@ -49,6 +49,9 @@ const chip = computed(() => ({
     />
   </UFormField>
   <UFormField label="Button Text" name="embed_button_text">
-    <UInput v-model="model.embed_button_text" class="w-full" />
+    <UInput
+      v-model="model.embed_button_text as string | undefined"
+      class="w-full"
+    />
   </UFormField>
 </template>
