@@ -6,7 +6,7 @@ const client = useApiClient();
 const toast = useSimpleToast();
 
 const data = await client("/server-content-message");
-const serverContentMessage = ref(data);
+const serverContentMessage = ref(data !== "" ? data : {});
 
 const persited = () => {
   toast.success("Mods + Datapacks Messages updated.");
