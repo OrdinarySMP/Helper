@@ -11,7 +11,7 @@ const { data } = await useApi<FullResponse<TicketData[]>>("/ticket", {
 </script>
 
 <template>
-  <UCard v-if="hasPermissionTo('ticket.read')" variant="subtle">
+  <UCard variant="subtle">
     <template #header>
       Open Tickets
       <UBadge variant="subtle">{{ data?.data?.length }}</UBadge>

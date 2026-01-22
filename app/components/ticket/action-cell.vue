@@ -32,7 +32,9 @@ const closeTicket = async () => {
 <template>
   <div class="space-x-2">
     <UButton
-      v-if="hasPermissionTo('ticketTranscript.read')"
+      v-if="
+        hasPermissionTo(['ticketTranscript.read', 'ticketTranscript.read-own'])
+      "
       label="Transcript"
       size="md"
       icon="material-symbols:drive-file-rename-outline-outline"

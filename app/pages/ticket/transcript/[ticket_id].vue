@@ -18,7 +18,7 @@ ticket.value = data.value?.data[0];
 
 definePageMeta({
   permission: {
-    permission: "ticketTranscript.read",
+    permission: ["ticketTranscript.read", "ticketTranscript.read-own"],
   },
 });
 
