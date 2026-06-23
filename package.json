@@ -24,7 +24,7 @@
     "@vueuse/core": "^12.8.2",
     "dayjs": "^1.11.20",
     "esbuild": "^0.25.12",
-    "nuxt": "^4.4.2",
+    "nuxt": "^4.4.8",
     "nuxt-auth-sanctum": "1.4.3",
     "vee-validate": "^4.15.1",
     "vue": "^3.5.30",
